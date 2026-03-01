@@ -1,0 +1,15 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor
+*.swp
+*.swo
+*~
+
+# Night shift working files
+.night-shift/
+
+# Extracted figures (output)
+*_figures/
+*.zip
