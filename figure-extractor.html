@@ -9,6 +9,7 @@
         pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.0.379/pdf.worker.min.mjs";
         window.pdfjsLib = pdfjsLib;
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -3030,7 +3031,6 @@ function getCurrentPageNum() {
 function toggleHelpOverlay() {
     const overlay = document.getElementById("helpOverlay");
     overlay.classList.toggle("visible");
-}
 }
 
 // Selection system
