@@ -1134,7 +1134,7 @@ function createFigureCard(fig) {
     input.type = 'text';
     input.className = 'figure-label-input';
     input.value = fig.label;
-    input.onchange = () => { fig.label = input.value; saveAnnotations(); renderAnnotations(); };
+    input.onchange = () => { pushHistory(); fig.label = input.value; saveAnnotations(); renderAnnotations(); };
     header.appendChild(input);
 
     // Page indicator
@@ -1277,6 +1277,7 @@ function setupSubfigureDrawing(overlay, fig) {
         const h = Math.abs(e.clientY - rect.top - start.y);
 
         if (w > 15 && h > 15) {
+            pushHistory();
             fig.subfigures.push({
                 id: fig.id + '_s' + (fig.subfigures.length + 1),
                 label: fig.label + String.fromCharCode(97 + fig.subfigures.length),
@@ -1332,7 +1333,7 @@ function createSubfigureItem(sub, fig) {
     const input = document.createElement('input');
     input.type = 'text';
     input.value = sub.label;
-    input.onchange = () => { sub.label = input.value; saveAnnotations(); renderAnnotations(); };
+    input.onchange = () => { pushHistory(); sub.label = input.value; saveAnnotations(); renderAnnotations(); };
     item.appendChild(input);
 
     const del = document.createElement('button');
@@ -1354,6 +1355,8 @@ async function exportAll() {
     showLoading(true);
 
     try {
+        const zip = new JSZip();
+
         const data = {
             project: state.projectName,
             article: state.currentArticle,
@@ -1363,14 +1366,14 @@ async function exportAll() {
                 subfigures: f.subfigures.map(s => ({ id: s.id, label: s.label, bounds: s.bounds }))
             }))
         };
-
-        download(JSON.stringify(data, null, 2), `${state.currentArticle}_annotations.json`, 'application/json');
+        zip.file('annotations.json', JSON.stringify(data, null, 2));
 
         for (const fig of state.figures) {
             const page = state.pages.find(p => p.pageNum === fig.pageNum);
             if (!page) continue;
             const canvas = cropImage(page.img, fig.bounds);
-            await downloadCanvas(canvas, sanitize(fig.label) + '.png');
+            const figBlob = await canvasToBlob(canvas);
+            zip.file(sanitize(fig.label) + '.png', figBlob);
 
             for (const sub of fig.subfigures) {
                 const sx = canvas.width / fig.bounds.width;
@@ -1379,12 +1382,23 @@ async function exportAll() {
                 subCanvas.width = sub.bounds.width * sx;
                 subCanvas.height = sub.bounds.height * sy;
                 subCanvas.getContext('2d').drawImage(canvas, sub.bounds.x * sx, sub.bounds.y * sy, subCanvas.width, subCanvas.height, 0, 0, subCanvas.width, subCanvas.height);
-                await downloadCanvas(subCanvas, sanitize(sub.label) + '.png');
+                const subBlob = await canvasToBlob(subCanvas);
+                zip.file(sanitize(sub.label) + '.png', subBlob);
             }
         }
+
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(zipBlob);
+        a.download = `${state.currentArticle}_figures.zip`;
+        a.click();
     } finally {
         showLoading(false);
     }
+}
+
+function canvasToBlob(canvas) {
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 }
 
 function download(content, name, type) {
