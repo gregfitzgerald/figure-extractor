@@ -4,9 +4,13 @@
 
 set -e
 
-PROJECTS_DIR="/mnt/c/Users/gregs/Drive/figure-extraction-projects"
-TOOL_PATH="/mnt/c/Users/gregs/Drive/tools/figure-extractor.html"
-PDF_CONVERTER="/mnt/c/Users/gregs/Drive/tools/pdf-to-pages.py"
+# Defaults resolve relative to this repo; override via environment variables.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_DIR="$(dirname "$SCRIPT_DIR")"
+
+PROJECTS_DIR="${FIGURE_PROJECTS_DIR:-$HOME/figure-extraction-projects}"
+TOOL_PATH="${FIGURE_TOOL_PATH:-$REPO_DIR/figure-extractor.html}"
+PDF_CONVERTER="${FIGURE_PDF_CONVERTER:-$SCRIPT_DIR/pdf-to-pages.py}"
 
 usage() {
     cat << EOF
@@ -83,9 +87,16 @@ cmd_list() {
 }
 
 cmd_open() {
-    echo "Opening Figure Extractor..."
-    /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -Command \
-        "Start-Process 'C:\\Users\\gregs\\Drive\\tools\\figure-extractor.html'"
+    echo "Opening Figure Extractor: $TOOL_PATH"
+    if command -v wslview >/dev/null 2>&1; then
+        wslview "$TOOL_PATH"
+    elif command -v xdg-open >/dev/null 2>&1; then
+        xdg-open "$TOOL_PATH"
+    elif command -v open >/dev/null 2>&1; then
+        open "$TOOL_PATH"
+    else
+        echo "No opener found -- open this file in your browser: $TOOL_PATH"
+    fi
 }
 
 cmd_info() {

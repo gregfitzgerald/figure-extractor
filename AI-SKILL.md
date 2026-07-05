@@ -18,21 +18,19 @@ figure-extraction-projects/           # Root projects folder
     ...
 ```
 
-**Default projects location:** `/mnt/c/Users/gregs/Drive/figure-extraction-projects/`
+**Default projects location:** `~/figure-extraction-projects/` (override with the `FIGURE_PROJECTS_DIR` environment variable when using the CLI helper)
 
 ## PDF to Pages Conversion
 
 Before using the extractor, convert PDFs to numbered PNGs:
 
 ```bash
-python3 /mnt/c/Users/gregs/Drive/tools/pdf-to-pages.py <input.pdf> [output_dir] [--dpi 150]
+python3 scripts/pdf-to-pages.py <input.pdf> [output_dir] [--dpi 150]
 ```
 
 ## Browser Tool Location
 
-`/mnt/c/Users/gregs/Drive/tools/figure-extractor.html`
-
-Windows path: `C:\Users\gregs\Drive\tools\figure-extractor.html`
+`figure-extractor.html` in the repository root. Open it directly in any modern browser (no server required).
 
 ## AI Operation via Browser Automation
 
@@ -41,7 +39,7 @@ The tool exposes `window.figureExtractor` API for programmatic control.
 ### 1. Open the Tool
 
 ```
-browser action=open targetUrl="file:///C:/Users/gregs/Drive/tools/figure-extractor.html" profile=clawd
+browser action=open targetUrl="file:///path/to/figure-extractor/figure-extractor.html"
 ```
 
 ### 2. Check Status

@@ -1,6 +1,6 @@
 # Academic Figure Extractor
 
-A browser-based tool for extracting, annotating, and organizing figures from academic papers. Supports subfigure hierarchy, keyboard-driven workflows, and AI-assisted annotation.
+A browser-based tool for extracting, annotating, and organizing figures from academic papers. Supports subfigure hierarchy and AI-assisted annotation, as part of an automated meta-analysis / evidence-synthesis pipeline.
 
 ## Quick Start
 
@@ -20,14 +20,12 @@ Click "Load PDF" in the browser pane. Select a PDF file. Choose DPI (150 for spe
 
 - **Draw figures**: Click and drag on any page to draw a rectangle around a figure
 - **Draw subfigures**: In the Figures pane, draw on the cropped figure image to define panels
-- **Resize**: Hover over any annotation to see drag handles
-- **Select**: Click an annotation to select it (red highlight)
-- **Nudge**: Arrow keys move selected annotation by 1px (Shift = 10px)
-- **Delete**: Delete/Backspace removes selected annotation
+- **Label**: Edit the label field on each figure card ("Figure 1", "Figure 2a", ...)
+- **Locate**: Click a figure card's image to scroll to its source page
+- **Delete**: Delete button on each figure card
 - **Undo/Redo**: Ctrl+Z / Ctrl+Y
-- **Zoom**: Ctrl+scroll or use the slider
 
-Press **?** for full keyboard shortcut reference.
+Annotations persist per-article in localStorage, so work survives a page reload.
 
 ### Export
 
@@ -42,7 +40,7 @@ figure-extractor.html    # Main application (single file, runs in browser)
 scripts/
   pdf-to-pages.py        # PDF to PNG conversion utility
   figure-extractor.sh    # CLI helper for common operations
-SPEC.md                  # Original design specification
+SPEC.md                  # Original design specification (aspirational; not all features built)
 SCOPE-AND-RECOMMENDATIONS.md  # Project scope and technical recommendations
 AI-SKILL.md              # Instructions for AI agents to operate the tool programmatically
 ```

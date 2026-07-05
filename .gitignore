@@ -13,3 +13,7 @@ Thumbs.db
 # Extracted figures (output)
 *_figures/
 *.zip
+
+# Claude working notes (local, not for the public repo)
+CLAUDE-HANDOFF.md
+BUG-REPORT.md
