@@ -2,6 +2,8 @@
 
 A browser-based tool for extracting, annotating, and organizing figures from academic papers. Supports subfigure hierarchy and AI-assisted annotation, as part of an automated meta-analysis / evidence-synthesis pipeline.
 
+![Figure Extractor: a multi-panel figure boxed on the page (blue) with its six panels marked as nested subfigures (orange), and the extracted figure card with per-panel crops in the right pane](screenshot.png)
+
 ## Quick Start
 
 Open `figure-extractor.html` in any modern browser. No server, no dependencies, no installation.
