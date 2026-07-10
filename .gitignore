@@ -14,6 +14,27 @@ Thumbs.db
 *_figures/
 *.zip
 
+# Python
+__pycache__/
+*.pyc
+
+# Evaluation run log (lives in the projects dir, but ignore if run inside the repo)
+scores.jsonl
+score-results.json
+
 # Claude working notes (local, not for the public repo)
 CLAUDE-HANDOFF.md
 BUG-REPORT.md
+tasks/
+
+# Generated evaluation artifacts (regenerate with eval/*.py) + copyrighted figure crops
+eval/charts/
+eval/charts_real/
+eval/results/
+eval/results_imgonly/
+eval/tasks/
+eval/tasks_imgonly/
+eval/vtasks/
+eval/vresults/
+eval/vtruth.json
+eval/results_real/

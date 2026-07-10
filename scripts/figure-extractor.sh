@@ -11,6 +11,7 @@ REPO_DIR="$(dirname "$SCRIPT_DIR")"
 PROJECTS_DIR="${FIGURE_PROJECTS_DIR:-$HOME/figure-extraction-projects}"
 TOOL_PATH="${FIGURE_TOOL_PATH:-$REPO_DIR/figure-extractor.html}"
 PDF_CONVERTER="${FIGURE_PDF_CONVERTER:-$SCRIPT_DIR/pdf-to-pages.py}"
+SCORER="${FIGURE_SCORER:-$SCRIPT_DIR/score.py}"
 
 usage() {
     cat << EOF
@@ -19,21 +20,47 @@ Figure Extractor CLI
 Usage: $(basename "$0") <command> [args]
 
 Commands:
-    convert <pdf> <name> [--dpi N]   Convert PDF to page images
+    convert <pdf> <name> [--dpi N]   Convert PDF to page images (+ text.json caption sidecar)
     list                              List articles in projects folder
     open                              Open the figure extractor tool
     info <article>                    Show article info (page count, etc.)
+
+  Evaluation (score extraction against hand-corrected ground truth):
+    promote <article>                 Copy an article's annotations.json to ground-truth.json
+    datasets                          Show which articles have predicted / ground-truth
+    score <article>                   Score one article vs its ground-truth.json
+    score-all                         Score every article that has both; print aggregate
+    gate [--min-f1 X]                 score-all + regression gate (nonzero exit on drop)
+
     help                              Show this help
 
 Examples:
     $(basename "$0") convert paper.pdf chen2011
-    $(basename "$0") convert paper.pdf chen2011 --dpi 200
-    $(basename "$0") list
-    $(basename "$0") open
-    $(basename "$0") info chen2011
+    $(basename "$0") promote chen2011      # after hand-correcting + exporting into the article dir
+    $(basename "$0") score chen2011
+    $(basename "$0") gate
 
 Projects directory: $PROJECTS_DIR
 EOF
+}
+
+cmd_promote() {
+    local name="$1"
+    if [[ -z "$name" ]]; then echo "Error: promote requires <article_name>"; exit 1; fi
+    local dir="$PROJECTS_DIR/$name"
+    local src="$dir/annotations.json"
+    local dst="$dir/ground-truth.json"
+    if [[ ! -f "$src" ]]; then echo "Error: no annotations.json in $dir (export a correction there first)"; exit 1; fi
+    if [[ -f "$dst" ]]; then
+        cp "$dst" "$dst.bak.$(date +%Y%m%d%H%M%S)"
+        echo "Backed up existing ground-truth.json"
+    fi
+    cp "$src" "$dst"
+    echo "Promoted $name/annotations.json -> ground-truth.json"
+}
+
+cmd_score() {
+    python3 "$SCORER" --projects-dir "$PROJECTS_DIR" "$@"
 }
 
 cmd_convert() {
@@ -142,6 +169,24 @@ case "${1:-}" in
     info)
         shift
         cmd_info "$@"
+        ;;
+    promote)
+        shift
+        cmd_promote "$@"
+        ;;
+    datasets)
+        cmd_score datasets
+        ;;
+    score)
+        shift
+        cmd_score score "$@"
+        ;;
+    score-all)
+        cmd_score score-all
+        ;;
+    gate)
+        shift
+        cmd_score gate "$@"
         ;;
     help|--help|-h|"")
         usage
