@@ -1,0 +1,22 @@
+[
+  { "pmid": "42000824", "decision": "exclude", "reason": "intervention", "confidence": 0.85, "note": "maternal (prenatal) wheel running; BDNF measured in offspring, not the running animal" },
+  { "pmid": "41825555", "decision": "exclude", "reason": "population", "confidence": 0.95, "note": "Alzheimer's disease mouse model (Ab oligomer)" },
+  { "pmid": "41482048", "decision": "exclude", "reason": "intervention", "confidence": 0.9, "note": "maternal prenatal exercise; offspring early-life-stress model, Bdnf assessed by ChIP (not protein)" },
+  { "pmid": "40932002", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "whole-brain irradiation injury model; BDNF measured in plasma not hippocampus" },
+  { "pmid": "40589545", "decision": "exclude", "reason": "population", "confidence": 0.95, "note": "Kcna1-null epileptic encephalopathy transgenic model; reduced wheel-running is phenotype not intervention" },
+  { "pmid": "40581286", "decision": "exclude", "reason": "intervention", "confidence": 0.6, "note": "wheel running only as IF+VA combined arm; no isolated voluntary-exercise-vs-sedentary comparison" },
+  { "pmid": "40313801", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "healthy mice, exercise-alone arm present, but BDNF region/protein-vs-mRNA unclear" },
+  { "pmid": "40164886", "decision": "exclude", "reason": "population", "confidence": 0.75, "note": "Western-diet/obesity model female rats; exercise confounded with WD, no healthy running arm" },
+  { "pmid": "40096936", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "juvenile rats + risperidone; hippocampal Bdnf measured as mRNA only" },
+  { "pmid": "39966302", "decision": "exclude", "reason": "population", "confidence": 0.8, "note": "adolescent rats, chronic social isolation stress model" },
+  { "pmid": "39558340", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "aged (16-17mo) mice, tibial-fracture surgery/POCD model" },
+  { "pmid": "39548909", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "activity-based anorexia model; wheel access paired with food restriction, not exercise intervention" },
+  { "pmid": "39470596", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "CCl4 fibrosis model but includes healthy vehicle-exercise vs vehicle-sedentary arm; BDNF assay (protein vs mRNA) unclear" },
+  { "pmid": "39306028", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "hippocampal BDNF measured by RT-PCR (mRNA); ELISA BDNF was blood not hippocampus" },
+  { "pmid": "39137861", "decision": "exclude", "reason": "outcome", "confidence": 0.6, "note": "healthy adult VWR vs control, but Bdnf reported as gene expression (mRNA) in dorsal hippocampus" },
+  { "pmid": "38889879", "decision": "exclude", "reason": "population", "confidence": 0.7, "note": "developing/developmental mice; otherwise VWR + hippocampal BDNF western blot" },
+  { "pmid": "39871877", "decision": "exclude", "reason": "population", "confidence": 0.75, "note": "high-fat-diet obesity model; exercise tested against HFD, no healthy running arm" },
+  { "pmid": "37759796", "decision": "exclude", "reason": "population", "confidence": 0.95, "note": "Cdkl5 knockout neurodevelopmental disorder model" },
+  { "pmid": "37736785", "decision": "exclude", "reason": "population", "confidence": 0.8, "note": "adolescent mice, social-defeat/ethanol model" },
+  { "pmid": "37519068", "decision": "exclude", "reason": "intervention", "confidence": 0.8, "note": "selective breeding for exercise behavior, not a wheel-running vs sedentary intervention; Bdnf as gene expression/methylation" }
+]

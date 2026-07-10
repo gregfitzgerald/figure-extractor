@@ -1,0 +1,22 @@
+[
+  { "pmid": "33344693", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "Adcy1 transgenic mouse; wheel running is a behavioral readout, not intervention" },
+  { "pmid": "33321142", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "healthy rats w/ exercise-vs-sedentary but outcome is serum BDNF + hippocampal TrkB signaling" },
+  { "pmid": "33279639", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "traumatic brain injury model" },
+  { "pmid": "32933545", "decision": "exclude", "reason": "population", "confidence": 0.95, "note": "5xFAD Alzheimer transgenic mice" },
+  { "pmid": "32799949", "decision": "exclude", "reason": "outcome", "confidence": 0.85, "note": "BDNF mRNA (qPCR) only; maternal low-protein model" },
+  { "pmid": "32458204", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "SH-SY5Y human cell line, not in vivo wheel running" },
+  { "pmid": "32006566", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "CUMS depression model but has healthy exercise-vs-control arm and hippocampal BDNF" },
+  { "pmid": "31844999", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "Synapsin II KO epilepsy-prone mice; BDNF unaltered" },
+  { "pmid": "31697961", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "ovariectomy (menopause) model but voluntary wheel running w/ hippocampal BDNF protein" },
+  { "pmid": "31562506", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "olfactory-bulb BDNF-overexpressing transgenic mice, non-hippocampal focus" },
+  { "pmid": "31517674", "decision": "exclude", "reason": "outcome", "confidence": 0.85, "note": "BDNF mRNA (qRT-PCR) only; early-life isoflurane model" },
+  { "pmid": "31377659", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "PTZ chronic epilepsy model" },
+  { "pmid": "31203831", "decision": "exclude", "reason": "outcome", "confidence": 0.85, "note": "BDNF gene expression (qPCR) only; maternal activity" },
+  { "pmid": "31193350", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "social defeat stress model but voluntary exercise arm w/ hippocampal BDNF protein" },
+  { "pmid": "31091850", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "MCAO cerebral ischemia model" },
+  { "pmid": "30917909", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "adolescent stress model but includes exercise-only arm and hippocampal BDNF protein" },
+  { "pmid": "30790584", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "D-GAL/AlCl3 Alzheimer model rats" },
+  { "pmid": "30247630", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "aged (18mo) mice; enriched-environment not pure wheel running" },
+  { "pmid": "30144942", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "in-utero VPA developmental model; outcome in pups" },
+  { "pmid": "29793890", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "hippocampal BDNF measured as gene expression (mRNA)" }
+]

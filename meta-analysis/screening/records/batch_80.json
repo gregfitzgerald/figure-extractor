@@ -1,0 +1,22 @@
+[
+  { "pmid": "27421897", "decision": "exclude", "reason": "outcome", "confidence": 0.75, "note": "AC1 knockout mice; BDNF measured as mRNA only" },
+  { "pmid": "27312674", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "relapsing-remitting EAE (MS) disease model" },
+  { "pmid": "27181637", "decision": "exclude", "reason": "population", "confidence": 0.8, "note": "maternal-hypothyroid developmental rat pups" },
+  { "pmid": "26836322", "decision": "exclude", "reason": "outcome", "confidence": 0.7, "note": "Korsakoff PTD model; cholinergic/ACh outcome, no BDNF measure" },
+  { "pmid": "26752611", "decision": "include", "reason": "", "confidence": 0.9, "note": "healthy adult mice, voluntary wheel vs SED, hippocampal BDNF protein ELISA" },
+  { "pmid": "26358368", "decision": "exclude", "reason": "outcome", "confidence": 0.6, "note": "chronically stressed mice; hippocampal BDNF mRNA only" },
+  { "pmid": "26240057", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "vascular dementia rat model" },
+  { "pmid": "26224094", "decision": "exclude", "reason": "population", "confidence": 0.8, "note": "aged mice with LPS immune challenge" },
+  { "pmid": "26109779", "decision": "exclude", "reason": "outcome", "confidence": 0.7, "note": "restraint stress; barley-leaf intervention; BDNF mRNA only" },
+  { "pmid": "26041908", "decision": "exclude", "reason": "population", "confidence": 0.75, "note": "BDNF cKO mechanistic study, not exercise-vs-sedentary BDNF quantification" },
+  { "pmid": "26019053", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "Mecp2 Rett syndrome model" },
+  { "pmid": "26000806", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "voluntary wheel confounded with dietary restriction; hippocampal BDNF ELISA; pure sedentary control unclear" },
+  { "pmid": "25919993", "decision": "exclude", "reason": "outcome", "confidence": 0.7, "note": "parental running; offspring (non-runner) hippocampal Bdnf mRNA, no difference" },
+  { "pmid": "25447477", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "adolescent mice (age borderline); ethanol paradigm; hippocampal BDNF protein measured" },
+  { "pmid": "25419789", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "exercise preconditioning then TBI; BDNF pathway noted but hippocampal BDNF protein not clearly quantified" },
+  { "pmid": "25413326", "decision": "exclude", "reason": "outcome", "confidence": 0.75, "note": "microarray transcriptome; BDNF mRNA only" },
+  { "pmid": "25332001", "decision": "include", "reason": "", "confidence": 0.85, "note": "healthy 2-mo adult mice, voluntary wheel, hippocampal BDNF protein by western blot" },
+  { "pmid": "25323073", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "MK-801-induced schizophrenia model" },
+  { "pmid": "25203492", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "adolescent rats (age borderline); voluntary wheel vs SED; hippocampal BDNF protein" },
+  { "pmid": "25010399", "decision": "exclude", "reason": "intervention", "confidence": 0.8, "note": "chronic sleep restriction via rotating wheels, not voluntary running exercise" }
+]

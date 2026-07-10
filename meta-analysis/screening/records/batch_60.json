@@ -1,0 +1,22 @@
+[
+  { "pmid": "29738768", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "PTSD/foot-shock stress rat model; BDNF mRNA only" },
+  { "pmid": "29574629", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "traumatic brain injury rat model" },
+  { "pmid": "29464752", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "neonatal maternal separation IC/PBS model; BDNF mRNA" },
+  { "pmid": "29370674", "decision": "exclude", "reason": "outcome", "confidence": 0.85, "note": "healthy rats but BDNF mRNA only (RT-PCR), acute 1wk" },
+  { "pmid": "29266170", "decision": "exclude", "reason": "population", "confidence": 0.7, "note": "chronic nicotine-exposed mice; BDNF unchanged" },
+  { "pmid": "29126372", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "vascular dementia rat model; PFC focus" },
+  { "pmid": "29099859", "decision": "exclude", "reason": "population", "confidence": 0.7, "note": "restraint-stress model; western blot BDNF present" },
+  { "pmid": "28811779", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "morphine model; BDNF gene expression only" },
+  { "pmid": "28757245", "decision": "exclude", "reason": "population", "confidence": 0.7, "note": "post-weaning social isolation model; ELISA BDNF" },
+  { "pmid": "28751854", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "healthy mice but BDNF mRNA only, very short running" },
+  { "pmid": "28593819", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "DN-DISC1 transgenic mouse model" },
+  { "pmid": "28556463", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "Bdnf mRNA only; acute vs chronic exercise" },
+  { "pmid": "28292830", "decision": "exclude", "reason": "population", "confidence": 0.8, "note": "chronic inflammatory pain model; EE+exercise combined" },
+  { "pmid": "28271805", "decision": "exclude", "reason": "design", "confidence": 0.95, "note": "review/year-in-review commentary" },
+  { "pmid": "27919728", "decision": "exclude", "reason": "population", "confidence": 0.7, "note": "depression model rats; hippocampal BDNF ELISA" },
+  { "pmid": "27861553", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "activity-based anorexia; BDNF transcripts mRNA" },
+  { "pmid": "27686571", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "healthy mice, hippocampal BDNF protein; treadmill+wheel mix" },
+  { "pmid": "27597545", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "neonatal alcohol FASD model; Bdnf mRNA/methylation" },
+  { "pmid": "27578497", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "BDNF-Val66Met knock-in + anorexia model" },
+  { "pmid": "27521273", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "concussion/mTBI model; bdnf gene expression" }
+]

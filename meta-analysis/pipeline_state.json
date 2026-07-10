@@ -1,0 +1,38 @@
+{
+  "created": "2026-07-10T03:35:09",
+  "stages": {
+    "identify": {
+      "status": "done",
+      "fetched": 120,
+      "totalHits": 204
+    },
+    "screen-ta": {
+      "status": "done",
+      "included": 6,
+      "unsure": 18,
+      "excluded": 96
+    },
+    "adjudicate-ta": {
+      "status": "blocked-on-human"
+    },
+    "screen-ft": {
+      "status": "pending"
+    },
+    "adjudicate-ft": {
+      "status": "pending"
+    },
+    "extract": {
+      "status": "pending"
+    },
+    "confirm-extract": {
+      "status": "pending"
+    },
+    "synthesize": {
+      "status": "pending"
+    },
+    "approve": {
+      "status": "pending"
+    }
+  },
+  "updated": "2026-07-10T03:35:28"
+}

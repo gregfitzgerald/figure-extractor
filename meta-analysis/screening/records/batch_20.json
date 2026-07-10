@@ -1,0 +1,22 @@
+[
+  { "pmid": "37393777", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "Parkinson's disease animal model" },
+  { "pmid": "37025840", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "voluntary exercise + sedentary plasma control, healthy mice; BDNF protein vs mRNA unclear" },
+  { "pmid": "36813223", "decision": "include", "reason": "", "confidence": 0.6, "note": "voluntary wheel vs sedentary healthy mice, hippocampal proBDNF-BDNF; TBI challenge after exercise phase" },
+  { "pmid": "36713033", "decision": "exclude", "reason": "intervention", "confidence": 0.8, "note": "FMT recipients (HFHC diet), not wheel running on measured animals" },
+  { "pmid": "36649932", "decision": "exclude", "reason": "outcome", "confidence": 0.9, "note": "Bdnf mRNA isoforms only (PCR)" },
+  { "pmid": "36623432", "decision": "exclude", "reason": "outcome", "confidence": 0.6, "note": "outcome is neurogenesis/cognition; BDNF as genotype, no hippocampal BDNF protein reported" },
+  { "pmid": "36567651", "decision": "include", "reason": "", "confidence": 0.75, "note": "voluntary wheel vs sedentary, hippocampal BDNF protein increased; Val66Met is genetic variant not pathology" },
+  { "pmid": "36460238", "decision": "exclude", "reason": "population", "confidence": 0.95, "note": "APP/PS1 Alzheimer transgenic model" },
+  { "pmid": "36438603", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "amyloid-beta-induced Alzheimer-like rat model (also EE, BDNF mRNA)" },
+  { "pmid": "36434832", "decision": "exclude", "reason": "intervention", "confidence": 0.85, "note": "exercise intervention was forced treadmill running" },
+  { "pmid": "35945649", "decision": "exclude", "reason": "intervention", "confidence": 0.85, "note": "ALC drug + Poly I:C sickness model; BDNF gene expression" },
+  { "pmid": "35811066", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "hippocampal Bdnf mRNA only, no difference reported" },
+  { "pmid": "35777551", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "MCAO stroke model (also BDNF gene expression)" },
+  { "pmid": "35297012", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "Alzheimer Abeta oligomer mouse model" },
+  { "pmid": "35121056", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "aged female rats" },
+  { "pmid": "34824037", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "CFA arthritis model; EE not pure wheel running" },
+  { "pmid": "34367052", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "voluntary wheel, hippocampal BDNF measured; adolescent (developmental) rats and sedentary comparator unclear" },
+  { "pmid": "34327268", "decision": "exclude", "reason": "design", "confidence": 0.9, "note": "Bio-protocol methods paper" },
+  { "pmid": "33488505", "decision": "exclude", "reason": "population", "confidence": 0.8, "note": "repeat mild TBI adolescent model" },
+  { "pmid": "33422526", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "adolescent-stress model but has non-stress exercise arm; CA3 hippocampal BDNF protein, crocin co-intervention" }
+]

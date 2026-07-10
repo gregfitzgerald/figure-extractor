@@ -1,0 +1,22 @@
+[
+  { "pmid": "25004447", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "aged (19-mo) mice, and BDNF mRNA only" },
+  { "pmid": "24845186", "decision": "exclude", "reason": "population", "confidence": 0.95, "note": "ovariectomized 3xTg-AD transgenic pathology model" },
+  { "pmid": "24819931", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "CBS-deficient mice; also EE combined with exercise" },
+  { "pmid": "24816445", "decision": "exclude", "reason": "population", "confidence": 0.6, "note": "corticosterone-induced depression model, not healthy" },
+  { "pmid": "24768711", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "hippocampal BDNF mRNA only; also AAS co-treatment" },
+  { "pmid": "24755094", "decision": "include", "reason": "", "confidence": 0.7, "note": "healthy SD rats, RW vs sedentary, hippocampal CA3 BDNF protein (IHC)" },
+  { "pmid": "24746931", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "traumatic brain injury lesion model" },
+  { "pmid": "24342563", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "mania mutant model but WT arm shows exercise-raised hippocampal BDNF protein" },
+  { "pmid": "24333433", "decision": "exclude", "reason": "intervention", "confidence": 0.9, "note": "forced running exercise; also irradiation model" },
+  { "pmid": "24320179", "decision": "exclude", "reason": "intervention", "confidence": 0.8, "note": "restraint stress manipulation, wheel-running measured not intervention; BDNF mRNA" },
+  { "pmid": "24239693", "decision": "exclude", "reason": "outcome", "confidence": 0.8, "note": "hippocampal Bdnf mRNA only; ethanol substitution focus" },
+  { "pmid": "24171072", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "maternal exercise; outcome in PND36 offspring (developmental)" },
+  { "pmid": "24157927", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "maternal exercise, offspring; BDNF mRNA" },
+  { "pmid": "24151829", "decision": "exclude", "reason": "population", "confidence": 0.85, "note": "traumatic brain injury model" },
+  { "pmid": "24141180", "decision": "exclude", "reason": "outcome", "confidence": 0.85, "note": "outcome is hippocampal LTP, no BDNF; morphine-dependent rats" },
+  { "pmid": "24114393", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "healthy mice, voluntary wheel raises hippocampal BDNF; protein vs mRNA and control unclear" },
+  { "pmid": "24016692", "decision": "exclude", "reason": "outcome", "confidence": 0.85, "note": "measures cerebral protein synthesis rates, not hippocampal BDNF protein" },
+  { "pmid": "23670818", "decision": "exclude", "reason": "population", "confidence": 0.9, "note": "3xTg Alzheimer transgenic model" },
+  { "pmid": "23615664", "decision": "unsure", "reason": "", "confidence": 0.5, "note": "healthy mice, voluntary exercise, BDNF-dependent; measured increases are transcripts" },
+  { "pmid": "23499703", "decision": "include", "reason": "", "confidence": 0.85, "note": "healthy Wistar rats, voluntary running vs sedentary, hippocampal BDNF protein" }
+]
