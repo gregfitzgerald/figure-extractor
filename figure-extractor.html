@@ -3602,6 +3602,40 @@ function computeCalibration(c, v) {
         }
     };
 }
+// Guard the calibration before trusting any extracted number. Two checks:
+//  (1) round-trip — re-predict the 4 reference values from their own pixels; a large residual
+//      means a degenerate/near-singular axis setup (swapped points, collinear refs).
+//  (2) nonlinear-axis — any log axis (declared, or a positive axis spanning >=2 decades that was
+//      calibrated LINEAR) is flagged 'log-axis-needs-human-review': pixel-linear digitization is
+//      invalid on a log axis, and even a correctly-declared log read is error-prone enough to
+//      warrant a human check. (This flags for review; it is not a hard refusal — that needs a 3rd tick.)
+// Returns { ok, maxError, flags[] }. ok=false only for (1) — a genuinely broken calibration.
+function verifyCalibration(c, v) {
+    const calib = computeCalibration(c, v);
+    if (!calib) return { ok: false, maxError: Infinity, flags: ['calibration-invalid'] };
+    const flags = [];
+    const refs = [['x', 'x1', c.x1], ['x', 'x2', c.x2], ['y', 'y1', c.y1], ['y', 'y2', c.y2]];
+    let maxError = 0;
+    for (const [axis, key, pt] of refs) {
+        if (!pt) continue;
+        const expected = parseFloat(v[key]);
+        const got = calib.toData(pt)[axis];
+        if (!isFinite(expected) || !isFinite(got)) { maxError = Infinity; continue; }
+        const denom = Math.max(Math.abs(expected), 1e-9);
+        maxError = Math.max(maxError, Math.abs(got - expected) / denom);
+    }
+    const ok = maxError <= 1e-6;
+    if (!ok) flags.push('calibration-roundtrip-error');
+    // Nonlinear (log) axes defy the pixel-linear digitization logic (WebPlotDigitizer's core), so
+    // ANY log axis — declared, or a positive axis spanning >=2 decades that was calibrated LINEAR
+    // (very likely an unchecked log box) — is flagged for HUMAN REVIEW. A declared log axis is
+    // handled by computeCalibration, but log reads are error-prone enough to always warrant a check.
+    const spans2decades = (a, b) => { a = Math.abs(parseFloat(a)); b = Math.abs(parseFloat(b)); return a > 0 && b > 0 && Math.max(a, b) / Math.min(a, b) >= 100; };
+    const xLog = v.logX || spans2decades(v.x1, v.x2);
+    const yLog = v.logY || spans2decades(v.y1, v.y2);
+    if (xLog || yLog) flags.push('log-axis-needs-human-review');
+    return { ok, maxError, flags };
+}
 function digToData(p, calib) {
     calib = calib === undefined ? digCalibration() : calib;
     return calib ? calib.toData(p) : { x: null, y: null };
@@ -3920,8 +3954,9 @@ async function exportAll() {
         const manifest = buildManifest([{ name: state.currentArticle, figures: state.figures }]);
         zip.file('manifest.json', JSON.stringify(manifest, null, 2));
         zip.file('README.md', buildReadme(manifest, false));
-        const maRows = metaAnalysisRows(state.currentArticle, state.figures);
-        if (maRows.length) zip.file('meta-analysis.csv', metaCsv(maRows));
+        // Figure-derived output: calibrated landmarks + dispersion TYPE + provenance (R does effect sizes).
+        const lmRows = authoritativeRows(state.currentArticle, state.figures);
+        if (lmRows.length) zip.file('figure-derived-landmarks.csv', landmarksCsv(lmRows));
 
         const zipBlob = await zip.generateAsync({ type: 'blob' });
         const a = document.createElement('a');
@@ -4006,8 +4041,9 @@ async function exportAllProjects() {
         const manifest = buildManifest(manifestArticles);
         zip.file('manifest.json', JSON.stringify(manifest, null, 2));
         zip.file('README.md', buildReadme(manifest, true));
-        const allMeta = manifestArticles.flatMap(a => metaAnalysisRows(a.name, a.figures));
-        if (allMeta.length) zip.file('meta-analysis.csv', metaCsv(allMeta));  // project-wide effects
+        // Figure-derived output (project-wide): landmarks + dispersion TYPE + provenance (R does effect sizes).
+        const allLm = manifestArticles.flatMap(a => authoritativeRows(a.name, a.figures));
+        if (allLm.length) zip.file('figure-derived-landmarks.csv', landmarksCsv(allLm));
         const blob = await zip.generateAsync({ type: 'blob' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -4067,26 +4103,41 @@ function csvFromRows(rows) {
     return [CSV_HEADER, ...rows].map(r => r.map(csvCell).join(',')).join('\r\n');
 }
 
-// The meta-analytic product: one row per extracted effect (MD/SMD/forest/correlation),
-// rolled up from every figure/subfigure that has a stored `extraction`.
-const META_HEADER = ['article', 'target', 'chartType', 'provenance', 'priority', 'effectType', 'comparison', 'effect', 'variance', 'se', 'ciLow', 'ciHigh', 'n1', 'n2', 'dispersionType'];
-function metaAnalysisRows(articleName, figures) {
+// Provenance stamped on every figure-derived record. Because THIS tool only ever produces
+// numbers read off a chart, the flags are always true; they persist inside the extraction/
+// digitization objects, so they survive figuresToJSON/figuresFromJSON round-trips and human
+// edits ("verified is not laundered" — the figure- vs text-derived sensitivity stays honest).
+const FIGURE_PROVENANCE = { figure_derived: true, Data_Source: 'figure', Data_Extraction_Method: 'figure-extractor' };
+
+// ===== Figure-derived output (the tool's only quantitative output) =====
+// One row per DATA-unit landmark (bar top + error-cap half-width, box quartiles, forest
+// estimate+CI, scatter point) with the dispersion TYPE and provenance — but NO yi/vi. Effect
+// sizes are R's job (escalc/Morris/metafor); this is the honest hand-off. `direction` is carried
+// as a field (raw landmarks are never mutated — you cannot negate a mean; R flips the effect sign
+// at escalc using this field). Each row is permanently flagged figure_derived.
+const LANDMARK_HEADER = ['article', 'target', 'chartType', 'landmarkKind', 'group', 'mean', 'errorHalf', 'dispersionType', 'median', 'q1', 'q3', 'min', 'max', 'estimate', 'ciLo', 'ciHi', 'x', 'y', 'n', 'nSource', 'direction', 'timepoint', 'figure_derived', 'Data_Source', 'Data_Extraction_Method'];
+function authoritativeRows(articleName, figures) {
     const rows = [];
     const walk = (label, t) => {
         const e = t.extraction; if (!e) return;
-        const base = { article: articleName, target: label, chartType: e.charType || '', provenance: e.dataProvenance || '', priority: e.priority || '', dispersionType: e.dispersionType || '' };
-        (e.effects || []).forEach(eff => {
-            if (eff.md != null) rows.push({ ...base, effectType: 'MD', comparison: eff.comparison || '', effect: eff.md, variance: eff.mdVariance, se: Math.sqrt(eff.mdVariance), ciLow: eff.mdCi95 ? eff.mdCi95[0] : '', ciHigh: eff.mdCi95 ? eff.mdCi95[1] : '', n1: eff.n1, n2: eff.n2 });
-            if (eff.smd != null) rows.push({ ...base, effectType: 'SMD', comparison: eff.comparison || '', effect: eff.smd, variance: eff.smdVariance, se: Math.sqrt(eff.smdVariance), ciLow: '', ciHigh: '', n1: eff.n1, n2: eff.n2 });
-        });
-        (e.rows || []).forEach(r => rows.push({ ...base, effectType: 'forest-effect', comparison: r.label || '', effect: r.estimate, variance: r.variance, se: r.se, ciLow: r.ciLo, ciHigh: r.ciHi, n1: '', n2: '' }));
-        if (e.correlation) rows.push({ ...base, effectType: 'r(Fisher-z)', comparison: '', effect: e.correlation.r, variance: e.correlation.variance, se: e.correlation.se, ciLow: '', ciHigh: '', n1: e.correlation.n, n2: '' });
+        const prov = {
+            direction: e.direction != null ? e.direction : '', timepoint: e.timepoint || '', nSource: e.nSource || '',
+            figure_derived: e.figure_derived != null ? e.figure_derived : FIGURE_PROVENANCE.figure_derived,
+            Data_Source: e.Data_Source || FIGURE_PROVENANCE.Data_Source,
+            Data_Extraction_Method: e.Data_Extraction_Method || FIGURE_PROVENANCE.Data_Extraction_Method,
+        };
+        const base = { article: articleName, target: label, chartType: e.charType || '' };
+        const push = o => rows.push({ ...base, group: '', mean: '', errorHalf: '', dispersionType: '', median: '', q1: '', q3: '', min: '', max: '', estimate: '', ciLo: '', ciHi: '', x: '', y: '', n: '', ...o, ...prov });
+        if (e.method === 'bar-endpoints') (e.groups || []).forEach(g => push({ landmarkKind: 'bar-group', group: g.name, mean: g.mean, errorHalf: g.errorHalf, dispersionType: g.dispersionType || e.dispersionType || '', n: g.n }));
+        else if (e.method === 'box-landmarks') (e.groups || []).forEach(g => push({ landmarkKind: 'box-group', group: g.name, median: g.median, q1: g.q1, q3: g.q3, min: g.min, max: g.max, n: g.n }));
+        else if (e.method === 'forest-rows') (e.rows || []).forEach(r => push({ landmarkKind: 'forest-row', group: r.label, estimate: r.estimate, ciLo: r.ciLo, ciHi: r.ciHi }));
+        else if (Array.isArray(e.points)) e.points.forEach(p => push({ landmarkKind: 'point', x: p.x, y: p.y }));
     };
     for (const f of figures) { walk(f.label, f); for (const s of (f.subfigures || [])) walk(s.label, s); }
     return rows;
 }
-function metaCsv(rows) {
-    return [META_HEADER.join(','), ...rows.map(r => META_HEADER.map(h => csvCell(r[h])).join(','))].join('\r\n');
+function landmarksCsv(rows) {
+    return [LANDMARK_HEADER.join(','), ...rows.map(r => LANDMARK_HEADER.map(h => csvCell(r[h])).join(','))].join('\r\n');
 }
 
 function escapeHtml(s) {
@@ -4219,6 +4270,7 @@ function buildReadme(manifest, isProject) {
     L.push(`- \`${p}*.png\` — cropped figure and subfigure images`);
     L.push(`- \`${p}digitized/*.csv\` — extracted chart data (one file per digitized panel)`);
     L.push('- `figures.csv` — flat table of every figure/subfigure' + (isProject ? ' across all articles' : ''));
+    L.push('- `figure-derived-landmarks.csv` — the figure-derived output: calibrated landmarks (bar tops + error-cap half-widths, box quartiles, forest estimate+CI, points) + dispersion TYPE + provenance flags. Feed this to R (escalc/metafor) for effect sizes; the tool computes no effect sizes itself.');
     L.push('- `manifest.json` — machine-readable summary of this export');
     L.push('', '## Summary', '');
     L.push(`- Render DPI: ${manifest.renderDpi || (isProject ? 'varies by article' : 'n/a')}`);
@@ -4501,6 +4553,13 @@ function validateCharacterization(c) {
         }
         const disp = p.statistics && p.statistics.dispersion;
         if (disp && disp.type && !CHAR_VOCAB.dispersion.includes(disp.type)) errs.push(`panels[${i}]: unknown dispersion type "${disp.type}"`);
+        // Dispersion discipline: if error bars are present but the TYPE is unknown/missing, the
+        // characterization MUST carry the 'dispersion-type-uncertain' flag — a wrong SD/SEM/CI
+        // reweights the study by ~sqrt(n), so uncertainty here can never be silent.
+        if (disp && disp.present === true && (!disp.type || disp.type === 'unknown')
+            && !((c.flags || []).includes('dispersion-type-uncertain'))) {
+            errs.push(`panels[${i}]: dispersion present but type unknown — add the 'dispersion-type-uncertain' flag`);
+        }
         const m = p.extractionPlan && p.extractionPlan.method;
         if (m && !CHAR_VOCAB.method.includes(m)) errs.push(`panels[${i}]: unknown extraction method "${m}"`);
         if (p.dataProvenance && !CHAR_VOCAB.dataProvenance.includes(p.dataProvenance)) errs.push(`panels[${i}]: unknown dataProvenance "${p.dataProvenance}"`);
@@ -4510,99 +4569,53 @@ function validateCharacterization(c) {
     return errs;
 }
 
-// Meta-analytic conversion helpers (pure). The dispersionType (from characterization)
-// decides which of these runs — getting SD vs SEM vs CI wrong changes variance by ~n.
-const Z95 = 1.959964;
-const MA = {
-    seToSd: (se, n) => se * Math.sqrt(n),
-    sdToSe: (sd, n) => sd / Math.sqrt(n),
-    ciToSe: (lo, hi, z = Z95) => (hi - lo) / (2 * z),
-    ci95ToSd: (lo, hi, n) => Math.sqrt(n) * (hi - lo) / (2 * Z95),
-    // median + IQR -> mean, SD (Wan 2014 approximation; sd ~ IQR/1.35)
-    medianIqrToMeanSd: (q1, med, q3) => ({ mean: (q1 + med + q3) / 3, sd: (q3 - q1) / 1.35 }),
-    // median + range -> mean, SD (Hozo 2005)
-    medianRangeToMeanSd: (min, med, max) => ({ mean: (min + 2 * med + max) / 4, sd: (max - min) / 4 }),
-    // two-group mean difference + variance
-    meanDiff: (m1, sd1, n1, m2, sd2, n2) => {
-        const md = m1 - m2, v = sd1 * sd1 / n1 + sd2 * sd2 / n2, se = Math.sqrt(v);
-        return { md, variance: v, se, ci95: [md - Z95 * se, md + Z95 * se] };
-    },
-    // standardized mean difference (Hedges g, small-sample corrected) + variance
-    hedgesG: (m1, sd1, n1, m2, sd2, n2) => {
-        const sp = Math.sqrt(((n1 - 1) * sd1 * sd1 + (n2 - 1) * sd2 * sd2) / (n1 + n2 - 2));
-        const d = (m1 - m2) / sp, J = 1 - 3 / (4 * (n1 + n2) - 9), g = J * d;
-        const varG = J * J * ((n1 + n2) / (n1 * n2) + d * d / (2 * (n1 + n2 - 2)));
-        return { g, d, variance: varG, se: Math.sqrt(varG) };
-    },
-    // correlation r -> Fisher z + variance
-    rToFisherZ: (r, n) => { const z = Math.atanh(r), v = 1 / (n - 3); return { z, variance: v, se: Math.sqrt(v) }; },
-    // ratio-scale CI (OR/RR/HR) -> variance of the log-effect
-    varFromRatioCI: (lo, hi, z = Z95) => { const se = (Math.log(hi) - Math.log(lo)) / (2 * z); return { se, variance: se * se }; },
-};
-
-// If exactly two groups have mean+sd+n, derive the between-group effect (MD + SMD).
-function twoGroupEffect(groups) {
-    const g = groups.filter(x => x.mean != null && x.sd != null && x.n);
-    if (g.length !== 2) return null;
-    const [a, b] = g;
-    const md = MA.meanDiff(a.mean, a.sd, a.n, b.mean, b.sd, b.n);
-    const smd = MA.hedgesG(a.mean, a.sd, a.n, b.mean, b.sd, b.n);
-    return { comparison: `${a.name} vs ${b.name}`, md: md.md, mdVariance: md.variance, mdCi95: md.ci95,
-             smd: smd.g, smdVariance: smd.variance, n1: a.n, n2: b.n };
-}
+// NOTE: effect-size math (MD / SMD / Hedges g, Fisher z, median->mean/SD, CI->SD) has been
+// REMOVED from this tool. Effect sizes are R's job (escalc / Morris / metafor) — see the pipeline
+// vision §7, which retired that math (and its small-n biases: CI half-width /1.96 instead of t;
+// median->SD via IQR/1.35 with no Wan Q(n) correction) from the tool. The tool's authoritative
+// output is calibrated LANDMARKS + dispersion TYPE + provenance (authoritativeRows): it hands R
+// the data it needs in a well-formatted, provenance-stamped manner and computes no effect sizes.
 
 // Extraction sub-modes: turn CALIBRATED landmark data-values (produced by the digitizer's
 // axis calibration, or supplied by an agent) into meta-analytic quantities. Pixel->data
 // conversion is the digitizer's job; these interpret the resulting numbers per the
-// characterization's semantics (dispersion type, axis scale).
+// characterization's semantics (dispersion type, axis scale). The DATA-unit landmarks (mean,
+// errorHalf, quartiles, estimate/CI) are the AUTHORITATIVE product; any `sd`/`se`/`effects`
+// derived here are the NON-AUTHORITATIVE preview (see FIGURE_PROVENANCE note) — R recomputes them.
+const DISPERSION_WITH_VARIANCE = new Set(['SD', 'SEM', 'CI95']);
 const EXTRACT = {
     // bar-endpoints: groups=[{name, mean, errorHalf, n}] where errorHalf = |cap - mean| in
-    // DATA units. dispersionType decides SD vs SE vs half-CI.
+    // DATA units. dispersionType decides SD vs SE vs half-CI. If the dispersion type is not a
+    // known variance-bearing type, we REFUSE to emit sd/se (a wrong SD/SEM/CI reweights the
+    // study by ~sqrt(n)) and force a `dispersion-type-uncertain` flag into the result.
     bars(groups, dispersionType) {
-        const out = groups.map(g => {
-            let sd = null, se = null; const eh = g.errorHalf;
-            if (eh != null) {
-                if (dispersionType === 'SD') { sd = eh; se = g.n ? MA.sdToSe(sd, g.n) : null; }
-                else if (dispersionType === 'SEM') { se = eh; sd = g.n ? MA.seToSd(se, g.n) : null; }
-                else if (dispersionType === 'CI95') { se = eh / Z95; sd = g.n ? MA.seToSd(se, g.n) : null; }
-            }
-            return { name: g.name, n: g.n ?? null, mean: g.mean, sd, se, errorHalf: eh, dispersionType };
-        });
-        const eff = twoGroupEffect(out);
-        return { method: 'bar-endpoints', groups: out, effects: eff ? [eff] : [] };
+        // AUTHORITATIVE landmarks only: bar mean + error-cap half-width (errorHalf) in DATA units,
+        // plus the dispersion TYPE. R (escalc) turns errorHalf + type + n into SD/variance — the
+        // tool no longer derives sd/se. If the dispersion type is not variance-bearing, flag it so
+        // the uncertainty is never silent (a wrong SD/SEM/CI reweights the study by ~sqrt(n)).
+        const knownDisp = DISPERSION_WITH_VARIANCE.has(dispersionType);
+        const out = groups.map(g => ({ name: g.name, n: g.n ?? null, mean: g.mean, errorHalf: g.errorHalf, dispersionType }));
+        const flags = knownDisp ? [] : ['dispersion-type-uncertain'];
+        return { method: 'bar-endpoints', groups: out, flags };
     },
-    // box-landmarks: groups=[{name, median, q1, q3, min, max, n}] -> mean, SD (Wan/Hozo).
+    // box-landmarks: groups=[{name, median, q1, q3, min, max, n}]. q1/q3/min/max are retained as
+    // AUTHORITATIVE landmarks; mean/SD (Wan/Hozo) are the NON-AUTHORITATIVE preview.
     boxes(groups) {
-        const out = groups.map(g => {
-            let r = null;
-            if (g.q1 != null && g.q3 != null) r = MA.medianIqrToMeanSd(g.q1, g.median, g.q3);
-            else if (g.min != null && g.max != null) r = MA.medianRangeToMeanSd(g.min, g.median, g.max);
-            return { name: g.name, n: g.n ?? null, median: g.median, mean: r ? r.mean : null, sd: r ? r.sd : null };
-        });
-        const eff = twoGroupEffect(out);
-        return { method: 'box-landmarks', groups: out, effects: eff ? [eff] : [] };
+        // AUTHORITATIVE box landmarks: median + quartiles (+ min/max). R does the Wan/Hozo
+        // median->mean/SD conversion; the tool does not (that conversion's small-n bias is R's).
+        const out = groups.map(g => ({ name: g.name, n: g.n ?? null, median: g.median,
+            q1: g.q1 ?? null, q3: g.q3 ?? null, min: g.min ?? null, max: g.max ?? null }));
+        return { method: 'box-landmarks', groups: out };
     },
     // forest-rows: rows=[{label, estimate, ciLo, ciHi}]; scale 'linear' (MD/SMD) or 'ratio' (OR/RR/HR).
     forest(rows, scale = 'linear') {
-        const out = rows.map(r => {
-            let se, variance, extra = {};
-            if (scale === 'ratio') { const v = MA.varFromRatioCI(r.ciLo, r.ciHi); se = v.se; variance = v.variance; extra = { logEffect: Math.log(r.estimate) }; }
-            else { se = (r.ciHi - r.ciLo) / (2 * Z95); variance = se * se; }
-            return { label: r.label, estimate: r.estimate, ciLo: r.ciLo, ciHi: r.ciHi, se, variance, ...extra };
-        });
-        return { method: 'forest-rows', rows: out };
+        // AUTHORITATIVE forest landmarks: estimate + CI as printed, plus the scale so R knows whether
+        // to log-transform. R derives SE/variance from the CI. (Forest plots are usually DERIVED data
+        // — low extraction priority — so this is rarely the study's own effect.)
+        const out = rows.map(r => ({ label: r.label, estimate: r.estimate, ciLo: r.ciLo, ciHi: r.ciHi, scale }));
+        return { method: 'forest-rows', rows: out, scale };
     },
 };
-
-// Pearson r over calibrated {x,y} points (for scatter extraction).
-function pearson(points) {
-    const pts = points.filter(p => Number.isFinite(p.x) && Number.isFinite(p.y));
-    const n = pts.length; if (n < 3) return null;
-    const mx = pts.reduce((s, p) => s + p.x, 0) / n, my = pts.reduce((s, p) => s + p.y, 0) / n;
-    let sxy = 0, sxx = 0, syy = 0;
-    for (const p of pts) { const dx = p.x - mx, dy = p.y - my; sxy += dx * dy; sxx += dx * dx; syy += dy * dy; }
-    return (sxx && syy) ? sxy / Math.sqrt(sxx * syy) : null;
-}
 
 // Resolve a figure or one of its subfigures by id.
 function findTarget(figId, subId) {
@@ -4742,6 +4755,8 @@ window.figureExtractor = {
         const t = findTarget(figureId, subId);
         if (!t) throw new Error('target not found');
         extraction.producedAt = extraction.producedAt || nowISO();
+        // Stamp figure-derived provenance (persists in the stored object, survives edits).
+        Object.assign(extraction, { ...FIGURE_PROVENANCE, ...extraction });
         commit(() => { t.extraction = extraction; });
         return { success: true };
     },
@@ -4762,11 +4777,12 @@ window.figureExtractor = {
         const cal = dig.cal || {}, vals = dig.vals || {};
         const c = computeCalibration(cal, vals);
         if (!c) return { success: false, error: 'invalid or incomplete calibration' };
+        const check = verifyCalibration(cal, vals);
         const points = (dig.points || []).map(p => ({ ...p }));
         const series = (dig.series && dig.series.length) ? dig.series : [{ name: 'series 1', color: DIG_PALETTE[0] }];
-        const record = { cal, vals, points, series, notes: dig.notes || '', updatedAt: nowISO() };
+        const record = { cal, vals, points, series, notes: dig.notes || '', flags: check.flags, ...FIGURE_PROVENANCE, updatedAt: nowISO() };
         commit(() => { t.digitization = record; });
-        return { success: true, dataPoints: points.map(p => ({ ...c.toData(p), s: p.s || 0 })) };
+        return { success: true, dataPoints: points.map(p => ({ ...c.toData(p), s: p.s || 0 })), calibrationFlags: check.flags };
     },
     // Interpret landmarks into a stored `extraction` object, routed by the characterization's
     // method. `landmarks` are in DATA units (convert pixels first with `calibrate`):
@@ -4774,27 +4790,43 @@ window.figureExtractor = {
     //   box-landmarks: {groups:[{name,median,q1,q3,min,max,n}]}
     //   forest-rows:   {rows:[{label,estimate,ciLo,ciHi}], scale}
     //   digitize_points/auto_trace: omit landmarks -> uses the stored digitization's data points.
+    // Optional cross-cutting fields: landmarks.direction (+1/-1), .timepoint, .nSource.
     runExtraction: (figureId, subId, landmarks = {}) => {
         const t = findTarget(figureId, subId);
         if (!t) throw new Error('target not found');
         const c = t.characterization || {};
+        // Multi-panel guard: refuse to extract an un-split multi-panel figure. Reading only
+        // panels[0] would silently drop the other panels' data — split into subfigures first,
+        // then extract each panel separately.
+        if ((Array.isArray(c.panels) && c.panels.length > 1) || (c.panelCount && c.panelCount > 1)) {
+            return { success: false, error: 'multi-panel figure: split into subfigures and extract each panel separately' };
+        }
         const panel = (c.panels && c.panels[0]) || {};
         const charType = panel.charType || c.charType || null;
         const method = (panel.extractionPlan && panel.extractionPlan.method) || CHART_METHOD[charType] || 'not_extractable';
         const dispersion = (panel.statistics && panel.statistics.dispersion && panel.statistics.dispersion.type) || landmarks.dispersionType || null;
         const provenance = panel.dataProvenance || c.dataProvenance || null;
-        let result;
-        if (method === 'bar-endpoints') result = EXTRACT.bars(landmarks.groups || [], dispersion);
+        // Cross-cutting MA fields — carried through so downstream sign/weighting is correct.
+        const direction = landmarks.direction != null ? landmarks.direction : null;
+        const timepoint = landmarks.timepoint || (panel.statistics && panel.statistics.timepoint) || null;
+        const nSource = landmarks.nSource || (panel.series && panel.series[0] && panel.series[0].nSource)
+            || (panel.statistics && panel.statistics.nSource) || null;
+        let result, flags = [];
+        if (method === 'bar-endpoints') { result = EXTRACT.bars(landmarks.groups || [], dispersion); flags = result.flags || []; }
         else if (method === 'box-landmarks') result = EXTRACT.boxes(landmarks.groups || []);
         else if (method === 'forest-rows') result = EXTRACT.forest(landmarks.rows || [], landmarks.scale || 'linear');
         else if (method === 'digitize_points' || method === 'auto_trace') {
             const dz = t.digitization; const cal = dz && computeCalibration(dz.cal, dz.vals);
             const pts = cal ? (dz.points || []).map(p => ({ ...cal.toData(p), s: p.s || 0 })) : [];
-            result = { method, points: pts };
-            if (charType === 'scatter') { const r = pearson(pts); if (r != null) result.correlation = { r, n: pts.length, ...MA.rToFisherZ(r, pts.length) }; }
+            result = { method, points: pts };  // authoritative: the digitized {x,y} points; R computes r
         } else { return { success: false, error: 'no extraction method for ' + charType }; }
+        // `direction` (+1/-1) is carried as a FIELD on the extraction — raw landmarks (means,
+        // quartiles, points) are never mutated (you cannot negate a mean). R applies the sign at
+        // escalc using this field. The tool computes no effect sizes.
         const extraction = { ...result, charType, dispersionType: dispersion, dataProvenance: provenance,
-            priority: extractionPriority(charType, provenance), producedAt: nowISO() };
+            priority: extractionPriority(charType, provenance),
+            direction, timepoint, nSource, flags,
+            ...FIGURE_PROVENANCE, producedAt: nowISO() };
         commit(() => { t.extraction = extraction; });
         return { success: true, extraction };
     },
@@ -4817,11 +4849,15 @@ window.figureExtractor = {
     // Expose the vocab + conversion + extraction helpers so an agent/skill can validate,
     // convert, and interpret calibrated landmarks locally.
     charVocab: () => JSON.parse(JSON.stringify(CHAR_VOCAB)),
-    convert: MA,
     extract: EXTRACT,
-    // The meta-analytic product: effect rows (MD/SMD/forest/correlation) across the article.
-    getMetaAnalysisRows: () => metaAnalysisRows(state.currentArticle || '', state.figures),
-    getMetaAnalysisCsv: () => metaCsv(metaAnalysisRows(state.currentArticle || '', state.figures)),
+    // Verify a calibration before trusting numbers: round-trip residual (hard: 'calibration-
+    // roundtrip-error') + nonlinear-axis check (flags 'log-axis-needs-human-review' for review).
+    verifyCalibration: (cal, vals) => verifyCalibration(cal || {}, vals || {}),
+    // The tool's quantitative output: DATA-unit landmarks + dispersion TYPE + provenance
+    // (figure_derived/Data_Source/Data_Extraction_Method) + direction/timepoint/nSource — NO yi/vi.
+    // Hand this to R (escalc/metafor) for effect sizes.
+    getFigureDerivedRows: () => authoritativeRows(state.currentArticle || '', state.figures),
+    getFigureDerivedCsv: () => landmarksCsv(authoritativeRows(state.currentArticle || '', state.figures)),
 
     // Get page dimensions (for calculating annotation coordinates)
     getPageDimensions: (pageNum) => {

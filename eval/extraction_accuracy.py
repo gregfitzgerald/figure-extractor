@@ -6,8 +6,9 @@ For each chart type we draw a chart from KNOWN true statistics, read the EXACT p
 coordinates of the axis-calibration points and the data landmarks (bar tops, error caps,
 box quartiles, forest markers/CIs) straight from matplotlib's data->display transform, then
 feed those pixels through the tool's real calibration + extraction (figureExtractor.calibrate
-+ .extract). We compare recovered values to the truth. Tight agreement => the pixel->data->
-stats pipeline is correct end to end.
++ .extract). We compare recovered LANDMARKS (mean, error-cap half-width, box quartiles, forest
+estimate+CI) to the truth. Tight agreement => the pixel->data landmark pipeline is correct end to
+end. (Effect sizes are R's job — the tool emits landmarks + dispersion type + provenance only.)
 
 Run: python3 eval/extraction_accuracy.py    (needs the server on :8001 + Playwright)
 """
@@ -113,9 +114,12 @@ async def run():
                     groups.append({"name": str(i), "mean": top, "errorHalf": abs(cap - top), "n": n})
                 res = await pg.evaluate("(g)=>window.figureExtractor.extract.bars(g,'SEM')", groups)
                 for i in range(2):
-                    tm, ts = ch["true"]["means"][i], ch["true"]["sds"][i]
-                    rm, rs = res["groups"][i]["mean"], res["groups"][i]["sd"]
-                    for q, t, r in (("mean", tm, rm), ("SD", ts, rs)):
+                    # the tool emits LANDMARKS (mean + error-cap half-width in data units); the true
+                    # errorHalf is the drawn SEM. Deriving SD from it is R's job, not the tool's.
+                    tm = ch["true"]["means"][i]
+                    teh = ch["true"]["sds"][i] / (ch["ns"][i] ** 0.5)
+                    rm, reh = res["groups"][i]["mean"], res["groups"][i]["errorHalf"]
+                    for q, t, r in (("mean", tm, rm), ("errorHalf(SEM)", teh, reh)):
                         ep = 100 * abs(r - t) / abs(t); worst = max(worst, ep)
                         print(f"{'bar':8s} {('group%d %s'%(i,q)):22s} {t:10.2f} {r:12.2f} {ep:6.2f}%")
 
@@ -128,10 +132,11 @@ async def run():
                     groups.append(g)
                 res = await pg.evaluate("(g)=>window.figureExtractor.extract.boxes(g)", groups)
                 for i in range(2):
+                    # the tool emits box LANDMARKS (quartiles); Wan/Hozo median->mean/SD is R's job.
                     tq = ch["true"]["q"][i]
-                    tmean = (tq["q1"] + tq["med"] + tq["q3"]) / 3; tsd = (tq["q3"] - tq["q1"]) / 1.35
-                    rm, rs = res["groups"][i]["mean"], res["groups"][i]["sd"]
-                    for qn, t, r in (("mean", tmean, rm), ("SD", tsd, rs)):
+                    for qn, t, r in (("q1", tq["q1"], res["groups"][i]["q1"]),
+                                     ("median", tq["med"], res["groups"][i]["median"]),
+                                     ("q3", tq["q3"], res["groups"][i]["q3"])):
                         ep = 100 * abs(r - t) / abs(t); worst = max(worst, ep)
                         print(f"{'box':8s} {('group%d %s'%(i,qn)):22s} {t:10.2f} {r:12.2f} {ep:6.2f}%")
 
@@ -144,10 +149,11 @@ async def run():
                                  "ciHi": next(l["x"] for l in ch["lms"] if l["g"] == i and l["role"] == "hi")})
                 res = await pg.evaluate("(r)=>window.figureExtractor.extract.forest(r,'linear')", rows)
                 for i in range(2):
+                    # the tool emits forest LANDMARKS (estimate + CI as printed); SE from the CI is R's job.
                     tr = ch["true"]["rows"][i]
-                    t_se = (tr["hi"] - tr["lo"]) / (2 * 1.959964)
                     for qn, t, r in (("estimate", tr["est"], res["rows"][i]["estimate"]),
-                                     ("SE", t_se, res["rows"][i]["se"])):
+                                     ("ciLo", tr["lo"], res["rows"][i]["ciLo"]),
+                                     ("ciHi", tr["hi"], res["rows"][i]["ciHi"])):
                         ep = 100 * abs(r - t) / abs(t); worst = max(worst, ep)
                         print(f"{'forest':8s} {('row%d %s'%(i,qn)):22s} {t:10.3f} {r:12.3f} {ep:6.2f}%")
 
