@@ -38,3 +38,12 @@ eval/vtasks/
 eval/vresults/
 eval/vtruth.json
 eval/results_real/
+# generated benchmark artifacts (regenerate deterministically from the seeded generators; keep code + reports)
+benchmark/corpus/
+benchmark/tasks/
+benchmark/vision/
+bench/charts/
+bench/tasks/
+bench/vision/
+bench/truth.json
+bench/floor.json
