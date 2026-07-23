@@ -206,7 +206,20 @@ for. The harness scores that detector against R exactly as it scores the floors 
   `VISION-MODEL-METHODOLOGY.md` §7: **agent-driven digitization + a human dispersion gate now;
   the specialist detector when the real-figure gap is measured, not assumed.**
 
-## Roadmap / white-paper threads (TODO)
+## TODO checklist
+
+- [ ] **White paper: "more precise than WebPlotDigitizer -- take the human out of the digitization
+      loop."** DEFERRED -- the author has more tests to run first. Write once the additional tests +
+      the real-figure scale-up land, so the argument rests on the full evidence, not the pilot.
+- [ ] Scale the real-figure golden diff (`benchmark/real/`) to committee-grade N (~120 rows), add a
+      second human reader per panel for an accuracy envelope, run the full 3-level `rma.mv(~1|article/row)`.
+- [ ] Train the specialist sub-pixel landmark detector and score it through the SAME harness against
+      the agent baseline -- the experiment that proves a detector beats the agent on the dispersion channel.
+- [ ] Classification real-figure transfer: label real panels, report acc(synthetic) - acc(real),
+      oversampling the hard pairs (funnel<->scatter, dose-response<->line).
+- [ ] (Author's additional tests -- TBD.)
+
+## Roadmap / white-paper threads (detail)
 
 - **White paper: "more precise than WebPlotDigitizer -- and why the human should come out of the
   loop."** This benchmark's `human_floor` sweep is the argument's backbone: even a *correct* human
