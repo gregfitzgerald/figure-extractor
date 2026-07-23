@@ -1,0 +1,17 @@
+id,row_id,bar,role,n,mean_coded,mean_ext,sd_coded,sd_ext,caplen_units,mean_gap_pct,sd_gap_pct
+Bonaccorsi2013_fig1b_10day,Bonaccorsi2013__r13,sc_target,control,5,18.58,18.4746,5.03,5.2428,2.3446,0.567,4.23
+Bonaccorsi2013_fig1b_10day,Bonaccorsi2013__r13,ee_target,interv,5,18.36,18.2768,5.03,5.0533,2.2599,0.453,0.462
+Bonaccorsi2013_fig1b_1day,Bonaccorsi2013__r12,sc_target,control,5,16.55,16.7614,6.04,6.416,2.8693,1.277,6.225
+Bonaccorsi2013_fig1b_1day,Bonaccorsi2013__r12,ee_target,interv,5,19.93,19.7443,8.05,8.7664,3.9205,0.932,8.899
+Bonaccorsi2013_fig1b_20day,Bonaccorsi2013__r14,sc_target,control,5,19.59,19.7159,2.77,2.7316,1.2216,0.643,1.388
+Bonaccorsi2013_fig1b_20day,Bonaccorsi2013__r14,ee_target,interv,5,16.5,16.4205,3.06,3.4939,1.5625,0.482,14.178
+GarciaCapdevila2009_fig1a,GarciaCapdevila2009__r43,sed_total,control,20,20.21,20.7692,32.51,29.5849,6.6154,2.767,8.998
+GarciaCapdevila2009_fig1a,GarciaCapdevila2009__r43,ex_total,interv,20,11.09,11.2308,31.98,31.305,7.0,1.269,2.111
+GarciaCapdevila2009_fig1b,GarciaCapdevila2009__r44,sed_total,control,20,15.9,16.2431,25.36,28.5377,6.3812,2.158,12.53
+GarciaCapdevila2009_fig1b,GarciaCapdevila2009__r44,ex_total,interv,20,21.69,21.7348,32.51,30.4402,6.8066,0.207,6.367
+Gobeske2009_fig1a,Gobeske2009__r46,day0,control,10,70.02,69.7773,6.95,6.8584,2.1688,0.347,1.318
+Gobeske2009_fig1a,Gobeske2009__r46,day7,interv,8,76.16,76.0492,4.72,4.6422,1.6413,0.145,1.648
+Gobeske2009_fig1a,Gobeske2009__r47,day0,control,10,70.02,69.7773,6.95,6.8584,2.1688,0.347,1.318
+Gobeske2009_fig1a,Gobeske2009__r47,day10,interv,8,83.41,83.3763,3.79,4.4764,1.5826,0.04,18.111
+Gobeske2009_fig1a,Gobeske2009__r48,day0,control,10,70.02,69.7773,6.95,6.8584,2.1688,0.347,1.318
+Gobeske2009_fig1a,Gobeske2009__r48,day14,interv,8,86.54,86.4244,8.2,8.4554,2.9894,0.134,3.115

@@ -1,0 +1,44 @@
+{
+  "id": "GarciaCapdevila2009_fig1b",
+  "reader": "claude-fable-5 vision @600dpi grid",
+  "calPixels": {
+    "x1": {
+      "px": 1210,
+      "py": 1190
+    },
+    "x2": {
+      "px": 1400,
+      "py": 1190
+    },
+    "y1": {
+      "px": 310,
+      "py": 1190
+    },
+    "y2": {
+      "px": 310,
+      "py": 285
+    }
+  },
+  "bars": {
+    "sed_total": {
+      "top": {
+        "px": 1210,
+        "py": 770
+      },
+      "cap": {
+        "px": 1210,
+        "py": 605
+      }
+    },
+    "ex_total": {
+      "top": {
+        "px": 1400,
+        "py": 628
+      },
+      "cap": {
+        "px": 1400,
+        "py": 452
+      }
+    }
+  }
+}

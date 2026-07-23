@@ -1,0 +1,358 @@
+{
+  "Aykan2024": {
+    "doi": "10.1016/j.pbb.2024.173790",
+    "n_rows": 2,
+    "panels": {
+      "Figure 5B": 1,
+      "Figure 2C": 1
+    }
+  },
+  "Baraldi2013": {
+    "doi": "10.1016/j.exger.2013.05.055",
+    "n_rows": 2,
+    "panels": {
+      "Figure 1D": 1,
+      "Figure 2B": 1
+    }
+  },
+  "Bechara2013": {
+    "doi": "10.1016/j.bbr.2013.02.018",
+    "n_rows": 1,
+    "panels": {
+      "Figure 2b": 1
+    }
+  },
+  "Bhat2023": {
+    "doi": "10.12688/f1000research.121922.3",
+    "n_rows": 1,
+    "panels": {
+      "Table 4": 1
+    }
+  },
+  "Bonaccorsi2013": {
+    "doi": "10.1155/2013/956312",
+    "n_rows": 6,
+    "panels": {
+      "Figure 1A": 1,
+      "Figure 1B": 5
+    }
+  },
+  "Bouet2011": {
+    "doi": "10.1016/j.mad.2011.04.006",
+    "n_rows": 2,
+    "panels": {
+      "Figure 3B": 1,
+      "Figure 3C": 1
+    }
+  },
+  "Cavalcante2020": {
+    "doi": "10.1016/j.bbr.2020.112806",
+    "n_rows": 4,
+    "panels": {
+      "Figure 1B": 4
+    }
+  },
+  "Chandler2020": {
+    "doi": "10.1016/j.neuroscience.2019.12.028",
+    "n_rows": 3,
+    "panels": {
+      "Figure 3A": 1,
+      "Figure 3B": 1,
+      "Figure 3C": 1
+    }
+  },
+  "Chrusch2023": {
+    "doi": "10.3390/cells12060883",
+    "n_rows": 2,
+    "panels": {
+      "Figure 4A": 1,
+      "Figure 4B": 1
+    }
+  },
+  "Clemenson2015": {
+    "doi": "10.1002/hipo.22380",
+    "n_rows": 10,
+    "panels": {
+      "Figure 1F": 1,
+      "Figure 1E": 1,
+      "Figure 2B": 3,
+      "Figure 2E": 2,
+      "Figure 3A": 1,
+      "Figure 3B": 1,
+      "Figure 4E": 1
+    }
+  },
+  "Doulames2014": {
+    "doi": "10.3109/00207454.2013.848441",
+    "n_rows": 3,
+    "panels": {
+      "Figure 1A": 1,
+      "Figure 2E": 2
+    }
+  },
+  "Esselun2021": {
+    "doi": "10.1007/s12017-020-08639-7",
+    "n_rows": 2,
+    "panels": {
+      "Figure 2c": 1,
+      "Figure 2e": 1
+    }
+  },
+  "GarciaCapdevila2009": {
+    "doi": "10.1016/j.bbr.2009.03.020",
+    "n_rows": 2,
+    "panels": {
+      "Figure 1B": 2
+    }
+  },
+  "Giacobbo2019": {
+    "doi": "10.1016/j.bbr.2019.111965",
+    "n_rows": 1,
+    "panels": {
+      "Figure 2": 1
+    }
+  },
+  "Gobeske2009": {
+    "doi": "10.1371/journal.pone.0007506",
+    "n_rows": 3,
+    "panels": {
+      "Figure 1A": 3
+    }
+  },
+  "Harburger2007a": {
+    "doi": "10.1016/j.bbr.2007.07.009",
+    "n_rows": 4,
+    "panels": {
+      "Figure 2B": 2,
+      "Figure 2A": 2
+    }
+  },
+  "Harburger2007b": {
+    "doi": "10.1037/0735-7044.121.4.679",
+    "n_rows": 12,
+    "panels": {
+      "Figure 3D": 6,
+      "Figure 3H": 6
+    }
+  },
+  "Hullinger2015": {
+    "doi": "10.1016/j.nlm.2015.08.006",
+    "n_rows": 10,
+    "panels": {
+      "Figure 2A": 2,
+      "Figure 2B": 2,
+      "Figure 3A": 2,
+      "Figure 3B": 2,
+      "Figure 3C": 2
+    }
+  },
+  "Jaimes2020": {
+    "doi": "10.1016/j.neuropharm.2020.108102",
+    "n_rows": 1,
+    "panels": {
+      "Figure 2B": 1
+    }
+  },
+  "Kazlauckas2011": {
+    "doi": "10.1016/j.physbeh.2010.12.025",
+    "n_rows": 4,
+    "panels": {
+      "Figure 3A": 2,
+      "Figure 4B": 2
+    }
+  },
+  "Keeley2014": {
+    "doi": "10.1016/j.brainresbull.2013.12.008",
+    "n_rows": 1,
+    "panels": {
+      "Figure 3": 1
+    }
+  },
+  "Lach2016": {
+    "doi": "10.1016/j.npep.2015.10.001",
+    "n_rows": 1,
+    "panels": {
+      "Figure 1B": 1
+    }
+  },
+  "Lambert2005": {
+    "doi": "10.1016/j.nlm.2004.12.001",
+    "n_rows": 2,
+    "panels": {
+      "Figure 1A": 2
+    }
+  },
+  "Lee2024": {
+    "doi": "10.7586/jkbns.24.033",
+    "n_rows": 3,
+    "panels": {
+      "Figure 2-C": 2,
+      "Figure 2-B": 1
+    }
+  },
+  "Leger2012a": {
+    "doi": "10.1371/journal.pone.0048043",
+    "n_rows": 2,
+    "panels": {
+      "Figure 3A": 1,
+      "Figure 4A": 1
+    }
+  },
+  "Leger2012b": {
+    "doi": "10.1016/j.bbr.2011.11.022",
+    "n_rows": 2,
+    "panels": {
+      "Figure 4b": 1,
+      "Figure 4d": 1
+    }
+  },
+  "Leger2015": {
+    "doi": "10.1093/cercor/bhu119",
+    "n_rows": 9,
+    "panels": {
+      "Figure 4A": 4,
+      "Figure 4B": 5
+    }
+  },
+  "Liu2009": {
+    "doi": "10.1113/jphysiol.2009.173088",
+    "n_rows": 3,
+    "panels": {
+      "Figure 1B": 1,
+      "Figure 1D": 1,
+      "Figure 2B": 1
+    }
+  },
+  "Lyst2012": {
+    "doi": "10.1371/journal.pone.0047640",
+    "n_rows": 2,
+    "panels": {
+      "Figure 7": 1,
+      "Figure 8": 1
+    }
+  },
+  "Madronal2010": {
+    "doi": "10.1371/journal.pone.0011130",
+    "n_rows": 1,
+    "panels": {
+      "Figure 4C": 1
+    }
+  },
+  "Melani2017": {
+    "doi": "10.1016/j.neuroscience.2017.04.006",
+    "n_rows": 6,
+    "panels": {
+      "Figure 2B": 2,
+      "Figure 3B": 2,
+      "Figure 4B": 2
+    }
+  },
+  "Meshi2006": {
+    "doi": "10.1038/nn1696",
+    "n_rows": 3,
+    "panels": {
+      "Figure 3c": 1,
+      "Figure 3e": 1,
+      "Figure 3f": 1
+    }
+  },
+  "Miu2006": {
+    "doi": "10.1016/j.bbr.2006.05.007",
+    "n_rows": 8,
+    "panels": {
+      "Figure 3D": 1,
+      "Figure 5A": 1,
+      "Figure 6A": 1,
+      "Figure 5B": 1,
+      "Figure 5C": 1,
+      "Figure 6B": 1,
+      "Figure 6C": 1,
+      "Figure 6D": 1
+    }
+  },
+  "MoraGallegos2015": {
+    "doi": "10.1016/j.nlm.2014.11.012",
+    "n_rows": 2,
+    "panels": {
+      "Figure 4C": 1,
+      "Figure 4D": 1
+    }
+  },
+  "Morgan2018": {
+    "doi": "10.1016/j.bbr.2017.09.022",
+    "n_rows": 6,
+    "panels": {
+      "Figure 7A": 1,
+      "Figure 7B": 1,
+      "Figure 7C": 1,
+      "Figure 8A": 1,
+      "Figure 8B": 1,
+      "Figure 8C": 1
+    }
+  },
+  "Nawaz2018": {
+    "doi": "10.1016/j.lfs.2018.05.049",
+    "n_rows": 2,
+    "panels": {
+      "Figure 1": 1,
+      "Figure 2": 1
+    }
+  },
+  "PereiraCaixeta2017": {
+    "doi": "10.1007/s12035-016-9922-2",
+    "n_rows": 1,
+    "panels": {
+      "Figure 1a": 1
+    }
+  },
+  "Ronzoni2016": {
+    "doi": "10.1016/j.bbr.2015.10.037",
+    "n_rows": 1,
+    "panels": {
+      "Figure 5": 1
+    }
+  },
+  "SampedroPiquero2018": {
+    "doi": "10.1016/j.neuroscience.2018.07.036",
+    "n_rows": 3,
+    "panels": {
+      "Figure 3a": 1,
+      "Figure 3b": 1,
+      "Figure 3c": 1
+    }
+  },
+  "Veyrac2009": {
+    "doi": "10.1038/npp.2008.191",
+    "n_rows": 4,
+    "panels": {
+      "Figure 3a": 2,
+      "Figure 3b": 2
+    }
+  },
+  "Yamada2018": {
+    "doi": "10.1523/JNEUROSCI.0632-18.2018",
+    "n_rows": 1,
+    "panels": {
+      "Figure 10B": 1
+    }
+  },
+  "Yolanda2019": {
+    "doi": "10.18585/inabj.v11i2.731",
+    "n_rows": 1,
+    "panels": {
+      "figure": 1
+    }
+  },
+  "Zhang2017": {
+    "doi": "10.1177/1721727X17730471",
+    "n_rows": 6,
+    "panels": {
+      "Figure 3b": 1,
+      "Figure 3c": 1,
+      "Figure 3d": 1,
+      "Figure 3g": 1,
+      "Figure 3e": 1,
+      "Figure 3f": 1
+    }
+  }
+}

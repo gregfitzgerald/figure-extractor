@@ -1,0 +1,44 @@
+{
+  "id": "Bonaccorsi2013_fig1b_20day",
+  "reader": "claude-fable-5 vision @600dpi+3x zoom",
+  "calPixels": {
+    "x1": {
+      "px": 377,
+      "py": 920
+    },
+    "x2": {
+      "px": 515,
+      "py": 920
+    },
+    "y1": {
+      "px": 125,
+      "py": 920
+    },
+    "y2": {
+      "px": 125,
+      "py": 40
+    }
+  },
+  "bars": {
+    "sc_target": {
+      "top": {
+        "px": 377,
+        "py": 226
+      },
+      "cap": {
+        "px": 377,
+        "py": 183
+      }
+    },
+    "ee_target": {
+      "top": {
+        "px": 515,
+        "py": 342
+      },
+      "cap": {
+        "px": 515,
+        "py": 287
+      }
+    }
+  }
+}

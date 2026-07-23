@@ -47,3 +47,5 @@ bench/tasks/
 bench/vision/
 bench/truth.json
 bench/floor.json
+# real-figure crops from published articles (copyright)
+benchmark/real/panels/

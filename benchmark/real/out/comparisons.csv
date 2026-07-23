@@ -1,0 +1,9 @@
+id,row_id,article,direction,c_mean_coded,c_sd_coded,c_n,i_mean_coded,i_sd_coded,i_n,c_mean_ext,c_sd_ext,i_mean_ext,i_sd_ext,g_coded,vi_coded,g_ext,vi_ext,g_abs_diff
+Bonaccorsi2013_fig1b_10day,Bonaccorsi2013__r13,Bonaccorsi2013,higher better,18.58,5.03,5,18.36,5.03,5,18.4746,5.2428,18.2768,5.0533,-0.0395,0.40008,-0.0347,0.40006,0.0048
+Bonaccorsi2013_fig1b_1day,Bonaccorsi2013__r12,Bonaccorsi2013,higher better,16.55,6.04,5,19.93,8.05,5,16.7614,6.416,19.7443,8.7664,0.429,0.4092,0.3507,0.40615,0.0783
+Bonaccorsi2013_fig1b_20day,Bonaccorsi2013__r14,Bonaccorsi2013,higher better,19.59,2.77,5,16.5,3.06,5,19.7159,2.7316,16.4205,3.4939,-0.9563,0.44572,-0.9492,0.44505,0.0071
+GarciaCapdevila2009_fig1a,GarciaCapdevila2009__r43,GarciaCapdevila2009,higher better,20.21,32.51,20,11.09,31.98,20,20.7692,29.5849,11.2308,31.305,-0.2772,0.10096,-0.307,0.10118,0.0297
+GarciaCapdevila2009_fig1b,GarciaCapdevila2009__r44,GarciaCapdevila2009,higher better,15.9,25.36,20,21.69,32.51,20,16.2431,28.5377,21.7348,30.4402,0.1946,0.10047,0.1824,0.10042,0.0122
+Gobeske2009_fig1a,Gobeske2009__r46,Gobeske2009,higher better,70.02,6.95,10,76.16,4.72,8,69.7773,6.8584,76.0492,4.6422,0.9624,0.25073,0.9971,0.25262,0.0347
+Gobeske2009_fig1a,Gobeske2009__r47,Gobeske2009,higher better,70.02,6.95,10,83.41,3.79,8,69.7773,6.8584,83.3763,4.4764,2.2048,0.36003,2.1822,0.35728,0.0226
+Gobeske2009_fig1a,Gobeske2009__r48,Gobeske2009,higher better,70.02,6.95,10,86.54,8.2,8,69.7773,6.8584,86.4244,8.4554,2.0915,0.34651,2.0865,0.34593,0.005

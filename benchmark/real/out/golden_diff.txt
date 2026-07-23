@@ -1,0 +1,12 @@
+=== Pooled effect: hand-coded vs automated-extracted (same escalc + model) ===
+CODED      g=+0.487  SE=0.592  95% CI [-0.672, +1.647]  p=0.4101  tau^2=0.000
+EXTRACTED  g=+0.475  SE=0.600  95% CI [-0.702, +1.652]  p=0.4289  tau^2=0.000
+delta(pooled g)      = -0.0125
+delta(CI width)      = +0.0340
+
+per-study |g_ext - g_coded|: median=0.017  mean=0.024  max=0.078
+sign flips (effect direction changed): 0 / 8
+
+Interpretation: a small delta(pooled g) with overlapping CIs means the automated read
+reproduces the hand-coded meta-analytic conclusion; per-study |dg| localizes where
+figure-reading (dispersion-channel) error would perturb individual study weights.

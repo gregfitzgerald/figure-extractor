@@ -1,0 +1,25 @@
+{
+  "panels_scored": [
+    "Bonaccorsi2013_fig1b_10day",
+    "Bonaccorsi2013_fig1b_1day",
+    "Bonaccorsi2013_fig1b_20day",
+    "GarciaCapdevila2009_fig1a",
+    "GarciaCapdevila2009_fig1b",
+    "Gobeske2009_fig1a"
+  ],
+  "panels_unread": [],
+  "n_bars": 16,
+  "n_comparisons": 8,
+  "central_channel": {
+    "median_pct": 0.468,
+    "worst_pct": 2.767
+  },
+  "dispersion_channel": {
+    "median_pct": 3.673,
+    "worst_pct": 18.111
+  },
+  "golden_diff_field": {
+    "median_abs_g": 0.017,
+    "worst_abs_g": 0.078
+  }
+}
