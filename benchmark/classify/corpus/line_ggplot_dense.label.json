@@ -1,0 +1,13 @@
+{
+  "id": "line_ggplot_dense",
+  "charType": "line",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "significance-markers", "title"],
+  "image": "line_ggplot_dense.png"
+}

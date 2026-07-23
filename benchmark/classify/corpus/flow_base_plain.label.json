@@ -1,0 +1,13 @@
+{
+  "id": "flow_base_plain",
+  "charType": "flow-diagram",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "unknown",
+  "scaleX": "unknown",
+  "scaleY": "unknown",
+  "dispersionPresent": false,
+  "nonDataElements": ["schematic"],
+  "image": "flow_base_plain.png"
+}

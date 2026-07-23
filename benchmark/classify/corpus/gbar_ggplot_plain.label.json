@@ -1,0 +1,13 @@
+{
+  "id": "gbar_ggplot_plain",
+  "charType": "grouped-bar",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "gridlines", "legend"],
+  "image": "gbar_ggplot_plain.png"
+}

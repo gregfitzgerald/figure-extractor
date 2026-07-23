@@ -1,0 +1,13 @@
+{
+  "id": "pie_plotrix_plain",
+  "charType": "pie",
+  "library": "plotrix",
+  "grammar": "plotrix",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": [],
+  "image": "pie_plotrix_plain.png"
+}

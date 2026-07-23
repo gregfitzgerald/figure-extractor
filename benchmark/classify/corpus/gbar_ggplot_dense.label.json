@@ -1,0 +1,13 @@
+{
+  "id": "gbar_ggplot_dense",
+  "charType": "grouped-bar",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "significance-markers", "title"],
+  "image": "gbar_ggplot_dense.png"
+}

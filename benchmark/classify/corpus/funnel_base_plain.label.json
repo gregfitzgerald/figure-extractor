@@ -1,0 +1,13 @@
+{
+  "id": "funnel_base_plain",
+  "charType": "funnel",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "derived",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "reference-line"],
+  "image": "funnel_base_plain.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "gbar_base_dense",
+  "charType": "grouped-bar",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "panel-label", "significance-markers", "title"],
+  "image": "gbar_base_dense.png"
+}

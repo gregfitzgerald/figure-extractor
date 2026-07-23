@@ -1,0 +1,13 @@
+{
+  "id": "box_lattice_plain",
+  "charType": "box",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks"],
+  "image": "box_lattice_plain.png"
+}

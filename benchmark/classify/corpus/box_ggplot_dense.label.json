@@ -1,0 +1,13 @@
+{
+  "id": "box_ggplot_dense",
+  "charType": "box",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "raw-points", "significance-markers", "title"],
+  "image": "box_ggplot_dense.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "roc_pROC_plain",
+  "charType": "roc",
+  "library": "pROC",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "probability",
+  "scaleY": "probability",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "reference-line"],
+  "image": "roc_pROC_plain.png"
+}

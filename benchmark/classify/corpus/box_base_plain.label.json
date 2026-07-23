@@ -1,0 +1,13 @@
+{
+  "id": "box_base_plain",
+  "charType": "box",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks"],
+  "image": "box_base_plain.png"
+}

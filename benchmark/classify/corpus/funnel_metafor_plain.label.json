@@ -1,0 +1,13 @@
+{
+  "id": "funnel_metafor_plain",
+  "charType": "funnel",
+  "library": "metafor",
+  "grammar": "metafor",
+  "tier": "plain",
+  "dataProvenance": "derived",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "reference-line"],
+  "image": "funnel_metafor_plain.png"
+}

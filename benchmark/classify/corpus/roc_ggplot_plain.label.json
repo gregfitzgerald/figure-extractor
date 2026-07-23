@@ -1,0 +1,13 @@
+{
+  "id": "roc_ggplot_plain",
+  "charType": "roc",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "probability",
+  "scaleY": "probability",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "gridlines", "reference-line"],
+  "image": "roc_ggplot_plain.png"
+}

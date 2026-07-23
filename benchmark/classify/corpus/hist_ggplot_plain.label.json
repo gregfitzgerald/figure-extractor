@@ -1,0 +1,13 @@
+{
+  "id": "hist_ggplot_plain",
+  "charType": "histogram",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "gridlines"],
+  "image": "hist_ggplot_plain.png"
+}

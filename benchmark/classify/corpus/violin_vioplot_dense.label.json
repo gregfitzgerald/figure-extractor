@@ -1,0 +1,13 @@
+{
+  "id": "violin_vioplot_dense",
+  "charType": "violin",
+  "library": "vioplot",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "panel-label", "significance-markers", "title"],
+  "image": "violin_vioplot_dense.png"
+}

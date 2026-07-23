@@ -1,0 +1,13 @@
+{
+  "id": "heatmap_pheatmap_plain",
+  "charType": "heatmap",
+  "library": "pheatmap",
+  "grammar": "pheatmap",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "colorbar"],
+  "image": "heatmap_pheatmap_plain.png"
+}

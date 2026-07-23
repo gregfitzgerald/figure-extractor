@@ -1,0 +1,13 @@
+{
+  "id": "dr_ggplot_dense",
+  "charType": "dose-response",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "log",
+  "scaleY": "percent",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "reference-line", "title"],
+  "image": "dr_ggplot_dense.png"
+}

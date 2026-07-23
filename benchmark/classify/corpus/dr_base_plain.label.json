@@ -1,0 +1,13 @@
+{
+  "id": "dr_base_plain",
+  "charType": "dose-response",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "log",
+  "scaleY": "percent",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks"],
+  "image": "dr_base_plain.png"
+}

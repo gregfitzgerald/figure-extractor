@@ -1,0 +1,13 @@
+{
+  "id": "ba_ggplot_dense",
+  "charType": "bland-altman",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "reference-line", "title"],
+  "image": "ba_ggplot_dense.png"
+}

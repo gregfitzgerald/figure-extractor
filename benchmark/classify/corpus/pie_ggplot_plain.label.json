@@ -1,0 +1,13 @@
+{
+  "id": "pie_ggplot_plain",
+  "charType": "pie",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["legend"],
+  "image": "pie_ggplot_plain.png"
+}

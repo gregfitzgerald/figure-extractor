@@ -1,0 +1,13 @@
+{
+  "id": "sbar_base_dense",
+  "charType": "stacked-bar",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "percent",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "legend", "panel-label", "title"],
+  "image": "sbar_base_dense.png"
+}

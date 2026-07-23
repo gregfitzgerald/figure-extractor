@@ -1,0 +1,32 @@
+{
+  "n_scored": 80,
+  "n_corpus": 80,
+  "run": null,
+  "accuracy": 1.0,
+  "macro_f1": 1.0,
+  "weighted_f1": 1.0,
+  "priority_flip_rate": 0.0,
+  "ece": 0.07187499999999943,
+  "mean_confidence": 0.9281250000000008,
+  "abstention_rate": 0.0,
+  "aux": {
+    "dataProvenance": 1.0,
+    "scaleY": 1.0,
+    "scaleX": 1.0,
+    "dispersionPresent_f1": 1.0,
+    "nonDataElements_f1": 0.9925650557620818
+  },
+  "by_tier": {
+    "plain": {
+      "correct": 40,
+      "n": 40,
+      "acc": 1.0
+    },
+    "dense": {
+      "correct": 40,
+      "n": 40,
+      "acc": 1.0
+    }
+  },
+  "confusions": {}
+}

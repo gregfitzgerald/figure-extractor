@@ -1,0 +1,43 @@
+{
+  "count": 80,
+  "ids": ["bar_base_plain", "bar_base_dense", "bar_ggplot_plain", "bar_ggplot_dense", "gbar_base_plain", "gbar_base_dense", "gbar_ggplot_plain", "gbar_ggplot_dense", "gbar_lattice_plain", "gbar_lattice_dense", "sbar_base_plain", "sbar_base_dense", "sbar_ggplot_plain", "sbar_ggplot_dense", "hist_base_plain", "hist_base_dense", "hist_ggplot_plain", "hist_ggplot_dense", "box_base_plain", "box_base_dense", "box_ggplot_plain", "box_ggplot_dense", "box_lattice_plain", "box_lattice_dense", "violin_vioplot_plain", "violin_vioplot_dense", "violin_ggplot_plain", "violin_ggplot_dense", "scatter_base_plain", "scatter_base_dense", "scatter_ggplot_plain", "scatter_ggplot_dense", "scatter_lattice_plain", "scatter_lattice_dense", "line_base_plain", "line_base_dense", "line_ggplot_plain", "line_ggplot_dense", "dr_ggplot_plain", "dr_ggplot_dense", "dr_base_plain", "dr_base_dense", "km_survival_plain", "km_survival_dense", "km_ggplot_plain", "km_ggplot_dense", "forest_forestplot_plain", "forest_forestplot_dense", "forest_metafor_plain", "forest_metafor_dense", "forest_forestploter_plain", "forest_forestploter_dense", "funnel_metafor_plain", "funnel_metafor_dense", "funnel_base_plain", "funnel_base_dense", "roc_pROC_plain", "roc_pROC_dense", "roc_ggplot_plain", "roc_ggplot_dense", "ba_base_plain", "ba_base_dense", "ba_ggplot_plain", "ba_ggplot_dense", "pie_base_plain", "pie_base_dense", "pie_plotrix_plain", "pie_plotrix_dense", "pie_ggplot_plain", "pie_ggplot_dense", "heatmap_pheatmap_plain", "heatmap_pheatmap_dense", "heatmap_corrplot_plain", "heatmap_corrplot_dense", "heatmap_lattice_plain", "heatmap_lattice_dense", "schematic_base_plain", "schematic_base_dense", "flow_base_plain", "flow_base_dense"],
+  "byCharType": {
+    "bar": 4,
+    "bland-altman": 4,
+    "box": 6,
+    "dose-response": 4,
+    "flow-diagram": 2,
+    "forest": 6,
+    "funnel": 4,
+    "grouped-bar": 6,
+    "heatmap": 6,
+    "histogram": 4,
+    "kaplan-meier": 4,
+    "line": 4,
+    "pie": 6,
+    "roc": 4,
+    "scatter": 6,
+    "schematic": 2,
+    "stacked-bar": 4,
+    "violin": 4
+  },
+  "byLibrary": {
+    "base": 26,
+    "corrplot": 2,
+    "forestplot": 2,
+    "forestploter": 2,
+    "ggplot2": 26,
+    "lattice": 8,
+    "metafor": 4,
+    "pheatmap": 2,
+    "plotrix": 2,
+    "pROC": 2,
+    "survival": 2,
+    "vioplot": 2
+  },
+  "byTier": {
+    "dense": 40,
+    "plain": 40
+  },
+  "failures": []
+}

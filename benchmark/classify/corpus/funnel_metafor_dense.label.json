@@ -1,0 +1,13 @@
+{
+  "id": "funnel_metafor_dense",
+  "charType": "funnel",
+  "library": "metafor",
+  "grammar": "metafor",
+  "tier": "dense",
+  "dataProvenance": "derived",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "legend", "panel-label", "reference-line", "title"],
+  "image": "funnel_metafor_dense.png"
+}

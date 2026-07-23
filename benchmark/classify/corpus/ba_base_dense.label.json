@@ -1,0 +1,13 @@
+{
+  "id": "ba_base_dense",
+  "charType": "bland-altman",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "panel-label", "reference-line", "title"],
+  "image": "ba_base_dense.png"
+}

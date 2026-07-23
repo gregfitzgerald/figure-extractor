@@ -1,0 +1,13 @@
+{
+  "id": "violin_ggplot_plain",
+  "charType": "violin",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks"],
+  "image": "violin_ggplot_plain.png"
+}

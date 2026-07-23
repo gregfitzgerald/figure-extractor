@@ -1,0 +1,13 @@
+{
+  "id": "hist_ggplot_dense",
+  "charType": "histogram",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "reference-line", "title", "trend-line"],
+  "image": "hist_ggplot_dense.png"
+}

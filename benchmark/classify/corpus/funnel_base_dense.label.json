@@ -1,0 +1,13 @@
+{
+  "id": "funnel_base_dense",
+  "charType": "funnel",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "derived",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "panel-label", "reference-line", "title"],
+  "image": "funnel_base_dense.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "line_base_plain",
+  "charType": "line",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "legend"],
+  "image": "line_base_plain.png"
+}

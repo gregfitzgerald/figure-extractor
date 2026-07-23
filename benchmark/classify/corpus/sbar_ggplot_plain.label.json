@@ -1,0 +1,13 @@
+{
+  "id": "sbar_ggplot_plain",
+  "charType": "stacked-bar",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "percent",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "legend"],
+  "image": "sbar_ggplot_plain.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "dr_ggplot_plain",
+  "charType": "dose-response",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "log",
+  "scaleY": "percent",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "gridlines"],
+  "image": "dr_ggplot_plain.png"
+}

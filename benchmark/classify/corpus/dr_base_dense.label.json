@@ -1,0 +1,13 @@
+{
+  "id": "dr_base_dense",
+  "charType": "dose-response",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "log",
+  "scaleY": "percent",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "panel-label", "reference-line", "title"],
+  "image": "dr_base_dense.png"
+}

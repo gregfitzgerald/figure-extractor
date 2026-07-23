@@ -1,0 +1,13 @@
+{
+  "id": "ba_base_plain",
+  "charType": "bland-altman",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "reference-line"],
+  "image": "ba_base_plain.png"
+}

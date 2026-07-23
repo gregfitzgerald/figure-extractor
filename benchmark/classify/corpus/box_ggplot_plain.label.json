@@ -1,0 +1,13 @@
+{
+  "id": "box_ggplot_plain",
+  "charType": "box",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks"],
+  "image": "box_ggplot_plain.png"
+}

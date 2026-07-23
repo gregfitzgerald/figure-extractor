@@ -49,3 +49,6 @@ bench/truth.json
 bench/floor.json
 # real-figure crops from published articles (copyright)
 benchmark/real/panels/
+# classification corpus: keep GT labels + code, drop regenerable synthetic renders
+benchmark/classify/corpus/*.png
+benchmark/classify/tasks/img/

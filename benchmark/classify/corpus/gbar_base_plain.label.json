@@ -1,0 +1,13 @@
+{
+  "id": "gbar_base_plain",
+  "charType": "grouped-bar",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "legend"],
+  "image": "gbar_base_plain.png"
+}

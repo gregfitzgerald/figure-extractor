@@ -1,0 +1,13 @@
+{
+  "id": "heatmap_corrplot_plain",
+  "charType": "heatmap",
+  "library": "corrplot",
+  "grammar": "corrplot",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "colorbar"],
+  "image": "heatmap_corrplot_plain.png"
+}

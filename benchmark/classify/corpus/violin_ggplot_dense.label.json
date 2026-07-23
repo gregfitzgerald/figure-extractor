@@ -1,0 +1,13 @@
+{
+  "id": "violin_ggplot_dense",
+  "charType": "violin",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "significance-markers", "title"],
+  "image": "violin_ggplot_dense.png"
+}

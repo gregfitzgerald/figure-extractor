@@ -1,0 +1,13 @@
+{
+  "id": "heatmap_corrplot_dense",
+  "charType": "heatmap",
+  "library": "corrplot",
+  "grammar": "corrplot",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "colorbar", "title"],
+  "image": "heatmap_corrplot_dense.png"
+}

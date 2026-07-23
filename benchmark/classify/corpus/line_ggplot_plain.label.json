@@ -1,0 +1,13 @@
+{
+  "id": "line_ggplot_plain",
+  "charType": "line",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "legend"],
+  "image": "line_ggplot_plain.png"
+}

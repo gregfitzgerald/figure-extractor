@@ -1,0 +1,13 @@
+{
+  "id": "gbar_lattice_dense",
+  "charType": "grouped-bar",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "gridlines", "legend", "title"],
+  "image": "gbar_lattice_dense.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "pie_plotrix_dense",
+  "charType": "pie",
+  "library": "plotrix",
+  "grammar": "plotrix",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "panel-label", "title"],
+  "image": "pie_plotrix_dense.png"
+}

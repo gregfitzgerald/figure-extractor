@@ -1,0 +1,13 @@
+{
+  "id": "schematic_base_plain",
+  "charType": "schematic",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "unknown",
+  "scaleX": "unknown",
+  "scaleY": "unknown",
+  "dispersionPresent": false,
+  "nonDataElements": ["schematic"],
+  "image": "schematic_base_plain.png"
+}

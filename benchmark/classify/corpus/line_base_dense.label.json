@@ -1,0 +1,13 @@
+{
+  "id": "line_base_dense",
+  "charType": "line",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "panel-label", "title"],
+  "image": "line_base_dense.png"
+}

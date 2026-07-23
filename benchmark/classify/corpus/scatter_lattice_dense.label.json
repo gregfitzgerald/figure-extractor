@@ -1,0 +1,13 @@
+{
+  "id": "scatter_lattice_dense",
+  "charType": "scatter",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "gridlines", "legend", "title", "trend-line"],
+  "image": "scatter_lattice_dense.png"
+}

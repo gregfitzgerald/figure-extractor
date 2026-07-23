@@ -1,0 +1,13 @@
+{
+  "id": "forest_metafor_dense",
+  "charType": "forest",
+  "library": "metafor",
+  "grammar": "metafor",
+  "tier": "dense",
+  "dataProvenance": "derived",
+  "scaleX": "linear",
+  "scaleY": "categorical",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "reference-line", "title"],
+  "image": "forest_metafor_dense.png"
+}

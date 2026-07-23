@@ -1,0 +1,13 @@
+{
+  "id": "pie_base_dense",
+  "charType": "pie",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "legend", "panel-label", "title"],
+  "image": "pie_base_dense.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "sbar_base_plain",
+  "charType": "stacked-bar",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "percent",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "legend"],
+  "image": "sbar_base_plain.png"
+}

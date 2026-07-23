@@ -1,0 +1,13 @@
+{
+  "id": "flow_base_dense",
+  "charType": "flow-diagram",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "unknown",
+  "scaleX": "unknown",
+  "scaleY": "unknown",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "panel-label", "schematic", "title"],
+  "image": "flow_base_dense.png"
+}

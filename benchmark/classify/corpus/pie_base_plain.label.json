@@ -1,0 +1,13 @@
+{
+  "id": "pie_base_plain",
+  "charType": "pie",
+  "library": "base",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": [],
+  "image": "pie_base_plain.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "forest_forestploter_dense",
+  "charType": "forest",
+  "library": "forestploter",
+  "grammar": "forestploter",
+  "tier": "dense",
+  "dataProvenance": "derived",
+  "scaleX": "linear",
+  "scaleY": "categorical",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "reference-line", "title"],
+  "image": "forest_forestploter_dense.png"
+}

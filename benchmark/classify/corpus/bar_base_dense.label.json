@@ -1,0 +1,13 @@
+{
+  "id": "bar_base_dense",
+  "charType": "bar",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "panel-label", "significance-markers", "title"],
+  "image": "bar_base_dense.png"
+}

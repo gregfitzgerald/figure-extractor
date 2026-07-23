@@ -1,0 +1,13 @@
+{
+  "id": "forest_forestplot_plain",
+  "charType": "forest",
+  "library": "forestplot",
+  "grammar": "forestplot",
+  "tier": "plain",
+  "dataProvenance": "derived",
+  "scaleX": "log",
+  "scaleY": "categorical",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "reference-line"],
+  "image": "forest_forestplot_plain.png"
+}

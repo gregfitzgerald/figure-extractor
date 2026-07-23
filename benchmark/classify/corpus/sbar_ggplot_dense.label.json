@@ -1,0 +1,13 @@
+{
+  "id": "sbar_ggplot_dense",
+  "charType": "stacked-bar",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "percent",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "title"],
+  "image": "sbar_ggplot_dense.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "scatter_ggplot_dense",
+  "charType": "scatter",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "title", "trend-line"],
+  "image": "scatter_ggplot_dense.png"
+}

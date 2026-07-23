@@ -1,0 +1,13 @@
+{
+  "id": "km_ggplot_plain",
+  "charType": "kaplan-meier",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "time",
+  "scaleY": "probability",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "legend"],
+  "image": "km_ggplot_plain.png"
+}

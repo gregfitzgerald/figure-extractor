@@ -1,0 +1,13 @@
+{
+  "id": "scatter_lattice_plain",
+  "charType": "scatter",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks"],
+  "image": "scatter_lattice_plain.png"
+}

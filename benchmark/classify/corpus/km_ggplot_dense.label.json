@@ -1,0 +1,13 @@
+{
+  "id": "km_ggplot_dense",
+  "charType": "kaplan-meier",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "time",
+  "scaleY": "probability",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "title"],
+  "image": "km_ggplot_dense.png"
+}

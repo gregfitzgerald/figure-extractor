@@ -1,0 +1,13 @@
+{
+  "id": "heatmap_lattice_plain",
+  "charType": "heatmap",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "colorbar"],
+  "image": "heatmap_lattice_plain.png"
+}

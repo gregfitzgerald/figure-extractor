@@ -1,0 +1,13 @@
+{
+  "id": "heatmap_lattice_dense",
+  "charType": "heatmap",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "colorbar", "title"],
+  "image": "heatmap_lattice_dense.png"
+}

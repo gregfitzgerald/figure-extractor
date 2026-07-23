@@ -1,0 +1,13 @@
+{
+  "id": "box_lattice_dense",
+  "charType": "box",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "gridlines", "title"],
+  "image": "box_lattice_dense.png"
+}

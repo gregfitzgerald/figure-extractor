@@ -1,0 +1,13 @@
+{
+  "id": "schematic_base_dense",
+  "charType": "schematic",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "unknown",
+  "scaleX": "unknown",
+  "scaleY": "unknown",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "panel-label", "schematic", "title"],
+  "image": "schematic_base_dense.png"
+}

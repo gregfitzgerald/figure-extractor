@@ -1,0 +1,13 @@
+{
+  "id": "hist_base_dense",
+  "charType": "histogram",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "panel-label", "reference-line", "title"],
+  "image": "hist_base_dense.png"
+}

@@ -1,0 +1,13 @@
+{
+  "id": "ba_ggplot_plain",
+  "charType": "bland-altman",
+  "library": "ggplot2",
+  "grammar": "ggplot2",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks", "reference-line"],
+  "image": "ba_ggplot_plain.png"
+}

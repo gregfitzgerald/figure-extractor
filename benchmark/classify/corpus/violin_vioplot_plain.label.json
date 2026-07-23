@@ -1,0 +1,13 @@
+{
+  "id": "violin_vioplot_plain",
+  "charType": "violin",
+  "library": "vioplot",
+  "grammar": "base",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": true,
+  "nonDataElements": ["axis-ticks"],
+  "image": "violin_vioplot_plain.png"
+}

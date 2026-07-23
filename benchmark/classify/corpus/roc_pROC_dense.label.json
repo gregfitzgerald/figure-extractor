@@ -1,0 +1,13 @@
+{
+  "id": "roc_pROC_dense",
+  "charType": "roc",
+  "library": "pROC",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "probability",
+  "scaleY": "probability",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "panel-label", "reference-line", "title"],
+  "image": "roc_pROC_dense.png"
+}

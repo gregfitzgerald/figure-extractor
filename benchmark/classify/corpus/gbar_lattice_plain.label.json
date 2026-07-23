@@ -1,0 +1,13 @@
+{
+  "id": "gbar_lattice_plain",
+  "charType": "grouped-bar",
+  "library": "lattice",
+  "grammar": "lattice",
+  "tier": "plain",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["axis-ticks", "legend"],
+  "image": "gbar_lattice_plain.png"
+}

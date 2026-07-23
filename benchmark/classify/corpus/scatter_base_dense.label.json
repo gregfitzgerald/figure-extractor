@@ -1,0 +1,13 @@
+{
+  "id": "scatter_base_dense",
+  "charType": "scatter",
+  "library": "base",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "linear",
+  "scaleY": "linear",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "panel-label", "title", "trend-line"],
+  "image": "scatter_base_dense.png"
+}

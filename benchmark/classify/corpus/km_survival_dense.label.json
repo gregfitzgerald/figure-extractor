@@ -1,0 +1,13 @@
+{
+  "id": "km_survival_dense",
+  "charType": "kaplan-meier",
+  "library": "survival",
+  "grammar": "base",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "time",
+  "scaleY": "probability",
+  "dispersionPresent": true,
+  "nonDataElements": ["annotation", "axis-ticks", "gridlines", "legend", "panel-label", "title"],
+  "image": "km_survival_dense.png"
+}

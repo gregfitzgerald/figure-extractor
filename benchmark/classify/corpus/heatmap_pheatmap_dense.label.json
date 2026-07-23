@@ -1,0 +1,13 @@
+{
+  "id": "heatmap_pheatmap_dense",
+  "charType": "heatmap",
+  "library": "pheatmap",
+  "grammar": "pheatmap",
+  "tier": "dense",
+  "dataProvenance": "primary",
+  "scaleX": "categorical",
+  "scaleY": "categorical",
+  "dispersionPresent": false,
+  "nonDataElements": ["annotation", "axis-ticks", "colorbar", "legend", "title"],
+  "image": "heatmap_pheatmap_dense.png"
+}
