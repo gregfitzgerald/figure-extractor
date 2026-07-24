@@ -164,6 +164,57 @@ stacked bars and multi-series scatter/line *from labeled data*, so it already kn
 series/group and the legend mapping. The answer key exists; only the export and the scorer are new.
 Metric to lead with: a **mis-assignment rate** (the catastrophic-error metric), not just accuracy.
 
+## 10a. Series parsing: audit findings (verified in code, 2026-07-24)
+
+A code audit ahead of building the series tier found that series structure is **not absent from the
+tool -- it exists in five places, each stopping one step short.** All four checkable claims were
+independently verified:
+
+1. **The series index is computed and then dropped.** `runExtraction` carefully preserves each
+   digitized point's series index (`s: p.s || 0`, figure-extractor.html:4820), but
+   `authoritativeRows` emits only `{landmarkKind:'point', x, y}` (line 4134) -- so a two-colour
+   scatter exports as **one undifferentiated cloud**. The information survives the whole pipeline and
+   dies at the last step. Cheapest high-value fix in the project.
+2. **Extraction flags never reach the CSV.** `LANDMARK_HEADER` (line 4118) has **zero flag columns**,
+   so `dispersion-type-uncertain` -- the flag whose entire purpose is to make uncertainty non-silent
+   -- is invisible in the artifact handed to R. A guard that fires into a void is not a guard. This
+   directly undercuts the design principle in section 9.
+3. **`CHAR_VOCAB.role`** (control/intervention/comparison/...) is defined but **never validated and
+   never read** -- `validateCharacterization` ignores it entirely. The vocabulary for arm identity
+   already exists and is inert.
+4. **`panel.series[]`** is documented in the extraction skill but read exactly once (for `nSource`),
+   unvalidated, unkeyed, and unlinked to any landmark.
+
+Plus a live defect worth reporting: `digAutoTrace` scans the whole crop **including the legend**, so a
+legend swatch of the traced colour injects phantom data points.
+
+**Scope correction to section 5 (important, and it qualifies a headline).** The real-figure golden-diff
+tasks (`benchmark/real/tasks/*.json`) **pre-declare `control_bar` and `interv_bar`** -- the reader was
+*handed* the arm assignment. So that experiment measured reading accuracy (the dispersion channel and
+the end-to-end reproduction) but **did not measure series parsing at all**; the "0/8 sign flips" result
+demonstrates correct *measurement*, not correct *arm identification*. Those same pre-declared fields
+are, conveniently, a ready-made answer key for scoring parsing on real figures later.
+
+**The modeling decision that falls out of the audit:** there are **two** structuring dimensions, not
+one -- `group` (categorical-axis position; usually a moderator/timepoint) and `series` (legend entry;
+usually an arm). Every landmark should declare `(groupId, seriesId)`, with a plain bar chart as the
+degenerate case. Keep `id` (join key), `label` (printed text, model-read), and `role` (meaning,
+agent-assigned) as three separate fields with separate confidences -- the same model-reads-glyphs /
+agent-assigns-meaning boundary already used for dispersion type.
+
+**Why this is a precondition, not a nicety:** without recovered series structure there is no way to
+know that two rows share a control arm, so the multi-arm variance correction (`VIF_multiarm`) cannot
+be applied and those studies are **silently over-weighted**. Series parsing is upstream of a
+correctness property in the statistics, not just a labelling convenience.
+
+**Why `Direction` does not save you:** `Direction` fixes outcome *polarity*, not arm *order*. A
+swapped assignment produces a legitimate-looking negative `g`; no range check, residual check, or
+downstream test detects it. This is what makes mis-assignment a silent catastrophic error rather than
+a detectable one -- and it is why the guard must never *auto-repair* a suspected order mismatch by
+swapping labels, which would convert a detectable error into an undetectable one.
+
+Full design: `benchmark/SERIES-PIPELINE-INTEGRATION.md`.
+
 ## 11. Evaluation-integrity practices worth reporting
 
 - **Leak-free tasks**: prompts carry the rubric and the allowed label sets but never the answers.
