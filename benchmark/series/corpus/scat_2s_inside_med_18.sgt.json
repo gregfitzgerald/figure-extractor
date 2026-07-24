@@ -1,0 +1,475 @@
+{
+  "id": "scat_2s_inside_med_18",
+  "engine": "ggplot2",
+  "chartType": "scatter",
+  "difficulty": "medium",
+  "cueType": "color",
+  "legendStyle": "inside",
+  "legendOrderMatchesPlotOrder": true,
+  "flags": [
+    "overlapping-series"
+  ],
+  "traits": [],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "classic",
+    "base_size": 12,
+    "seed": 218,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "all",
+      "centerPx": {
+        "px": 352.89269406,
+        "py": 418.08219178
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Pre",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 542.40890411,
+        "py": 331.27123288
+      },
+      "legendLabelPx": {
+        "px": 574.67511416,
+        "py": 331.27123288
+      },
+      "legendLabelText": "Pre",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Post",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 542.40890411,
+        "py": 357.67123288
+      },
+      "legendLabelPx": {
+        "px": 574.67511416,
+        "py": 357.67123288
+      },
+      "legendLabelText": "Post",
+      "plotOrderIndex": 1
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 93.93749236,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 14,
+      "x_mean": 3.82964286,
+      "x_sd": 1.16817198,
+      "y_mean": 26.9355,
+      "y_sd": 3.97075571,
+      "r": 0.55636568,
+      "slope": 1.8911532,
+      "intercept": 19.69305865
+    },
+    "g0|s1": {
+      "n": 14,
+      "x_mean": 6.16157143,
+      "x_sd": 1.20630489,
+      "y_mean": 34.93428571,
+      "y_sd": 2.30724132,
+      "r": 0.73457529,
+      "slope": 1.4049868,
+      "intercept": 26.27735917
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 68.10569192,
+        "py": 418.08219178
+      },
+      "x2": {
+        "px": 602.74962585,
+        "py": 418.08219178
+      },
+      "y1": {
+        "px": 68.10569192,
+        "py": 318.70900693
+      },
+      "y2": {
+        "px": 68.10569192,
+        "py": 103.51305895
+      }
+    },
+    "calVals": {
+      "x1": "2",
+      "x2": "8",
+      "y1": "25",
+      "y2": "35",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 54.91780822,
+    "x1": 650.86757991,
+    "ytop": 9.13242009,
+    "ybot": 418.08219178
+  },
+  "image": "scat_2s_inside_med_18.png",
+  "marks": [
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 387.73365709,
+      "py": 137.01906805,
+      "value_x": 5.587,
+      "value_y": 33.443,
+      "markId": "m001"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 353.69465996,
+      "py": 77.86170195,
+      "value_x": 5.205,
+      "value_y": 36.192,
+      "markId": "m002"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 346.74428882,
+      "py": 120.59961722,
+      "value_x": 5.127,
+      "value_y": 34.206,
+      "markId": "m003"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 229.83548194,
+      "py": 321.11920154,
+      "value_x": 3.815,
+      "value_y": 24.888,
+      "markId": "m004"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 250.95391733,
+      "py": 299.53504796,
+      "value_x": 4.052,
+      "value_y": 25.891,
+      "markId": "m005"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 575.75010719,
+      "py": 27.72104608,
+      "value_x": 7.697,
+      "value_y": 38.522,
+      "markId": "m006"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 271.18127949,
+      "py": 191.65731924,
+      "value_x": 4.279,
+      "value_y": 30.904,
+      "markId": "m007"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 149.4606772,
+      "py": 311.95185416,
+      "value_x": 2.913,
+      "value_y": 25.314,
+      "markId": "m008"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 104.99612336,
+      "py": 247.28547179,
+      "value_x": 2.414,
+      "value_y": 28.319,
+      "markId": "m009"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 266.54769873,
+      "py": 340.76659159,
+      "value_x": 4.227,
+      "value_y": 23.975,
+      "markId": "m010"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 349.41750849,
+      "py": 191.20540775,
+      "value_x": 5.157,
+      "value_y": 30.925,
+      "markId": "m011"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 82.00643421,
+      "py": 286.64481068,
+      "value_x": 2.156,
+      "value_y": 26.49,
+      "markId": "m012"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 294.17096865,
+      "py": 267.62148888,
+      "value_x": 4.537,
+      "value_y": 27.374,
+      "markId": "m013"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 439.86144065,
+      "py": 92.5811048,
+      "value_x": 6.172,
+      "value_y": 35.508,
+      "markId": "m014"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 364.29843132,
+      "py": 149.56499182,
+      "value_x": 5.324,
+      "value_y": 32.86,
+      "markId": "m015"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 172.9850103,
+      "py": 316.81528258,
+      "value_x": 3.177,
+      "value_y": 25.088,
+      "markId": "m016"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 460.26701746,
+      "py": 144.85220056,
+      "value_x": 6.401,
+      "value_y": 33.079,
+      "markId": "m017"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 203.19239256,
+      "py": 380.53480278,
+      "value_x": 3.516,
+      "value_y": 22.127,
+      "markId": "m018"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 393.16920375,
+      "py": 81.26179793,
+      "value_x": 5.648,
+      "value_y": 36.034,
+      "markId": "m019"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 380.78328595,
+      "py": 88.77213652,
+      "value_x": 5.509,
+      "value_y": 35.685,
+      "markId": "m020"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 210.67740764,
+      "py": 399.49356579,
+      "value_x": 3.6,
+      "value_y": 21.246,
+      "markId": "m021"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 492.96940475,
+      "py": 110.57148605,
+      "value_x": 6.768,
+      "value_y": 34.672,
+      "markId": "m022"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 430.59427913,
+      "py": 78.72248575,
+      "value_x": 6.068,
+      "value_y": 36.152,
+      "markId": "m023"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 623.15520267,
+      "py": 52.72681523,
+      "value_x": 8.229,
+      "value_y": 37.36,
+      "markId": "m024"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 113.28310434,
+      "py": 264.43658885,
+      "value_x": 2.507,
+      "value_y": 27.522,
+      "markId": "m025"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 623.77895392,
+      "py": 57.67632204,
+      "value_x": 8.236,
+      "value_y": 37.13,
+      "markId": "m026"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Post",
+      "px": 420.16872242,
+      "py": 91.97855614,
+      "value_x": 5.951,
+      "value_y": 35.536,
+      "markId": "m027"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Pre",
+      "px": 389.33758889,
+      "py": 216.81372556,
+      "value_x": 5.605,
+      "value_y": 29.735,
+      "markId": "m028"
+    }
+  ],
+  "nMarks": 28
+}

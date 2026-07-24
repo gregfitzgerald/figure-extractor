@@ -1,0 +1,453 @@
+{
+  "id": "scat_2s_shape_med_14",
+  "engine": "ggplot2",
+  "chartType": "scatter",
+  "difficulty": "medium",
+  "cueType": "shape",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": true,
+  "flags": [
+    "overlapping-series"
+  ],
+  "traits": [
+    "monochrome"
+  ],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "bw",
+    "base_size": 12,
+    "seed": 214,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "all",
+      "centerPx": {
+        "px": 292.86164384,
+        "py": 418.08219178
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Control",
+      "colorHex": "#2E2E2E",
+      "shape": 16,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 571.40273973,
+        "py": 200.40730594
+      },
+      "legendLabelPx": {
+        "px": 613.16894977,
+        "py": 200.40730594
+      },
+      "legendLabelText": "Control",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Trained",
+      "colorHex": "#2E2E2E",
+      "shape": 17,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 571.40273973,
+        "py": 226.80730594
+      },
+      "legendLabelPx": {
+        "px": 613.16894977,
+        "py": 226.80730594
+      },
+      "legendLabelText": "Trained",
+      "plotOrderIndex": 1
+    }
+  ],
+  "occlusion": {
+    "index": 0.07692308,
+    "medianNearestOther": 51.290596,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 13,
+      "x_mean": 4.03230769,
+      "x_sd": 1.76807812,
+      "y_mean": 26.73776923,
+      "y_sd": 4.83716102,
+      "r": 0.80794434,
+      "slope": 2.21039831,
+      "intercept": 17.82476313
+    },
+    "g0|s1": {
+      "n": 13,
+      "x_mean": 6.66930769,
+      "x_sd": 1.10167769,
+      "y_mean": 33.97807692,
+      "y_sd": 4.76411507,
+      "r": 0.59311625,
+      "slope": 2.5648827,
+      "intercept": 16.87208498
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 148.52436961,
+        "py": 418.08219178
+      },
+      "x2": {
+        "px": 479.95324269,
+        "py": 418.08219178
+      },
+      "y1": {
+        "px": 148.52436961,
+        "py": 372.84845925
+      },
+      "y2": {
+        "px": 148.52436961,
+        "py": 90.98908115
+      }
+    },
+    "calVals": {
+      "x1": "2",
+      "x2": "8",
+      "y1": "20",
+      "y2": "35",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 54.91780822,
+    "x1": 530.80547945,
+    "ytop": 9.13242009,
+    "ybot": 418.08219178
+  },
+  "image": "scat_2s_shape_med_14.png",
+  "marks": [
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 402.17793381,
+      "py": 221.80941384,
+      "value_x": 6.592,
+      "value_y": 28.038,
+      "markId": "m001"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 227.62539398,
+      "py": 306.78062102,
+      "value_x": 3.432,
+      "value_y": 23.516,
+      "markId": "m002"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 105.99099756,
+      "py": 390.79350632,
+      "value_x": 1.23,
+      "value_y": 19.045,
+      "markId": "m003"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 263.25399784,
+      "py": 309.50526168,
+      "value_x": 4.077,
+      "value_y": 23.371,
+      "markId": "m004"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 465.09418155,
+      "py": 27.72104608,
+      "value_x": 7.731,
+      "value_y": 38.367,
+      "markId": "m005"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 394.55506973,
+      "py": 85.69012484,
+      "value_x": 6.454,
+      "value_y": 35.282,
+      "markId": "m006"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 198.57012944,
+      "py": 199.59889484,
+      "value_x": 2.906,
+      "value_y": 29.22,
+      "markId": "m007"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 330.64453537,
+      "py": 232.78313896,
+      "value_x": 5.297,
+      "value_y": 27.454,
+      "markId": "m008"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 444.71130585,
+      "py": 95.78069058,
+      "value_x": 7.362,
+      "value_y": 34.745,
+      "markId": "m009"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 343.45978513,
+      "py": 189.79018849,
+      "value_x": 5.529,
+      "value_y": 29.742,
+      "markId": "m010"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 281.81401473,
+      "py": 204.80389803,
+      "value_x": 4.413,
+      "value_y": 28.943,
+      "markId": "m011"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 399.1398358,
+      "py": 52.24281197,
+      "value_x": 6.537,
+      "value_y": 37.062,
+      "markId": "m012"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 263.19875969,
+      "py": 299.43348657,
+      "value_x": 4.076,
+      "value_y": 23.907,
+      "markId": "m013"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 435.43129741,
+      "py": 37.86798369,
+      "value_x": 7.194,
+      "value_y": 37.827,
+      "markId": "m014"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 371.02361974,
+      "py": 80.33479666,
+      "value_x": 6.028,
+      "value_y": 35.567,
+      "markId": "m015"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 291.64640463,
+      "py": 205.40519803,
+      "value_x": 4.591,
+      "value_y": 28.911,
+      "markId": "m016"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 509.17422167,
+      "py": 46.66199629,
+      "value_x": 8.529,
+      "value_y": 37.359,
+      "markId": "m017"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 435.81796443,
+      "py": 272.8447519,
+      "value_x": 7.201,
+      "value_y": 25.322,
+      "markId": "m018"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 407.97793909,
+      "py": 100.44076563,
+      "value_x": 6.697,
+      "value_y": 34.497,
+      "markId": "m019"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 312.80261437,
+      "py": 225.09777325,
+      "value_x": 4.974,
+      "value_y": 27.863,
+      "markId": "m020"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 209.78347298,
+      "py": 257.09820798,
+      "value_x": 3.109,
+      "value_y": 26.16,
+      "markId": "m021"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 423.11319096,
+      "py": 113.59420327,
+      "value_x": 6.971,
+      "value_y": 33.797,
+      "markId": "m022"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 290.21021285,
+      "py": 195.72802605,
+      "value_x": 4.565,
+      "value_y": 29.426,
+      "markId": "m023"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 415.8769939,
+      "py": 32.23079613,
+      "value_x": 6.84,
+      "value_y": 38.127,
+      "markId": "m024"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 76.549066,
+      "py": 399.49356579,
+      "value_x": 0.697,
+      "value_y": 18.582,
+      "markId": "m025"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Trained",
+      "px": 374.39314661,
+      "py": 50.1006807,
+      "value_x": 6.089,
+      "value_y": 37.176,
+      "markId": "m026"
+    }
+  ],
+  "nMarks": 26
+}

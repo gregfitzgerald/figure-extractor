@@ -1,0 +1,316 @@
+{
+ "task": "fig_0001",
+ "image": "benchmark/series/tasks_stress/img/fig_0001.png",
+ "chartType": "scatter",
+ "imageSize": {
+  "width": 540,
+  "height": 420
+ },
+ "instruction": "You are the SERIES/GROUP PARSER of a scientific-figure extraction pipeline. A landmark detector has already found every drawn mark and given you its pixel position (origin (0,0) = TOP-LEFT, x right, y DOWN) and its role. Your job is the structure, not the numbers: recover WHICH SERIES (the legend entity -- the condition/arm/stratum) and WHICH GROUP (the x-axis cluster or timepoint) each mark belongs to, and what the legend calls each series.\nAnswer three things:\n(1) nSeries and nGroups -- how many distinct series and how many x-axis groups the figure actually has. For a scatter with no x-axis clusters, nGroups is 1.\n(2) assignments -- for EVERY markId listed below, the series and the group it belongs to, using your own ids. Assign all of them. Use the string \"unknown\" for a mark you genuinely cannot resolve (abstaining is scored separately and is better than guessing).\n(3) series -- one entry per series with the label EXACTLY as the legend or direct label spells it, and the pixel of its legend swatch/key (or of its direct label if the figure has no legend).\nAlso give groups[] with each group's x-axis label, in left-to-right order, and `confidence` in [0,1] that your FULL assignment is correct (be calibrated). Per-mark `conf` is optional but useful.\nWARNING: legend order does not always match plotting order. Do not assume the first legend entry is the leftmost bar, the top line, or the bottom stack segment -- verify from the drawn colours/shapes.",
+ "roles": {
+  "pt": "a single scatter data point"
+ },
+ "marks": [
+  {
+   "markId": "m001",
+   "role": "pt",
+   "px": 328.2,
+   "py": 130.5
+  },
+  {
+   "markId": "m002",
+   "role": "pt",
+   "px": 271.1,
+   "py": 206.2
+  },
+  {
+   "markId": "m003",
+   "role": "pt",
+   "px": 268.5,
+   "py": 158.5
+  },
+  {
+   "markId": "m004",
+   "role": "pt",
+   "px": 312.6,
+   "py": 207.2
+  },
+  {
+   "markId": "m005",
+   "role": "pt",
+   "px": 283.8,
+   "py": 150.7
+  },
+  {
+   "markId": "m006",
+   "role": "pt",
+   "px": 253.5,
+   "py": 129.8
+  },
+  {
+   "markId": "m007",
+   "role": "pt",
+   "px": 246.9,
+   "py": 208.5
+  },
+  {
+   "markId": "m008",
+   "role": "pt",
+   "px": 372.7,
+   "py": 97.9
+  },
+  {
+   "markId": "m009",
+   "role": "pt",
+   "px": 181.5,
+   "py": 279.0
+  },
+  {
+   "markId": "m010",
+   "role": "pt",
+   "px": 321.7,
+   "py": 263.8
+  },
+  {
+   "markId": "m011",
+   "role": "pt",
+   "px": 350.7,
+   "py": 188.3
+  },
+  {
+   "markId": "m012",
+   "role": "pt",
+   "px": 188.0,
+   "py": 329.6
+  },
+  {
+   "markId": "m013",
+   "role": "pt",
+   "px": 360.3,
+   "py": 204.5
+  },
+  {
+   "markId": "m014",
+   "role": "pt",
+   "px": 259.0,
+   "py": 164.6
+  },
+  {
+   "markId": "m015",
+   "role": "pt",
+   "px": 171.5,
+   "py": 264.4
+  },
+  {
+   "markId": "m016",
+   "role": "pt",
+   "px": 321.7,
+   "py": 256.7
+  },
+  {
+   "markId": "m017",
+   "role": "pt",
+   "px": 196.8,
+   "py": 259.2
+  },
+  {
+   "markId": "m018",
+   "role": "pt",
+   "px": 321.1,
+   "py": 219.5
+  },
+  {
+   "markId": "m019",
+   "role": "pt",
+   "px": 228.4,
+   "py": 278.4
+  },
+  {
+   "markId": "m020",
+   "role": "pt",
+   "px": 248.7,
+   "py": 166.5
+  },
+  {
+   "markId": "m021",
+   "role": "pt",
+   "px": 216.7,
+   "py": 126.4
+  },
+  {
+   "markId": "m022",
+   "role": "pt",
+   "px": 231.5,
+   "py": 221.0
+  },
+  {
+   "markId": "m023",
+   "role": "pt",
+   "px": 158.9,
+   "py": 233.7
+  },
+  {
+   "markId": "m024",
+   "role": "pt",
+   "px": 366.2,
+   "py": 149.4
+  },
+  {
+   "markId": "m025",
+   "role": "pt",
+   "px": 205.9,
+   "py": 317.6
+  },
+  {
+   "markId": "m026",
+   "role": "pt",
+   "px": 295.9,
+   "py": 25.4
+  },
+  {
+   "markId": "m027",
+   "role": "pt",
+   "px": 246.2,
+   "py": 233.3
+  },
+  {
+   "markId": "m028",
+   "role": "pt",
+   "px": 195.1,
+   "py": 301.1
+  },
+  {
+   "markId": "m029",
+   "role": "pt",
+   "px": 327.6,
+   "py": 247.0
+  },
+  {
+   "markId": "m030",
+   "role": "pt",
+   "px": 295.2,
+   "py": 166.7
+  },
+  {
+   "markId": "m031",
+   "role": "pt",
+   "px": 298.3,
+   "py": 189.3
+  },
+  {
+   "markId": "m032",
+   "role": "pt",
+   "px": 356.3,
+   "py": 151.1
+  },
+  {
+   "markId": "m033",
+   "role": "pt",
+   "px": 299.0,
+   "py": 251.9
+  },
+  {
+   "markId": "m034",
+   "role": "pt",
+   "px": 190.8,
+   "py": 269.2
+  },
+  {
+   "markId": "m035",
+   "role": "pt",
+   "px": 267.6,
+   "py": 211.8
+  },
+  {
+   "markId": "m036",
+   "role": "pt",
+   "px": 185.8,
+   "py": 351.8
+  },
+  {
+   "markId": "m037",
+   "role": "pt",
+   "px": 238.8,
+   "py": 147.9
+  },
+  {
+   "markId": "m038",
+   "role": "pt",
+   "px": 185.9,
+   "py": 157.5
+  },
+  {
+   "markId": "m039",
+   "role": "pt",
+   "px": 360.7,
+   "py": 167.0
+  },
+  {
+   "markId": "m040",
+   "role": "pt",
+   "px": 251.3,
+   "py": 260.2
+  },
+  {
+   "markId": "m041",
+   "role": "pt",
+   "px": 70.0,
+   "py": 278.9
+  },
+  {
+   "markId": "m042",
+   "role": "pt",
+   "px": 206.4,
+   "py": 309.2
+  },
+  {
+   "markId": "m043",
+   "role": "pt",
+   "px": 253.5,
+   "py": 182.9
+  },
+  {
+   "markId": "m044",
+   "role": "pt",
+   "px": 312.4,
+   "py": 269.7
+  },
+  {
+   "markId": "m045",
+   "role": "pt",
+   "px": 290.7,
+   "py": 234.7
+  }
+ ],
+ "output_schema": {
+  "task": "fig_0001",
+  "nSeries": 0,
+  "nGroups": 0,
+  "confidence": 0.0,
+  "series": [
+   {
+    "id": "S1",
+    "label": "<legend text, verbatim>",
+    "swatchPx": {
+     "px": 0,
+     "py": 0
+    }
+   }
+  ],
+  "groups": [
+   {
+    "id": "G1",
+    "label": "<x-axis tick label>"
+   }
+  ],
+  "assignments": [
+   {
+    "markId": "m001",
+    "series": "S1",
+    "group": "G1",
+    "conf": 1.0
+   }
+  ],
+  "method": "visual | pixel-sampled"
+ }
+}

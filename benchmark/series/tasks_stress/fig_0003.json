@@ -1,0 +1,622 @@
+{
+ "task": "fig_0003",
+ "image": "benchmark/series/tasks_stress/img/fig_0003.png",
+ "chartType": "scatter",
+ "imageSize": {
+  "width": 540,
+  "height": 420
+ },
+ "instruction": "You are the SERIES/GROUP PARSER of a scientific-figure extraction pipeline. A landmark detector has already found every drawn mark and given you its pixel position (origin (0,0) = TOP-LEFT, x right, y DOWN) and its role. Your job is the structure, not the numbers: recover WHICH SERIES (the legend entity -- the condition/arm/stratum) and WHICH GROUP (the x-axis cluster or timepoint) each mark belongs to, and what the legend calls each series.\nAnswer three things:\n(1) nSeries and nGroups -- how many distinct series and how many x-axis groups the figure actually has. For a scatter with no x-axis clusters, nGroups is 1.\n(2) assignments -- for EVERY markId listed below, the series and the group it belongs to, using your own ids. Assign all of them. Use the string \"unknown\" for a mark you genuinely cannot resolve (abstaining is scored separately and is better than guessing).\n(3) series -- one entry per series with the label EXACTLY as the legend or direct label spells it, and the pixel of its legend swatch/key (or of its direct label if the figure has no legend).\nAlso give groups[] with each group's x-axis label, in left-to-right order, and `confidence` in [0,1] that your FULL assignment is correct (be calibrated). Per-mark `conf` is optional but useful.\nWARNING: legend order does not always match plotting order. Do not assume the first legend entry is the leftmost bar, the top line, or the bottom stack segment -- verify from the drawn colours/shapes.",
+ "roles": {
+  "pt": "a single scatter data point"
+ },
+ "marks": [
+  {
+   "markId": "m001",
+   "role": "pt",
+   "px": 213.4,
+   "py": 60.7
+  },
+  {
+   "markId": "m002",
+   "role": "pt",
+   "px": 167.1,
+   "py": 232.7
+  },
+  {
+   "markId": "m003",
+   "role": "pt",
+   "px": 105.0,
+   "py": 230.8
+  },
+  {
+   "markId": "m004",
+   "role": "pt",
+   "px": 347.9,
+   "py": 31.3
+  },
+  {
+   "markId": "m005",
+   "role": "pt",
+   "px": 290.1,
+   "py": 145.1
+  },
+  {
+   "markId": "m006",
+   "role": "pt",
+   "px": 112.1,
+   "py": 295.3
+  },
+  {
+   "markId": "m007",
+   "role": "pt",
+   "px": 230.8,
+   "py": 196.6
+  },
+  {
+   "markId": "m008",
+   "role": "pt",
+   "px": 301.1,
+   "py": 152.4
+  },
+  {
+   "markId": "m009",
+   "role": "pt",
+   "px": 298.3,
+   "py": 140.5
+  },
+  {
+   "markId": "m010",
+   "role": "pt",
+   "px": 190.5,
+   "py": 246.9
+  },
+  {
+   "markId": "m011",
+   "role": "pt",
+   "px": 341.3,
+   "py": 149.1
+  },
+  {
+   "markId": "m012",
+   "role": "pt",
+   "px": 188.4,
+   "py": 296.8
+  },
+  {
+   "markId": "m013",
+   "role": "pt",
+   "px": 279.3,
+   "py": 183.4
+  },
+  {
+   "markId": "m014",
+   "role": "pt",
+   "px": 180.5,
+   "py": 188.7
+  },
+  {
+   "markId": "m015",
+   "role": "pt",
+   "px": 256.8,
+   "py": 118.5
+  },
+  {
+   "markId": "m016",
+   "role": "pt",
+   "px": 134.3,
+   "py": 182.0
+  },
+  {
+   "markId": "m017",
+   "role": "pt",
+   "px": 210.6,
+   "py": 270.8
+  },
+  {
+   "markId": "m018",
+   "role": "pt",
+   "px": 283.4,
+   "py": 79.0
+  },
+  {
+   "markId": "m019",
+   "role": "pt",
+   "px": 83.9,
+   "py": 259.8
+  },
+  {
+   "markId": "m020",
+   "role": "pt",
+   "px": 217.0,
+   "py": 48.4
+  },
+  {
+   "markId": "m021",
+   "role": "pt",
+   "px": 201.6,
+   "py": 272.8
+  },
+  {
+   "markId": "m022",
+   "role": "pt",
+   "px": 177.5,
+   "py": 196.6
+  },
+  {
+   "markId": "m023",
+   "role": "pt",
+   "px": 423.8,
+   "py": 133.9
+  },
+  {
+   "markId": "m024",
+   "role": "pt",
+   "px": 204.0,
+   "py": 342.6
+  },
+  {
+   "markId": "m025",
+   "role": "pt",
+   "px": 259.3,
+   "py": 143.0
+  },
+  {
+   "markId": "m026",
+   "role": "pt",
+   "px": 369.1,
+   "py": 141.2
+  },
+  {
+   "markId": "m027",
+   "role": "pt",
+   "px": 179.8,
+   "py": 177.9
+  },
+  {
+   "markId": "m028",
+   "role": "pt",
+   "px": 249.1,
+   "py": 270.3
+  },
+  {
+   "markId": "m029",
+   "role": "pt",
+   "px": 161.2,
+   "py": 287.4
+  },
+  {
+   "markId": "m030",
+   "role": "pt",
+   "px": 217.0,
+   "py": 177.4
+  },
+  {
+   "markId": "m031",
+   "role": "pt",
+   "px": 143.0,
+   "py": 244.7
+  },
+  {
+   "markId": "m032",
+   "role": "pt",
+   "px": 264.9,
+   "py": 170.5
+  },
+  {
+   "markId": "m033",
+   "role": "pt",
+   "px": 133.4,
+   "py": 205.2
+  },
+  {
+   "markId": "m034",
+   "role": "pt",
+   "px": 89.5,
+   "py": 351.8
+  },
+  {
+   "markId": "m035",
+   "role": "pt",
+   "px": 393.1,
+   "py": 72.9
+  },
+  {
+   "markId": "m036",
+   "role": "pt",
+   "px": 309.7,
+   "py": 188.7
+  },
+  {
+   "markId": "m037",
+   "role": "pt",
+   "px": 259.6,
+   "py": 148.9
+  },
+  {
+   "markId": "m038",
+   "role": "pt",
+   "px": 208.1,
+   "py": 186.1
+  },
+  {
+   "markId": "m039",
+   "role": "pt",
+   "px": 281.3,
+   "py": 25.4
+  },
+  {
+   "markId": "m040",
+   "role": "pt",
+   "px": 172.9,
+   "py": 296.9
+  },
+  {
+   "markId": "m041",
+   "role": "pt",
+   "px": 374.9,
+   "py": 82.5
+  },
+  {
+   "markId": "m042",
+   "role": "pt",
+   "px": 131.8,
+   "py": 283.3
+  },
+  {
+   "markId": "m043",
+   "role": "pt",
+   "px": 256.9,
+   "py": 219.4
+  },
+  {
+   "markId": "m044",
+   "role": "pt",
+   "px": 193.8,
+   "py": 233.2
+  },
+  {
+   "markId": "m045",
+   "role": "pt",
+   "px": 369.6,
+   "py": 92.2
+  },
+  {
+   "markId": "m046",
+   "role": "pt",
+   "px": 124.4,
+   "py": 206.7
+  },
+  {
+   "markId": "m047",
+   "role": "pt",
+   "px": 244.6,
+   "py": 247.2
+  },
+  {
+   "markId": "m048",
+   "role": "pt",
+   "px": 233.1,
+   "py": 279.9
+  },
+  {
+   "markId": "m049",
+   "role": "pt",
+   "px": 273.6,
+   "py": 154.8
+  },
+  {
+   "markId": "m050",
+   "role": "pt",
+   "px": 289.2,
+   "py": 148.0
+  },
+  {
+   "markId": "m051",
+   "role": "pt",
+   "px": 262.8,
+   "py": 211.5
+  },
+  {
+   "markId": "m052",
+   "role": "pt",
+   "px": 109.5,
+   "py": 275.6
+  },
+  {
+   "markId": "m053",
+   "role": "pt",
+   "px": 309.6,
+   "py": 134.2
+  },
+  {
+   "markId": "m054",
+   "role": "pt",
+   "px": 159.9,
+   "py": 269.5
+  },
+  {
+   "markId": "m055",
+   "role": "pt",
+   "px": 305.5,
+   "py": 177.3
+  },
+  {
+   "markId": "m056",
+   "role": "pt",
+   "px": 359.7,
+   "py": 223.5
+  },
+  {
+   "markId": "m057",
+   "role": "pt",
+   "px": 330.6,
+   "py": 112.3
+  },
+  {
+   "markId": "m058",
+   "role": "pt",
+   "px": 176.1,
+   "py": 222.2
+  },
+  {
+   "markId": "m059",
+   "role": "pt",
+   "px": 223.2,
+   "py": 246.3
+  },
+  {
+   "markId": "m060",
+   "role": "pt",
+   "px": 225.8,
+   "py": 197.3
+  },
+  {
+   "markId": "m061",
+   "role": "pt",
+   "px": 336.7,
+   "py": 137.9
+  },
+  {
+   "markId": "m062",
+   "role": "pt",
+   "px": 272.9,
+   "py": 132.2
+  },
+  {
+   "markId": "m063",
+   "role": "pt",
+   "px": 270.3,
+   "py": 153.7
+  },
+  {
+   "markId": "m064",
+   "role": "pt",
+   "px": 229.4,
+   "py": 157.9
+  },
+  {
+   "markId": "m065",
+   "role": "pt",
+   "px": 257.1,
+   "py": 268.8
+  },
+  {
+   "markId": "m066",
+   "role": "pt",
+   "px": 221.6,
+   "py": 236.0
+  },
+  {
+   "markId": "m067",
+   "role": "pt",
+   "px": 320.0,
+   "py": 168.8
+  },
+  {
+   "markId": "m068",
+   "role": "pt",
+   "px": 102.1,
+   "py": 249.0
+  },
+  {
+   "markId": "m069",
+   "role": "pt",
+   "px": 233.1,
+   "py": 172.5
+  },
+  {
+   "markId": "m070",
+   "role": "pt",
+   "px": 330.4,
+   "py": 124.5
+  },
+  {
+   "markId": "m071",
+   "role": "pt",
+   "px": 119.5,
+   "py": 235.3
+  },
+  {
+   "markId": "m072",
+   "role": "pt",
+   "px": 146.5,
+   "py": 195.2
+  },
+  {
+   "markId": "m073",
+   "role": "pt",
+   "px": 295.9,
+   "py": 194.5
+  },
+  {
+   "markId": "m074",
+   "role": "pt",
+   "px": 184.4,
+   "py": 165.5
+  },
+  {
+   "markId": "m075",
+   "role": "pt",
+   "px": 247.9,
+   "py": 214.4
+  },
+  {
+   "markId": "m076",
+   "role": "pt",
+   "px": 361.0,
+   "py": 180.5
+  },
+  {
+   "markId": "m077",
+   "role": "pt",
+   "px": 363.9,
+   "py": 86.4
+  },
+  {
+   "markId": "m078",
+   "role": "pt",
+   "px": 281.5,
+   "py": 262.0
+  },
+  {
+   "markId": "m079",
+   "role": "pt",
+   "px": 208.8,
+   "py": 203.6
+  },
+  {
+   "markId": "m080",
+   "role": "pt",
+   "px": 248.9,
+   "py": 244.5
+  },
+  {
+   "markId": "m081",
+   "role": "pt",
+   "px": 249.9,
+   "py": 130.7
+  },
+  {
+   "markId": "m082",
+   "role": "pt",
+   "px": 183.7,
+   "py": 162.5
+  },
+  {
+   "markId": "m083",
+   "role": "pt",
+   "px": 177.5,
+   "py": 251.2
+  },
+  {
+   "markId": "m084",
+   "role": "pt",
+   "px": 207.7,
+   "py": 318.6
+  },
+  {
+   "markId": "m085",
+   "role": "pt",
+   "px": 263.5,
+   "py": 258.2
+  },
+  {
+   "markId": "m086",
+   "role": "pt",
+   "px": 294.0,
+   "py": 191.8
+  },
+  {
+   "markId": "m087",
+   "role": "pt",
+   "px": 271.5,
+   "py": 155.9
+  },
+  {
+   "markId": "m088",
+   "role": "pt",
+   "px": 293.2,
+   "py": 150.2
+  },
+  {
+   "markId": "m089",
+   "role": "pt",
+   "px": 140.8,
+   "py": 278.3
+  },
+  {
+   "markId": "m090",
+   "role": "pt",
+   "px": 257.9,
+   "py": 173.7
+  },
+  {
+   "markId": "m091",
+   "role": "pt",
+   "px": 392.4,
+   "py": 98.1
+  },
+  {
+   "markId": "m092",
+   "role": "pt",
+   "px": 322.2,
+   "py": 68.2
+  },
+  {
+   "markId": "m093",
+   "role": "pt",
+   "px": 236.8,
+   "py": 176.9
+  },
+  {
+   "markId": "m094",
+   "role": "pt",
+   "px": 306.9,
+   "py": 182.3
+  },
+  {
+   "markId": "m095",
+   "role": "pt",
+   "px": 214.3,
+   "py": 252.5
+  },
+  {
+   "markId": "m096",
+   "role": "pt",
+   "px": 204.3,
+   "py": 243.7
+  }
+ ],
+ "output_schema": {
+  "task": "fig_0003",
+  "nSeries": 0,
+  "nGroups": 0,
+  "confidence": 0.0,
+  "series": [
+   {
+    "id": "S1",
+    "label": "<legend text, verbatim>",
+    "swatchPx": {
+     "px": 0,
+     "py": 0
+    }
+   }
+  ],
+  "groups": [
+   {
+    "id": "G1",
+    "label": "<x-axis tick label>"
+   }
+  ],
+  "assignments": [
+   {
+    "markId": "m001",
+    "series": "S1",
+    "group": "G1",
+    "conf": 1.0
+   }
+  ],
+  "method": "visual | pixel-sampled"
+ }
+}

@@ -1,0 +1,394 @@
+{
+  "id": "sbar_3x4_med_06",
+  "engine": "ggplot2",
+  "chartType": "stacked-bar",
+  "difficulty": "medium",
+  "cueType": "color+position",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": true,
+  "flags": [
+    "categorical-x",
+    "overlapping-series"
+  ],
+  "traits": [],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "classic",
+    "base_size": 12,
+    "seed": 206,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "Ctrl",
+      "centerPx": {
+        "px": 130.61604697,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "Low",
+      "centerPx": {
+        "px": 243.44644488,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "Mid",
+      "centerPx": {
+        "px": 356.27684279,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g3",
+      "index": 3,
+      "label": "High",
+      "centerPx": {
+        "px": 469.1072407,
+        "py": 439.64840183
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "G0/G1",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 577.40273973,
+        "py": 197.99041096
+      },
+      "legendLabelPx": {
+        "px": 616.16894977,
+        "py": 197.99041096
+      },
+      "legendLabelText": "G0/G1",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "S",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 577.40273973,
+        "py": 224.39041096
+      },
+      "legendLabelPx": {
+        "px": 616.16894977,
+        "py": 224.39041096
+      },
+      "legendLabelText": "S",
+      "plotOrderIndex": 1
+    },
+    {
+      "seriesId": "s2",
+      "index": 2,
+      "label": "G2/M",
+      "colorHex": "#7570B3",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 2,
+      "legendKeyPx": {
+        "px": 577.40273973,
+        "py": 250.79041096
+      },
+      "legendLabelPx": {
+        "px": 616.16894977,
+        "py": 250.79041096
+      },
+      "legendLabelText": "G2/M",
+      "plotOrderIndex": 2
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 122.7699739,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "value": 37.2
+    },
+    "g0|s1": {
+      "value": 26
+    },
+    "g0|s2": {
+      "value": 36.8
+    },
+    "g1|s0": {
+      "value": 31
+    },
+    "g1|s1": {
+      "value": 28.1
+    },
+    "g1|s2": {
+      "value": 40.9
+    },
+    "g2|s0": {
+      "value": 30.9
+    },
+    "g2|s1": {
+      "value": 40.1
+    },
+    "g2|s2": {
+      "value": 29.1
+    },
+    "g3|s0": {
+      "value": 45.9
+    },
+    "g3|s1": {
+      "value": 16.7
+    },
+    "g3|s2": {
+      "value": 37.3
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 130.61604697,
+        "py": 439.64840183
+      },
+      "x2": {
+        "px": 243.44644488,
+        "py": 439.64840183
+      },
+      "y1": {
+        "px": 130.61604697,
+        "py": 420.07949357
+      },
+      "y2": {
+        "px": 130.61604697,
+        "py": 29.09231553
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "1",
+      "y1": "0",
+      "y2": "100",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 62.91780822,
+    "x1": 536.80547945,
+    "ytop": 9.13242009,
+    "ybot": 439.64840183
+  },
+  "image": "sbar_3x4_med_06.png",
+  "marks": [
+    {
+      "role": "seg",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "G0/G1",
+      "px": 130.61604697,
+      "py": 101.81593064,
+      "value_x": 1,
+      "value_y": 37.2,
+      "segTopPy": 29.09231553,
+      "segBotPy": 174.53954576,
+      "segTopValue": 100,
+      "segBotValue": 62.8,
+      "markId": "m001"
+    },
+    {
+      "role": "seg",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "G2/M",
+      "px": 243.44644488,
+      "py": 340.12261566,
+      "value_x": 2,
+      "value_y": 40.9,
+      "segTopPy": 260.16573775,
+      "segBotPy": 420.07949357,
+      "segTopValue": 40.9,
+      "segBotValue": 0,
+      "markId": "m002"
+    },
+    {
+      "role": "seg",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "G0/G1",
+      "px": 356.27684279,
+      "py": 89.10884736,
+      "value_x": 3,
+      "value_y": 30.9,
+      "segTopPy": 28.70132835,
+      "segBotPy": 149.51636637,
+      "segTopValue": 100.1,
+      "segBotValue": 69.2,
+      "markId": "m003"
+    },
+    {
+      "role": "seg",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "S",
+      "px": 130.61604697,
+      "py": 225.3678789,
+      "value_x": 1,
+      "value_y": 26,
+      "segTopPy": 174.53954576,
+      "segBotPy": 276.19621205,
+      "segTopValue": 62.8,
+      "segBotValue": 36.8,
+      "markId": "m004"
+    },
+    {
+      "role": "seg",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "S",
+      "px": 243.44644488,
+      "py": 205.23203924,
+      "value_x": 2,
+      "value_y": 28.1,
+      "segTopPy": 150.29834072,
+      "segBotPy": 260.16573775,
+      "segTopValue": 69,
+      "segBotValue": 40.9,
+      "markId": "m005"
+    },
+    {
+      "role": "seg",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "G2/M",
+      "px": 130.61604697,
+      "py": 348.13785281,
+      "value_x": 1,
+      "value_y": 36.8,
+      "segTopPy": 276.19621205,
+      "segBotPy": 420.07949357,
+      "segTopValue": 36.8,
+      "segBotValue": 0,
+      "markId": "m006"
+    },
+    {
+      "role": "seg",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "G2/M",
+      "px": 356.27684279,
+      "py": 363.19085916,
+      "value_x": 3,
+      "value_y": 29.1,
+      "segTopPy": 306.30222476,
+      "segBotPy": 420.07949357,
+      "segTopValue": 29.1,
+      "segBotValue": 0,
+      "markId": "m007"
+    },
+    {
+      "role": "seg",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "G0/G1",
+      "px": 469.1072407,
+      "py": 119.21486007,
+      "value_x": 4,
+      "value_y": 45.9,
+      "segTopPy": 29.48330271,
+      "segBotPy": 208.94641743,
+      "segTopValue": 99.9,
+      "segBotValue": 54,
+      "markId": "m008"
+    },
+    {
+      "role": "seg",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "S",
+      "px": 469.1072407,
+      "py": 241.59384679,
+      "value_x": 4,
+      "value_y": 16.7,
+      "segTopPy": 208.94641743,
+      "segBotPy": 274.24127616,
+      "segTopValue": 54,
+      "segBotValue": 37.3,
+      "markId": "m009"
+    },
+    {
+      "role": "seg",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s2",
+      "series": "G2/M",
+      "px": 469.1072407,
+      "py": 347.16038486,
+      "value_x": 4,
+      "value_y": 37.3,
+      "segTopPy": 274.24127616,
+      "segBotPy": 420.07949357,
+      "segTopValue": 37.3,
+      "segBotValue": 0,
+      "markId": "m010"
+    },
+    {
+      "role": "seg",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "S",
+      "px": 356.27684279,
+      "py": 227.90929556,
+      "value_x": 3,
+      "value_y": 40.1,
+      "segTopPy": 149.51636637,
+      "segBotPy": 306.30222476,
+      "segTopValue": 69.2,
+      "segBotValue": 29.1,
+      "markId": "m011"
+    },
+    {
+      "role": "seg",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "G0/G1",
+      "px": 243.44644488,
+      "py": 89.69532813,
+      "value_x": 2,
+      "value_y": 31,
+      "segTopPy": 29.09231553,
+      "segBotPy": 150.29834072,
+      "segTopValue": 100,
+      "segBotValue": 69,
+      "markId": "m012"
+    }
+  ],
+  "nMarks": 12
+}

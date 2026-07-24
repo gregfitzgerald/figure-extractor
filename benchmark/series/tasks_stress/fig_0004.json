@@ -1,0 +1,334 @@
+{
+ "task": "fig_0004",
+ "image": "benchmark/series/tasks_stress/img/fig_0004.png",
+ "chartType": "line",
+ "imageSize": {
+  "width": 780,
+  "height": 560
+ },
+ "instruction": "You are the SERIES/GROUP PARSER of a scientific-figure extraction pipeline. A landmark detector has already found every drawn mark and given you its pixel position (origin (0,0) = TOP-LEFT, x right, y DOWN) and its role. Your job is the structure, not the numbers: recover WHICH SERIES (the legend entity -- the condition/arm/stratum) and WHICH GROUP (the x-axis cluster or timepoint) each mark belongs to, and what the legend calls each series.\nAnswer three things:\n(1) nSeries and nGroups -- how many distinct series and how many x-axis groups the figure actually has. For a scatter with no x-axis clusters, nGroups is 1.\n(2) assignments -- for EVERY markId listed below, the series and the group it belongs to, using your own ids. Assign all of them. Use the string \"unknown\" for a mark you genuinely cannot resolve (abstaining is scored separately and is better than guessing).\n(3) series -- one entry per series with the label EXACTLY as the legend or direct label spells it, and the pixel of its legend swatch/key (or of its direct label if the figure has no legend).\nAlso give groups[] with each group's x-axis label, in left-to-right order, and `confidence` in [0,1] that your FULL assignment is correct (be calibrated). Per-mark `conf` is optional but useful.\nWARNING: legend order does not always match plotting order. Do not assume the first legend entry is the leftmost bar, the top line, or the bottom stack segment -- verify from the drawn colours/shapes.",
+ "roles": {
+  "top": "the central mark of an arm -- a bar's top edge, or a line's point marker"
+ },
+ "marks": [
+  {
+   "markId": "m001",
+   "role": "top",
+   "px": 162.5,
+   "py": 321.3
+  },
+  {
+   "markId": "m002",
+   "role": "top",
+   "px": 481.5,
+   "py": 478.8
+  },
+  {
+   "markId": "m003",
+   "role": "top",
+   "px": 361.9,
+   "py": 455.9
+  },
+  {
+   "markId": "m004",
+   "role": "top",
+   "px": 162.5,
+   "py": 255.1
+  },
+  {
+   "markId": "m005",
+   "role": "top",
+   "px": 640.9,
+   "py": 31.8
+  },
+  {
+   "markId": "m006",
+   "role": "top",
+   "px": 242.3,
+   "py": 247.9
+  },
+  {
+   "markId": "m007",
+   "role": "top",
+   "px": 162.5,
+   "py": 301.2
+  },
+  {
+   "markId": "m008",
+   "role": "top",
+   "px": 82.8,
+   "py": 318.0
+  },
+  {
+   "markId": "m009",
+   "role": "top",
+   "px": 162.5,
+   "py": 227.8
+  },
+  {
+   "markId": "m010",
+   "role": "top",
+   "px": 361.9,
+   "py": 158.9
+  },
+  {
+   "markId": "m011",
+   "role": "top",
+   "px": 162.5,
+   "py": 365.1
+  },
+  {
+   "markId": "m012",
+   "role": "top",
+   "px": 82.8,
+   "py": 366.2
+  },
+  {
+   "markId": "m013",
+   "role": "top",
+   "px": 640.9,
+   "py": 485.4
+  },
+  {
+   "markId": "m014",
+   "role": "top",
+   "px": 640.9,
+   "py": 88.4
+  },
+  {
+   "markId": "m015",
+   "role": "top",
+   "px": 361.9,
+   "py": 268.1
+  },
+  {
+   "markId": "m016",
+   "role": "top",
+   "px": 481.5,
+   "py": 90.4
+  },
+  {
+   "markId": "m017",
+   "role": "top",
+   "px": 361.9,
+   "py": 240.2
+  },
+  {
+   "markId": "m018",
+   "role": "top",
+   "px": 82.8,
+   "py": 202.6
+  },
+  {
+   "markId": "m019",
+   "role": "top",
+   "px": 481.5,
+   "py": 457.8
+  },
+  {
+   "markId": "m020",
+   "role": "top",
+   "px": 82.8,
+   "py": 243.9
+  },
+  {
+   "markId": "m021",
+   "role": "top",
+   "px": 162.5,
+   "py": 320.1
+  },
+  {
+   "markId": "m022",
+   "role": "top",
+   "px": 242.3,
+   "py": 264.0
+  },
+  {
+   "markId": "m023",
+   "role": "top",
+   "px": 162.5,
+   "py": 260.2
+  },
+  {
+   "markId": "m024",
+   "role": "top",
+   "px": 242.3,
+   "py": 318.0
+  },
+  {
+   "markId": "m025",
+   "role": "top",
+   "px": 640.9,
+   "py": 287.2
+  },
+  {
+   "markId": "m026",
+   "role": "top",
+   "px": 640.9,
+   "py": 424.0
+  },
+  {
+   "markId": "m027",
+   "role": "top",
+   "px": 82.8,
+   "py": 247.7
+  },
+  {
+   "markId": "m028",
+   "role": "top",
+   "px": 481.5,
+   "py": 420.1
+  },
+  {
+   "markId": "m029",
+   "role": "top",
+   "px": 162.5,
+   "py": 273.1
+  },
+  {
+   "markId": "m030",
+   "role": "top",
+   "px": 242.3,
+   "py": 392.3
+  },
+  {
+   "markId": "m031",
+   "role": "top",
+   "px": 361.9,
+   "py": 169.5
+  },
+  {
+   "markId": "m032",
+   "role": "top",
+   "px": 361.9,
+   "py": 417.6
+  },
+  {
+   "markId": "m033",
+   "role": "top",
+   "px": 481.5,
+   "py": 256.2
+  },
+  {
+   "markId": "m034",
+   "role": "top",
+   "px": 640.9,
+   "py": 482.2
+  },
+  {
+   "markId": "m035",
+   "role": "top",
+   "px": 242.3,
+   "py": 235.1
+  },
+  {
+   "markId": "m036",
+   "role": "top",
+   "px": 242.3,
+   "py": 344.2
+  },
+  {
+   "markId": "m037",
+   "role": "top",
+   "px": 481.5,
+   "py": 213.5
+  },
+  {
+   "markId": "m038",
+   "role": "top",
+   "px": 82.8,
+   "py": 271.2
+  },
+  {
+   "markId": "m039",
+   "role": "top",
+   "px": 640.9,
+   "py": 484.2
+  },
+  {
+   "markId": "m040",
+   "role": "top",
+   "px": 640.9,
+   "py": 284.0
+  },
+  {
+   "markId": "m041",
+   "role": "top",
+   "px": 82.8,
+   "py": 283.4
+  },
+  {
+   "markId": "m042",
+   "role": "top",
+   "px": 361.9,
+   "py": 372.4
+  },
+  {
+   "markId": "m043",
+   "role": "top",
+   "px": 481.5,
+   "py": 120.5
+  },
+  {
+   "markId": "m044",
+   "role": "top",
+   "px": 242.3,
+   "py": 336.3
+  },
+  {
+   "markId": "m045",
+   "role": "top",
+   "px": 82.8,
+   "py": 230.7
+  },
+  {
+   "markId": "m046",
+   "role": "top",
+   "px": 361.9,
+   "py": 347.0
+  },
+  {
+   "markId": "m047",
+   "role": "top",
+   "px": 242.3,
+   "py": 246.9
+  },
+  {
+   "markId": "m048",
+   "role": "top",
+   "px": 481.5,
+   "py": 367.1
+  }
+ ],
+ "output_schema": {
+  "task": "fig_0004",
+  "nSeries": 0,
+  "nGroups": 0,
+  "confidence": 0.0,
+  "series": [
+   {
+    "id": "S1",
+    "label": "<legend text, verbatim>",
+    "swatchPx": {
+     "px": 0,
+     "py": 0
+    }
+   }
+  ],
+  "groups": [
+   {
+    "id": "G1",
+    "label": "<x-axis tick label>"
+   }
+  ],
+  "assignments": [
+   {
+    "markId": "m001",
+    "series": "S1",
+    "group": "G1",
+    "conf": 1.0
+   }
+  ],
+  "method": "visual | pixel-sampled"
+ }
+}

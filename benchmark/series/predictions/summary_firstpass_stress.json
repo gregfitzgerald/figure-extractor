@@ -1,0 +1,262 @@
+{
+  "run": "firstpass_stress",
+  "charts": 4,
+  "marks": 229,
+  "misassignment_series_bound": 0.048034934497816595,
+  "misassignment_series_bound_visible_only": 0.048034934497816595,
+  "misassignment_group_bound": 0.0,
+  "misassignment_arm_bound": 0.048034934497816595,
+  "misassignment_series_structural": 0.048034934497816595,
+  "misassignment_group_structural": 0.0,
+  "mean_ari": 0.9301162890052121,
+  "legend_label_accuracy": 1.0,
+  "swatch_median_px": 0.7287110503346074,
+  "abstention_rate": 0.043668122270742356,
+  "unreturned_marks": 0,
+  "nSeries_exact": 1.0,
+  "nGroups_exact": 1.0,
+  "e2e_central_median": 8.103309698234167e-08,
+  "e2e_dispersion_median": 1.4445938832475144e-07,
+  "e2e_sign_flip_rate": 0.0,
+  "e2e_sign_flips": 0,
+  "e2e_sign_comparisons": 67,
+  "e2e_arms_lost": 0,
+  "e2e_illformed_arms": 0,
+  "ece": 0.24113537117903916,
+  "mean_confidence": 0.6687336244541484,
+  "mark_accuracy": 0.9082969432314411,
+  "by_chart_type": {
+    "grouped-bar": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 40,
+      "charts": 1
+    },
+    "line": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 48,
+      "charts": 1
+    },
+    "scatter": {
+      "bound": 0.07801418439716312,
+      "structural": 0.07801418439716312,
+      "marks": 141,
+      "charts": 2
+    }
+  },
+  "by_difficulty": {
+    "hard": {
+      "bound": 0.048034934497816595,
+      "structural": 0.048034934497816595,
+      "marks": 229,
+      "charts": 4
+    }
+  },
+  "by_cue": {
+    "color": {
+      "bound": 0.11458333333333333,
+      "structural": 0.11458333333333333,
+      "marks": 96,
+      "charts": 1
+    },
+    "color+position": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 40,
+      "charts": 1
+    },
+    "color+shape": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 48,
+      "charts": 1
+    },
+    "shape": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 45,
+      "charts": 1
+    }
+  },
+  "by_occlusion": {
+    "moderate": {
+      "bound": 0.11458333333333333,
+      "structural": 0.11458333333333333,
+      "marks": 96,
+      "charts": 1
+    },
+    "none": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 85,
+      "charts": 2
+    },
+    "severe": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 48,
+      "charts": 1
+    }
+  },
+  "by_legend_style": {
+    "right": {
+      "bound": 0.048034934497816595,
+      "structural": 0.048034934497816595,
+      "marks": 229,
+      "charts": 4
+    }
+  },
+  "by_trait": {
+    "dense-overlap": {
+      "bound": 0.07801418439716312,
+      "structural": 0.07801418439716312,
+      "marks": 141,
+      "charts": 2
+    },
+    "low-contrast-series": {
+      "bound": 0.08088235294117647,
+      "structural": 0.08088235294117647,
+      "marks": 136,
+      "charts": 2
+    },
+    "many-series": {
+      "bound": 0.0763888888888889,
+      "structural": 0.0763888888888889,
+      "marks": 144,
+      "charts": 2
+    },
+    "monochrome": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 45,
+      "charts": 1
+    },
+    "repeated-hues": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 48,
+      "charts": 1
+    }
+  },
+  "by_legend_order_match": {
+    "False": {
+      "bound": 0.0582010582010582,
+      "structural": 0.0582010582010582,
+      "marks": 189,
+      "charts": 3
+    },
+    "True": {
+      "bound": 0.0,
+      "structural": 0.0,
+      "marks": 40,
+      "charts": 1
+    }
+  },
+  "per_chart": [
+    {
+      "id": "stress_scat_3s_smallshape_24",
+      "chartType": "scatter",
+      "difficulty": "hard",
+      "cueType": "shape",
+      "legendStyle": "right",
+      "occlusion": "none",
+      "marks": 45,
+      "bound_misassign": 0.0,
+      "structural_misassign": 0.0,
+      "ari": 1.0,
+      "legend_label_ok": 3,
+      "legend_n": 3,
+      "nSeries_ok": true,
+      "nGroups_ok": true,
+      "e2e_central_median": 1.6049737650014606e-07,
+      "e2e_central_worst": 3.5390776420562986e-07,
+      "e2e_dispersion_median": 1.4445938832475144e-07,
+      "e2e_dispersion_worst": 1.854614872301401e-07,
+      "e2e_arms_recovered": 3,
+      "e2e_arms_true": 3,
+      "e2e_illformed_arms": 0,
+      "e2e_sign_flips": 0,
+      "e2e_sign_comparisons": 3,
+      "e2e_floor_ok": true
+    },
+    {
+      "id": "stress_gbar_5s_grey_23",
+      "chartType": "grouped-bar",
+      "difficulty": "hard",
+      "cueType": "color+position",
+      "legendStyle": "right",
+      "occlusion": "none",
+      "marks": 40,
+      "bound_misassign": 0.0,
+      "structural_misassign": 0.0,
+      "ari": 1.0,
+      "legend_label_ok": 5,
+      "legend_n": 5,
+      "nSeries_ok": true,
+      "nGroups_ok": true,
+      "e2e_central_median": 1.5688174645372865e-09,
+      "e2e_central_worst": 6.4198069153559424e-09,
+      "e2e_dispersion_median": 2.2240214697997032e-08,
+      "e2e_dispersion_worst": 1.6558741737308394e-07,
+      "e2e_arms_recovered": 20,
+      "e2e_arms_true": 20,
+      "e2e_illformed_arms": 0,
+      "e2e_sign_flips": 0,
+      "e2e_sign_comparisons": 16,
+      "e2e_floor_ok": true
+    },
+    {
+      "id": "stress_scat_6s_ramp_22",
+      "chartType": "scatter",
+      "difficulty": "hard",
+      "cueType": "color",
+      "legendStyle": "right",
+      "occlusion": "moderate",
+      "marks": 96,
+      "bound_misassign": 0.11458333333333333,
+      "structural_misassign": 0.11458333333333333,
+      "ari": 0.7204651560208485,
+      "legend_label_ok": 6,
+      "legend_n": 6,
+      "nSeries_ok": true,
+      "nGroups_ok": true,
+      "e2e_central_median": 3.1540839938532574,
+      "e2e_central_worst": 13.94578163802374,
+      "e2e_dispersion_median": 11.828194073525623,
+      "e2e_dispersion_worst": 39.55534396922026,
+      "e2e_arms_recovered": 6,
+      "e2e_arms_true": 6,
+      "e2e_illformed_arms": 0,
+      "e2e_sign_flips": 0,
+      "e2e_sign_comparisons": 6,
+      "e2e_floor_ok": true
+    },
+    {
+      "id": "stress_line_8s_dup_hue_21",
+      "chartType": "line",
+      "difficulty": "hard",
+      "cueType": "color+shape",
+      "legendStyle": "right",
+      "occlusion": "severe",
+      "marks": 48,
+      "bound_misassign": 0.0,
+      "structural_misassign": 0.0,
+      "ari": 1.0,
+      "legend_label_ok": 8,
+      "legend_n": 8,
+      "nSeries_ok": true,
+      "nGroups_ok": true,
+      "e2e_central_median": 1.0285805547438704e-09,
+      "e2e_central_worst": 3.7868466993148534e-08,
+      "e2e_dispersion_median": null,
+      "e2e_dispersion_worst": null,
+      "e2e_arms_recovered": 48,
+      "e2e_arms_true": 48,
+      "e2e_illformed_arms": 0,
+      "e2e_sign_flips": 0,
+      "e2e_sign_comparisons": 42,
+      "e2e_floor_ok": true
+    }
+  ]
+}

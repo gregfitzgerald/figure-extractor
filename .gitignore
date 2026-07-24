@@ -52,3 +52,9 @@ benchmark/real/panels/
 # classification corpus: keep GT labels + code, drop regenerable synthetic renders
 benchmark/classify/corpus/*.png
 benchmark/classify/tasks/img/
+# series/group parsing corpus: keep the GT answer key + code, drop regenerable renders
+benchmark/series/corpus/*.png
+benchmark/series/corpus_stress/*.png
+benchmark/series/tasks/img/
+benchmark/series/tasks_stress/img/
+benchmark/series/__pycache__/

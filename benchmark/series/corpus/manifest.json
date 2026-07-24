@@ -1,0 +1,25 @@
+{
+  "count": 19,
+  "marks": 495,
+  "ids": [
+    "dbox_2x3_med_19",
+    "gbar_2x3_easy_01",
+    "gbar_2x4_revlegend_hard_04",
+    "gbar_3x3_inside_med_05",
+    "gbar_3x4_med_02",
+    "gbar_3x4_simhue_hard_03",
+    "line_3s_easy_08",
+    "line_3s_revlegend_hard_12",
+    "line_3s_shape_med_11",
+    "line_4s_direct_med_10",
+    "line_6s_cross_hard_09",
+    "sbar_3x4_med_06",
+    "sbar_4x3_simhue_hard_07",
+    "scat_2s_color_easy_13",
+    "scat_2s_inside_med_18",
+    "scat_2s_shape_med_14",
+    "scat_3s_colorshape_med_15",
+    "scat_3s_simhue_hard_16",
+    "scat_4s_dense_hard_17"
+  ]
+}

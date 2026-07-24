@@ -1,0 +1,451 @@
+{
+  "id": "scat_2s_color_easy_13",
+  "engine": "ggplot2",
+  "chartType": "scatter",
+  "difficulty": "easy",
+  "cueType": "color",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": true,
+  "flags": [
+    "overlapping-series"
+  ],
+  "traits": [],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "bw",
+    "base_size": 12,
+    "seed": 213,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "all",
+      "centerPx": {
+        "px": 292.86164384,
+        "py": 418.08219178
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Male",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 571.40273973,
+        "py": 200.40730594
+      },
+      "legendLabelPx": {
+        "px": 613.16894977,
+        "py": 200.40730594
+      },
+      "legendLabelText": "Male",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Female",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 571.40273973,
+        "py": 226.80730594
+      },
+      "legendLabelPx": {
+        "px": 613.16894977,
+        "py": 226.80730594
+      },
+      "legendLabelText": "Female",
+      "plotOrderIndex": 1
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 60.06620798,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 13,
+      "x_mean": 3.09284615,
+      "x_sd": 1.50747442,
+      "y_mean": 25.83646154,
+      "y_sd": 5.83286004,
+      "r": 0.70967069,
+      "slope": 2.74592373,
+      "intercept": 17.34374188
+    },
+    "g0|s1": {
+      "n": 13,
+      "x_mean": 6.02430769,
+      "x_sd": 1.48808246,
+      "y_mean": 32.60692308,
+      "y_sd": 5.18382598,
+      "r": 0.55001574,
+      "slope": 1.91601337,
+      "intercept": 21.06426899
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 161.27103975,
+        "py": 418.08219178
+      },
+      "x2": {
+        "px": 487.12478491,
+        "py": 418.08219178
+      },
+      "y1": {
+        "px": 161.27103975,
+        "py": 304.72464952
+      },
+      "y2": {
+        "px": 161.27103975,
+        "py": 75.42652159
+      }
+    },
+    "calVals": {
+      "x1": "2",
+      "x2": "8",
+      "y1": "20",
+      "y2": "40",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 54.91780822,
+    "x1": 530.80547945,
+    "ytop": 9.13242009,
+    "ybot": 418.08219178
+  },
+  "image": "scat_2s_color_easy_13.png",
+  "marks": [
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 475.77421279,
+      "py": 27.72104608,
+      "value_x": 7.791,
+      "value_y": 44.161,
+      "markId": "m001"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 357.38068538,
+      "py": 154.58023535,
+      "value_x": 5.611,
+      "value_y": 33.096,
+      "markId": "m002"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 244.79821642,
+      "py": 158.76492619,
+      "value_x": 3.538,
+      "value_y": 32.731,
+      "markId": "m003"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 363.62621549,
+      "py": 209.22197924,
+      "value_x": 5.726,
+      "value_y": 28.33,
+      "markId": "m004"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 304.80961449,
+      "py": 240.76193674,
+      "value_x": 4.643,
+      "value_y": 25.579,
+      "markId": "m005"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 290.36343179,
+      "py": 187.85139372,
+      "value_x": 4.377,
+      "value_y": 30.194,
+      "markId": "m006"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 386.001506,
+      "py": 218.57734286,
+      "value_x": 6.138,
+      "value_y": 27.514,
+      "markId": "m007"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 509.17422167,
+      "py": 97.1295894,
+      "value_x": 8.406,
+      "value_y": 38.107,
+      "markId": "m008"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 241.3767521,
+      "py": 247.88164361,
+      "value_x": 3.475,
+      "value_y": 24.958,
+      "markId": "m009"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 259.13578121,
+      "py": 161.09230219,
+      "value_x": 3.802,
+      "value_y": 32.528,
+      "markId": "m010"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 297.42359627,
+      "py": 230.04224926,
+      "value_x": 4.507,
+      "value_y": 26.514,
+      "markId": "m011"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 125.64436361,
+      "py": 349.11676709,
+      "value_x": 1.344,
+      "value_y": 16.128,
+      "markId": "m012"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 150.40924824,
+      "py": 195.99147726,
+      "value_x": 1.8,
+      "value_y": 29.484,
+      "markId": "m013"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 348.09385364,
+      "py": 169.7139118,
+      "value_x": 5.44,
+      "value_y": 31.776,
+      "markId": "m014"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 309.58880275,
+      "py": 202.06787765,
+      "value_x": 4.731,
+      "value_y": 28.954,
+      "markId": "m015"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 264.78391279,
+      "py": 196.56472258,
+      "value_x": 3.906,
+      "value_y": 29.434,
+      "markId": "m016"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 283.14034044,
+      "py": 219.70090369,
+      "value_x": 4.244,
+      "value_y": 27.416,
+      "markId": "m017"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 76.549066,
+      "py": 399.49356579,
+      "value_x": 0.44,
+      "value_y": 11.734,
+      "markId": "m018"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 441.83111433,
+      "py": 83.85322779,
+      "value_x": 7.166,
+      "value_y": 39.265,
+      "markId": "m019"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 98.65281172,
+      "py": 251.77971178,
+      "value_x": 0.847,
+      "value_y": 24.618,
+      "markId": "m020"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 440.03891874,
+      "py": 150.37261471,
+      "value_x": 7.133,
+      "value_y": 33.463,
+      "markId": "m021"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 193.36763364,
+      "py": 238.70971849,
+      "value_x": 2.591,
+      "value_y": 25.758,
+      "markId": "m022"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 443.29745619,
+      "py": 214.98882716,
+      "value_x": 7.193,
+      "value_y": 27.827,
+      "markId": "m023"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Male",
+      "px": 270.2691175,
+      "py": 200.52011528,
+      "value_x": 4.007,
+      "value_y": 29.089,
+      "markId": "m024"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 261.5796843,
+      "py": 181.58008992,
+      "value_x": 3.847,
+      "value_y": 30.741,
+      "markId": "m025"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Female",
+      "px": 368.7312575,
+      "py": 185.89089472,
+      "value_x": 5.82,
+      "value_y": 30.365,
+      "markId": "m026"
+    }
+  ],
+  "nMarks": 26
+}

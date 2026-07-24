@@ -1,0 +1,385 @@
+{
+  "id": "gbar_2x3_easy_01",
+  "engine": "ggplot2",
+  "chartType": "grouped-bar",
+  "difficulty": "easy",
+  "cueType": "color+position",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": true,
+  "dispersionType": "SD",
+  "flags": [
+    "categorical-x",
+    "overlapping-series"
+  ],
+  "traits": [],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "bw",
+    "base_size": 12,
+    "seed": 201,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "2 wk",
+      "centerPx": {
+        "px": 150.83424658,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "4 wk",
+      "centerPx": {
+        "px": 297.36164384,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "8 wk",
+      "centerPx": {
+        "px": 443.8890411,
+        "py": 439.64840183
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Control",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 572.40273973,
+        "py": 211.19041096
+      },
+      "legendLabelPx": {
+        "px": 613.66894977,
+        "py": 211.19041096
+      },
+      "legendLabelText": "Control",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Run",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 572.40273973,
+        "py": 237.59041096
+      },
+      "legendLabelPx": {
+        "px": 613.66894977,
+        "py": 237.59041096
+      },
+      "legendLabelText": "Run",
+      "plotOrderIndex": 1
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 62.08238791,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 15,
+      "mean": 244.85133333,
+      "sd": 38.47382726,
+      "sem": 9.93389948,
+      "median": 258.74,
+      "q1": 235.49,
+      "q3": 265.07,
+      "iqr": 29.58,
+      "min": 156.07,
+      "max": 291.7,
+      "range": 135.63,
+      "ci95_lo": 223.54523796,
+      "ci95_hi": 266.1574287,
+      "ci_half": 21.30609537,
+      "var": 1480.23538381
+    },
+    "g0|s1": {
+      "n": 11,
+      "mean": 219.32636364,
+      "sd": 25.37867659,
+      "sem": 7.6519589,
+      "median": 223.27,
+      "q1": 201.445,
+      "q3": 238.41,
+      "iqr": 36.965,
+      "min": 173.27,
+      "max": 247.8,
+      "range": 74.53,
+      "ci95_lo": 202.27673671,
+      "ci95_hi": 236.37599056,
+      "ci_half": 17.04962692,
+      "var": 644.07722545
+    },
+    "g1|s0": {
+      "n": 8,
+      "mean": 261.7075,
+      "sd": 29.20920782,
+      "sem": 10.32701446,
+      "median": 262.24,
+      "q1": 248.3675,
+      "q3": 273.3675,
+      "iqr": 25,
+      "min": 221.21,
+      "max": 306.81,
+      "range": 85.6,
+      "ci95_lo": 237.28799116,
+      "ci95_hi": 286.12700884,
+      "ci_half": 24.41950884,
+      "var": 853.17782143
+    },
+    "g1|s1": {
+      "n": 15,
+      "mean": 261.56333333,
+      "sd": 25.71973024,
+      "sem": 6.64080579,
+      "median": 263.8,
+      "q1": 248,
+      "q3": 276.51,
+      "iqr": 28.51,
+      "min": 206.24,
+      "max": 301.95,
+      "range": 95.71,
+      "ci95_lo": 247.32022147,
+      "ci95_hi": 275.8064452,
+      "ci_half": 14.24311186,
+      "var": 661.50452381
+    },
+    "g2|s0": {
+      "n": 7,
+      "mean": 248.11714286,
+      "sd": 71.76028398,
+      "sem": 27.12283792,
+      "median": 212.76,
+      "q1": 196.085,
+      "q3": 296.12,
+      "iqr": 100.035,
+      "min": 180.12,
+      "max": 359.53,
+      "range": 179.41,
+      "ci95_lo": 181.74994932,
+      "ci95_hi": 314.4843364,
+      "ci_half": 66.36719354,
+      "var": 5149.53835714
+    },
+    "g2|s1": {
+      "n": 14,
+      "mean": 169.09357143,
+      "sd": 21.78572066,
+      "sem": 5.82247876,
+      "median": 172.895,
+      "q1": 156.875,
+      "q3": 180.85,
+      "iqr": 23.975,
+      "min": 123.35,
+      "max": 203.07,
+      "range": 79.72,
+      "ci95_lo": 156.51487081,
+      "ci95_hi": 181.67227204,
+      "ci_half": 12.57870062,
+      "var": 474.61762473
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 150.83424658,
+        "py": 439.64840183
+      },
+      "x2": {
+        "px": 297.36164384,
+        "py": 439.64840183
+      },
+      "y1": {
+        "px": 150.83424658,
+        "py": 439.64840183
+      },
+      "y2": {
+        "px": 150.83424658,
+        "py": 98.40145215
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "1",
+      "y1": "0",
+      "y2": "300",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 62.91780822,
+    "x1": 531.80547945,
+    "ytop": 9.13242009,
+    "ybot": 439.64840183
+  },
+  "image": "gbar_2x3_easy_01.png",
+  "marks": [
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Run",
+      "px": 180.13972603,
+      "py": 190.16689324,
+      "value_x": 1.2,
+      "value_y": 219.32636364,
+      "markId": "m001"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 121.52876712,
+      "py": 161.13249974,
+      "value_x": 0.8,
+      "value_y": 244.85133333,
+      "markId": "m002"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Run",
+      "px": 326.66712329,
+      "py": 142.12276967,
+      "value_x": 2.2,
+      "value_y": 261.56333333,
+      "markId": "m003"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Run",
+      "px": 180.13972603,
+      "py": 161.29890666,
+      "value_x": 1.2,
+      "value_y": 244.70504023,
+      "markId": "m004"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 414.58356164,
+      "py": 157.41767462,
+      "value_x": 2.8,
+      "value_y": 248.11714286,
+      "markId": "m005"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 268.05616438,
+      "py": 141.95878155,
+      "value_x": 1.8,
+      "value_y": 261.7075,
+      "markId": "m006"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 268.05616438,
+      "py": 108.73360465,
+      "value_x": 1.8,
+      "value_y": 290.91670782,
+      "markId": "m007"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 121.52876712,
+      "py": 117.36891243,
+      "value_x": 0.8,
+      "value_y": 283.32516059,
+      "markId": "m008"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Run",
+      "px": 473.19452055,
+      "py": 222.52514788,
+      "value_x": 3.2,
+      "value_y": 190.87929209,
+      "markId": "m009"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Run",
+      "px": 326.66712329,
+      "py": 112.86683803,
+      "value_x": 2.2,
+      "value_y": 287.28306358,
+      "markId": "m010"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Run",
+      "px": 473.19452055,
+      "py": 247.30618362,
+      "value_x": 3.2,
+      "value_y": 169.09357143,
+      "markId": "m011"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Control",
+      "px": 414.58356164,
+      "py": 75.79108123,
+      "value_x": 2.8,
+      "value_y": 319.87742684,
+      "markId": "m012"
+    }
+  ],
+  "nMarks": 12
+}

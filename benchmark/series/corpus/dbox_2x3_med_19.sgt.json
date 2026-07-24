@@ -1,0 +1,456 @@
+{
+  "id": "dbox_2x3_med_19",
+  "engine": "ggplot2",
+  "chartType": "box",
+  "difficulty": "medium",
+  "cueType": "color+position",
+  "legendStyle": "top",
+  "legendOrderMatchesPlotOrder": true,
+  "flags": [
+    "categorical-x",
+    "overlapping-series"
+  ],
+  "traits": [],
+  "render": {
+    "width": 680,
+    "height": 470,
+    "dpi": 110,
+    "theme": "bw",
+    "base_size": 12,
+    "seed": 219,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "Day 1",
+      "centerPx": {
+        "px": 176.90839041,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "Day 5",
+      "centerPx": {
+        "px": 366.89269406,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "Day 10",
+      "centerPx": {
+        "px": 556.87699772,
+        "py": 439.64840183
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Sham",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 303.49406393,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 340.26027397,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Sham",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Injury",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 386.15890411,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 421.42511416,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Injury",
+      "plotOrderIndex": 1
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 81.0559943,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 20,
+      "mean": 204.9625,
+      "sd": 38.95159856,
+      "sem": 8.70984222,
+      "median": 202.65,
+      "q1": 178.2,
+      "q3": 223.5575,
+      "iqr": 45.3575,
+      "min": 133.23,
+      "max": 292.68,
+      "range": 159.45,
+      "ci95_lo": 186.73259072,
+      "ci95_hi": 223.19240928,
+      "ci_half": 18.22990928,
+      "var": 1517.22703026
+    },
+    "g0|s1": {
+      "n": 22,
+      "mean": 176.15772727,
+      "sd": 44.45495622,
+      "sem": 9.47782851,
+      "median": 170.83,
+      "q1": 152.5425,
+      "q3": 194.185,
+      "iqr": 41.6425,
+      "min": 84.89,
+      "max": 288.65,
+      "range": 203.76,
+      "ci95_lo": 156.44750388,
+      "ci95_hi": 195.86795066,
+      "ci_half": 19.71022339,
+      "var": 1976.24313268
+    },
+    "g1|s0": {
+      "n": 15,
+      "mean": 283.562,
+      "sd": 26.1298262,
+      "sem": 6.74669211,
+      "median": 278.85,
+      "q1": 268.415,
+      "q3": 295.72,
+      "iqr": 27.305,
+      "min": 245.24,
+      "max": 329.31,
+      "range": 84.07,
+      "ci95_lo": 269.09178457,
+      "ci95_hi": 298.03221543,
+      "ci_half": 14.47021543,
+      "var": 682.76781714
+    },
+    "g1|s1": {
+      "n": 19,
+      "mean": 231.40105263,
+      "sd": 31.40425712,
+      "sem": 7.20463069,
+      "median": 227.66,
+      "q1": 217.55,
+      "q3": 242.395,
+      "iqr": 24.845,
+      "min": 173.24,
+      "max": 308.75,
+      "range": 135.51,
+      "ci95_lo": 216.26468521,
+      "ci95_hi": 246.53742005,
+      "ci_half": 15.13636742,
+      "var": 986.2273655
+    },
+    "g2|s0": {
+      "n": 17,
+      "mean": 287.31470588,
+      "sd": 17.34359901,
+      "sem": 4.20644063,
+      "median": 288.22,
+      "q1": 278.98,
+      "q3": 303.24,
+      "iqr": 24.26,
+      "min": 259.91,
+      "max": 313.13,
+      "range": 53.22,
+      "ci95_lo": 278.39745011,
+      "ci95_hi": 296.23196165,
+      "ci_half": 8.91725577,
+      "var": 300.80042647
+    },
+    "g2|s1": {
+      "n": 23,
+      "mean": 294.62695652,
+      "sd": 39.81366547,
+      "sem": 8.30172313,
+      "median": 282.64,
+      "q1": 268.48,
+      "q3": 329.815,
+      "iqr": 61.335,
+      "min": 218.98,
+      "max": 360.44,
+      "range": 141.46,
+      "ci95_lo": 277.41023651,
+      "ci95_hi": 311.84367653,
+      "ci_half": 17.21672001,
+      "var": 1585.1279585
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 176.90839041,
+        "py": 439.64840183
+      },
+      "x2": {
+        "px": 366.89269406,
+        "py": 439.64840183
+      },
+      "y1": {
+        "px": 176.90839041,
+        "py": 404.61549481
+      },
+      "y2": {
+        "px": 176.90839041,
+        "py": 162.06832378
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "1",
+      "y1": "100",
+      "y2": "300",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 62.91780822,
+    "x1": 670.86757991,
+    "ytop": 72.06210046,
+    "ybot": 439.64840183
+  },
+  "image": "dbox_2x3_med_19.png",
+  "marks": [
+    {
+      "role": "q1",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 138.91152968,
+      "py": 309.77955094,
+      "value_x": 0.8,
+      "value_y": 178.2,
+      "markId": "m001"
+    },
+    {
+      "role": "med",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 594.87385845,
+      "py": 183.12141823,
+      "value_x": 3.2,
+      "value_y": 282.64,
+      "markId": "m002"
+    },
+    {
+      "role": "q3",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 214.90525114,
+      "py": 290.3939683,
+      "value_x": 1.2,
+      "value_y": 194.185,
+      "markId": "m003"
+    },
+    {
+      "role": "q1",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 404.88955479,
+      "py": 262.05839504,
+      "value_x": 2.2,
+      "value_y": 217.55,
+      "markId": "m004"
+    },
+    {
+      "role": "q1",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 594.87385845,
+      "py": 200.29375794,
+      "value_x": 3.2,
+      "value_y": 268.48,
+      "markId": "m005"
+    },
+    {
+      "role": "q3",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 594.87385845,
+      "py": 125.91060426,
+      "value_x": 3.2,
+      "value_y": 329.815,
+      "markId": "m006"
+    },
+    {
+      "role": "q1",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 518.88013699,
+      "py": 187.56003146,
+      "value_x": 2.8,
+      "value_y": 278.98,
+      "markId": "m007"
+    },
+    {
+      "role": "med",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 328.89583333,
+      "py": 187.71768712,
+      "value_x": 1.8,
+      "value_y": 278.85,
+      "markId": "m008"
+    },
+    {
+      "role": "q3",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 328.89583333,
+      "py": 167.25883324,
+      "value_x": 1.8,
+      "value_y": 295.72,
+      "markId": "m009"
+    },
+    {
+      "role": "q3",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 404.88955479,
+      "py": 231.92797272,
+      "value_x": 2.2,
+      "value_y": 242.395,
+      "markId": "m010"
+    },
+    {
+      "role": "q1",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 214.90525114,
+      "py": 340.89532114,
+      "value_x": 1.2,
+      "value_y": 152.5425,
+      "markId": "m011"
+    },
+    {
+      "role": "med",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 518.88013699,
+      "py": 176.35435216,
+      "value_x": 2.8,
+      "value_y": 288.22,
+      "markId": "m012"
+    },
+    {
+      "role": "q1",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 328.89583333,
+      "py": 200.37258577,
+      "value_x": 1.8,
+      "value_y": 268.415,
+      "markId": "m013"
+    },
+    {
+      "role": "med",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 214.90525114,
+      "py": 318.71741419,
+      "value_x": 1.2,
+      "value_y": 170.83,
+      "markId": "m014"
+    },
+    {
+      "role": "q3",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 518.88013699,
+      "py": 158.13905961,
+      "value_x": 2.8,
+      "value_y": 303.24,
+      "markId": "m015"
+    },
+    {
+      "role": "q3",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 138.91152968,
+      "py": 254.77288439,
+      "value_x": 0.8,
+      "value_y": 223.5575,
+      "markId": "m016"
+    },
+    {
+      "role": "med",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 138.91152968,
+      "py": 280.12815928,
+      "value_x": 0.8,
+      "value_y": 202.65,
+      "markId": "m017"
+    },
+    {
+      "role": "med",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Injury",
+      "px": 404.88955479,
+      "py": 249.79763555,
+      "value_x": 2.2,
+      "value_y": 227.66,
+      "markId": "m018"
+    }
+  ],
+  "nMarks": 18
+}

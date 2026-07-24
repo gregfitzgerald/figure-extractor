@@ -1,0 +1,746 @@
+{
+  "id": "scat_3s_simhue_hard_16",
+  "engine": "ggplot2",
+  "chartType": "scatter",
+  "difficulty": "hard",
+  "cueType": "color",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": true,
+  "flags": [
+    "overlapping-series"
+  ],
+  "traits": [
+    "low-contrast-series"
+  ],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "bw",
+    "base_size": 12,
+    "seed": 216,
+    "alpha": 0.9,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "all",
+      "centerPx": {
+        "px": 296.86164384,
+        "py": 418.08219178
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Site A",
+      "colorHex": "#3B6BA5",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 579.40273973,
+        "py": 187.20730594
+      },
+      "legendLabelPx": {
+        "px": 617.16894977,
+        "py": 187.20730594
+      },
+      "legendLabelText": "Site A",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Site B",
+      "colorHex": "#4E7CB4",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 579.40273973,
+        "py": 213.60730594
+      },
+      "legendLabelPx": {
+        "px": 617.16894977,
+        "py": 213.60730594
+      },
+      "legendLabelText": "Site B",
+      "plotOrderIndex": 1
+    },
+    {
+      "seriesId": "s2",
+      "index": 2,
+      "label": "Site C",
+      "colorHex": "#6189C0",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 2,
+      "legendKeyPx": {
+        "px": 579.40273973,
+        "py": 240.00730594
+      },
+      "legendLabelPx": {
+        "px": 617.16894977,
+        "py": 240.00730594
+      },
+      "legendLabelText": "Site C",
+      "plotOrderIndex": 2
+    }
+  ],
+  "occlusion": {
+    "index": 0.04166667,
+    "medianNearestOther": 29.46496064,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 16,
+      "x_mean": 4.934375,
+      "x_sd": 0.95284017,
+      "y_mean": 30.312125,
+      "y_sd": 3.46581803,
+      "r": 0.69999977,
+      "slope": 2.54614773,
+      "intercept": 17.7484773
+    },
+    "g0|s1": {
+      "n": 16,
+      "x_mean": 5.0466875,
+      "x_sd": 0.91434346,
+      "y_mean": 29.9574375,
+      "y_sd": 3.04361754,
+      "r": 0.65011617,
+      "slope": 2.16407188,
+      "intercept": 19.03604301
+    },
+    "g0|s2": {
+      "n": 16,
+      "x_mean": 5.324875,
+      "x_sd": 0.77286074,
+      "y_mean": 31.596125,
+      "y_sd": 2.32921531,
+      "r": 0.54312179,
+      "slope": 1.63683771,
+      "intercept": 22.88016879
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 153.57679308,
+        "py": 418.08219178
+      },
+      "x2": {
+        "px": 488.35448177,
+        "py": 418.08219178
+      },
+      "y1": {
+        "px": 153.57679308,
+        "py": 409.9888653
+      },
+      "y2": {
+        "px": 153.57679308,
+        "py": 68.67831242
+      }
+    },
+    "calVals": {
+      "x1": "4",
+      "x2": "7",
+      "y1": "24",
+      "y2": "36",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 54.91780822,
+    "x1": 538.80547945,
+    "ytop": 9.13242009,
+    "ybot": 418.08219178
+  },
+  "image": "scat_3s_simhue_hard_16.png",
+  "marks": [
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 260.59406089,
+      "py": 227.78591515,
+      "value_x": 4.959,
+      "value_y": 30.406,
+      "markId": "m001"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 160.7187171,
+      "py": 252.41716005,
+      "value_x": 4.064,
+      "value_y": 29.54,
+      "markId": "m002"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 168.64178907,
+      "py": 164.38747996,
+      "value_x": 4.135,
+      "value_y": 32.635,
+      "markId": "m003"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 401.08909758,
+      "py": 93.65086787,
+      "value_x": 6.218,
+      "value_y": 35.122,
+      "markId": "m004"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 163.39693861,
+      "py": 372.55847466,
+      "value_x": 4.088,
+      "value_y": 25.316,
+      "markId": "m005"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 250.6623228,
+      "py": 141.09303472,
+      "value_x": 4.87,
+      "value_y": 33.454,
+      "markId": "m006"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 163.50853117,
+      "py": 270.44973426,
+      "value_x": 4.089,
+      "value_y": 28.906,
+      "markId": "m007"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 344.06529794,
+      "py": 200.76549638,
+      "value_x": 5.707,
+      "value_y": 31.356,
+      "markId": "m008"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 134.04809457,
+      "py": 399.49356579,
+      "value_x": 3.825,
+      "value_y": 24.369,
+      "markId": "m009"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 516.81058531,
+      "py": 63.95684977,
+      "value_x": 7.255,
+      "value_y": 36.166,
+      "markId": "m010"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 296.86164384,
+      "py": 265.75671416,
+      "value_x": 5.284,
+      "value_y": 29.071,
+      "markId": "m011"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 330.11622758,
+      "py": 181.68054797,
+      "value_x": 5.582,
+      "value_y": 32.027,
+      "markId": "m012"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 215.51066548,
+      "py": 375.23207399,
+      "value_x": 4.555,
+      "value_y": 25.222,
+      "markId": "m013"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 189.06322808,
+      "py": 294.02860496,
+      "value_x": 4.318,
+      "value_y": 28.077,
+      "markId": "m014"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 129.91916974,
+      "py": 341.32855908,
+      "value_x": 3.788,
+      "value_y": 26.414,
+      "markId": "m015"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 395.621062,
+      "py": 107.95746855,
+      "value_x": 6.169,
+      "value_y": 34.619,
+      "markId": "m016"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 397.96450582,
+      "py": 209.6680133,
+      "value_x": 6.19,
+      "value_y": 31.043,
+      "markId": "m017"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 301.66012404,
+      "py": 342.09650782,
+      "value_x": 5.327,
+      "value_y": 26.387,
+      "markId": "m018"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 361.920108,
+      "py": 27.72104608,
+      "value_x": 5.867,
+      "value_y": 37.44,
+      "markId": "m019"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 359.91144187,
+      "py": 225.33985619,
+      "value_x": 5.849,
+      "value_y": 30.492,
+      "markId": "m020"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 306.01223399,
+      "py": 231.34123341,
+      "value_x": 5.366,
+      "value_y": 30.281,
+      "markId": "m021"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 307.797715,
+      "py": 266.60999054,
+      "value_x": 5.382,
+      "value_y": 29.041,
+      "markId": "m022"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 296.63845871,
+      "py": 131.96297743,
+      "value_x": 5.282,
+      "value_y": 33.775,
+      "markId": "m023"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 345.85077895,
+      "py": 143.51065114,
+      "value_x": 5.723,
+      "value_y": 33.369,
+      "markId": "m024"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 405.5528001,
+      "py": 167.88591312,
+      "value_x": 6.258,
+      "value_y": 32.512,
+      "markId": "m025"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 76.91270237,
+      "py": 349.26402943,
+      "value_x": 3.313,
+      "value_y": 26.135,
+      "markId": "m026"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 406.22235547,
+      "py": 237.45638082,
+      "value_x": 6.264,
+      "value_y": 30.066,
+      "markId": "m027"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 230.7988466,
+      "py": 235.94892588,
+      "value_x": 4.692,
+      "value_y": 30.119,
+      "markId": "m028"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 213.9483696,
+      "py": 330.43506393,
+      "value_x": 4.541,
+      "value_y": 26.797,
+      "markId": "m029"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 430.77271931,
+      "py": 220.76060627,
+      "value_x": 6.484,
+      "value_y": 30.653,
+      "markId": "m030"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 246.19862028,
+      "py": 274.65923108,
+      "value_x": 4.83,
+      "value_y": 28.758,
+      "markId": "m031"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 444.49860455,
+      "py": 129.3462632,
+      "value_x": 6.607,
+      "value_y": 33.867,
+      "markId": "m032"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 300.09782816,
+      "py": 144.07950206,
+      "value_x": 5.313,
+      "value_y": 33.349,
+      "markId": "m033"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 345.73918638,
+      "py": 188.64897176,
+      "value_x": 5.722,
+      "value_y": 31.782,
+      "markId": "m034"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 289.71971981,
+      "py": 187.73881028,
+      "value_x": 5.22,
+      "value_y": 31.814,
+      "markId": "m035"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 335.69585572,
+      "py": 138.67541831,
+      "value_x": 5.632,
+      "value_y": 33.539,
+      "markId": "m036"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 173.6634544,
+      "py": 222.78002704,
+      "value_x": 4.18,
+      "value_y": 30.582,
+      "markId": "m037"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 164.6244568,
+      "py": 133.84018547,
+      "value_x": 4.099,
+      "value_y": 33.709,
+      "markId": "m038"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 324.20182175,
+      "py": 217.14840292,
+      "value_x": 5.529,
+      "value_y": 30.78,
+      "markId": "m039"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 293.9602372,
+      "py": 169.59246589,
+      "value_x": 5.258,
+      "value_y": 32.452,
+      "markId": "m040"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 300.99056866,
+      "py": 114.27171378,
+      "value_x": 5.321,
+      "value_y": 34.397,
+      "markId": "m041"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 195.98196698,
+      "py": 254.57879355,
+      "value_x": 4.38,
+      "value_y": 29.464,
+      "markId": "m042"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 282.13142553,
+      "py": 233.95794765,
+      "value_x": 5.152,
+      "value_y": 30.189,
+      "markId": "m043"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 172.10115852,
+      "py": 280.14864247,
+      "value_x": 4.166,
+      "value_y": 28.565,
+      "markId": "m044"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 207.25281583,
+      "py": 285.38207095,
+      "value_x": 4.481,
+      "value_y": 28.381,
+      "markId": "m045"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Site C",
+      "px": 204.90937201,
+      "py": 310.78126459,
+      "value_x": 4.46,
+      "value_y": 27.488,
+      "markId": "m046"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Site B",
+      "px": 299.53986535,
+      "py": 174.85433691,
+      "value_x": 5.308,
+      "value_y": 32.267,
+      "markId": "m047"
+    },
+    {
+      "role": "pt",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Site A",
+      "px": 130.47713256,
+      "py": 305.94603176,
+      "value_x": 3.793,
+      "value_y": 27.658,
+      "markId": "m048"
+    }
+  ],
+  "nMarks": 48
+}

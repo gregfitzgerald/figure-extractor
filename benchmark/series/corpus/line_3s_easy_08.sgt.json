@@ -1,0 +1,791 @@
+{
+  "id": "line_3s_easy_08",
+  "engine": "ggplot2",
+  "chartType": "line",
+  "difficulty": "easy",
+  "cueType": "color",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": false,
+  "dispersionType": "SEM",
+  "flags": [
+    "overlapping-series",
+    "occluded"
+  ],
+  "traits": [],
+  "render": {
+    "width": 700,
+    "height": 470,
+    "dpi": 110,
+    "theme": "classic",
+    "base_size": 12,
+    "seed": 208,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "0",
+      "centerPx": {
+        "px": 86.20874737,
+        "py": 418.08219178
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "2",
+      "centerPx": {
+        "px": 198.5351956,
+        "py": 418.08219178
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "4",
+      "centerPx": {
+        "px": 310.86164384,
+        "py": 418.08219178
+      }
+    },
+    {
+      "groupId": "g3",
+      "index": 3,
+      "label": "6",
+      "centerPx": {
+        "px": 423.18809207,
+        "py": 418.08219178
+      }
+    },
+    {
+      "groupId": "g4",
+      "index": 4,
+      "label": "8",
+      "centerPx": {
+        "px": 535.5145403,
+        "py": 418.08219178
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Placebo",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 607.40273973,
+        "py": 187.20730594
+      },
+      "legendLabelPx": {
+        "px": 651.16894977,
+        "py": 187.20730594
+      },
+      "legendLabelText": "Placebo",
+      "plotOrderIndex": 1
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Low",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 607.40273973,
+        "py": 213.60730594
+      },
+      "legendLabelPx": {
+        "px": 651.16894977,
+        "py": 213.60730594
+      },
+      "legendLabelText": "Low",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s2",
+      "index": 2,
+      "label": "High",
+      "colorHex": "#7570B3",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 2,
+      "legendKeyPx": {
+        "px": 607.40273973,
+        "py": 240.00730594
+      },
+      "legendLabelPx": {
+        "px": 651.16894977,
+        "py": 240.00730594
+      },
+      "legendLabelText": "High",
+      "plotOrderIndex": 2
+    }
+  ],
+  "occlusion": {
+    "index": 0.5,
+    "medianNearestOther": 19.59090025,
+    "bucket": "severe"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 8,
+      "mean": 36.44,
+      "sd": 5.94918242,
+      "sem": 2.10335361,
+      "median": 36.305,
+      "q1": 31.9475,
+      "q3": 39.495,
+      "iqr": 7.5475,
+      "min": 29.08,
+      "max": 46.62,
+      "range": 17.54,
+      "ci95_lo": 31.46635903,
+      "ci95_hi": 41.41364097,
+      "ci_half": 4.97364097,
+      "var": 35.39277143
+    },
+    "g1|s0": {
+      "n": 8,
+      "mean": 43.19,
+      "sd": 8.10952174,
+      "sem": 2.86714891,
+      "median": 43.315,
+      "q1": 39.7025,
+      "q3": 46.3625,
+      "iqr": 6.66,
+      "min": 29.94,
+      "max": 54.85,
+      "range": 24.91,
+      "ci95_lo": 36.41027016,
+      "ci95_hi": 49.96972984,
+      "ci_half": 6.77972984,
+      "var": 65.76434286
+    },
+    "g2|s0": {
+      "n": 8,
+      "mean": 38.76375,
+      "sd": 9.57004693,
+      "sem": 3.38352254,
+      "median": 40.56,
+      "q1": 36.2125,
+      "q3": 43.4475,
+      "iqr": 7.235,
+      "min": 20.43,
+      "max": 52.66,
+      "range": 32.23,
+      "ci95_lo": 30.76299055,
+      "ci95_hi": 46.76450945,
+      "ci_half": 8.00075945,
+      "var": 91.58579821
+    },
+    "g3|s0": {
+      "n": 8,
+      "mean": 41.89625,
+      "sd": 6.52030003,
+      "sem": 2.30527418,
+      "median": 42.875,
+      "q1": 40.03,
+      "q3": 46.4575,
+      "iqr": 6.4275,
+      "min": 28.31,
+      "max": 48.5,
+      "range": 20.19,
+      "ci95_lo": 36.44514276,
+      "ci95_hi": 47.34735724,
+      "ci_half": 5.45110724,
+      "var": 42.5143125
+    },
+    "g4|s0": {
+      "n": 8,
+      "mean": 46.36375,
+      "sd": 7.44051254,
+      "sem": 2.63061843,
+      "median": 44.85,
+      "q1": 41.8225,
+      "q3": 51.2425,
+      "iqr": 9.42,
+      "min": 35.54,
+      "max": 58.45,
+      "range": 22.91,
+      "ci95_lo": 40.14332585,
+      "ci95_hi": 52.58417415,
+      "ci_half": 6.22042415,
+      "var": 55.36122679
+    },
+    "g0|s1": {
+      "n": 8,
+      "mean": 31.77875,
+      "sd": 6.4897181,
+      "sem": 2.29446184,
+      "median": 30.72,
+      "q1": 26.9675,
+      "q3": 36.3875,
+      "iqr": 9.42,
+      "min": 23.38,
+      "max": 42.23,
+      "range": 18.85,
+      "ci95_lo": 26.35320989,
+      "ci95_hi": 37.20429011,
+      "ci_half": 5.42554011,
+      "var": 42.11644107
+    },
+    "g1|s1": {
+      "n": 8,
+      "mean": 31.14375,
+      "sd": 5.83741611,
+      "sem": 2.06383826,
+      "median": 28.92,
+      "q1": 27.33,
+      "q3": 35.8225,
+      "iqr": 8.4925,
+      "min": 24.22,
+      "max": 39.82,
+      "range": 15.6,
+      "ci95_lo": 26.26354801,
+      "ci95_hi": 36.02395199,
+      "ci_half": 4.88020199,
+      "var": 34.07542679
+    },
+    "g2|s1": {
+      "n": 8,
+      "mean": 38.8725,
+      "sd": 5.32403378,
+      "sem": 1.8823302,
+      "median": 36.845,
+      "q1": 35.7075,
+      "q3": 40.205,
+      "iqr": 4.4975,
+      "min": 34.65,
+      "max": 50.77,
+      "range": 16.12,
+      "ci95_lo": 34.42149637,
+      "ci95_hi": 43.32350363,
+      "ci_half": 4.45100363,
+      "var": 28.34533571
+    },
+    "g3|s1": {
+      "n": 8,
+      "mean": 38.18375,
+      "sd": 6.02284209,
+      "sem": 2.12939624,
+      "median": 39.65,
+      "q1": 36.1975,
+      "q3": 42.455,
+      "iqr": 6.2575,
+      "min": 26.77,
+      "max": 44.49,
+      "range": 17.72,
+      "ci95_lo": 33.14852801,
+      "ci95_hi": 43.21897199,
+      "ci_half": 5.03522199,
+      "var": 36.27462679
+    },
+    "g4|s1": {
+      "n": 8,
+      "mean": 46.68875,
+      "sd": 7.67604146,
+      "sem": 2.71389048,
+      "median": 45.94,
+      "q1": 43.495,
+      "q3": 49.5075,
+      "iqr": 6.0125,
+      "min": 35.08,
+      "max": 58.04,
+      "range": 22.96,
+      "ci95_lo": 40.27141874,
+      "ci95_hi": 53.10608126,
+      "ci_half": 6.41733126,
+      "var": 58.9216125
+    },
+    "g0|s2": {
+      "n": 8,
+      "mean": 34.31375,
+      "sd": 4.64533233,
+      "sem": 1.642373,
+      "median": 34.57,
+      "q1": 31.42,
+      "q3": 37.385,
+      "iqr": 5.965,
+      "min": 27.93,
+      "max": 40.14,
+      "range": 12.21,
+      "ci95_lo": 30.43015498,
+      "ci95_hi": 38.19734502,
+      "ci_half": 3.88359502,
+      "var": 21.5791125
+    },
+    "g1|s2": {
+      "n": 8,
+      "mean": 35.68375,
+      "sd": 4.48794556,
+      "sem": 1.58672837,
+      "median": 34.7,
+      "q1": 33.525,
+      "q3": 37.125,
+      "iqr": 3.6,
+      "min": 29.27,
+      "max": 44.46,
+      "range": 15.19,
+      "ci95_lo": 31.93173362,
+      "ci95_hi": 39.43576638,
+      "ci_half": 3.75201638,
+      "var": 20.14165536
+    },
+    "g2|s2": {
+      "n": 8,
+      "mean": 36.70125,
+      "sd": 5.40557764,
+      "sem": 1.9111603,
+      "median": 34.99,
+      "q1": 32.66,
+      "q3": 40.3425,
+      "iqr": 7.6825,
+      "min": 30.79,
+      "max": 45.11,
+      "range": 14.32,
+      "ci95_lo": 32.182074,
+      "ci95_hi": 41.220426,
+      "ci_half": 4.519176,
+      "var": 29.22026964
+    },
+    "g3|s2": {
+      "n": 8,
+      "mean": 39.78125,
+      "sd": 6.48089156,
+      "sem": 2.29134118,
+      "median": 41.475,
+      "q1": 35.3475,
+      "q3": 45.005,
+      "iqr": 9.6575,
+      "min": 28.75,
+      "max": 46.48,
+      "range": 17.73,
+      "ci95_lo": 34.36308907,
+      "ci95_hi": 45.19941093,
+      "ci_half": 5.41816093,
+      "var": 42.00195536
+    },
+    "g4|s2": {
+      "n": 8,
+      "mean": 43.0875,
+      "sd": 4.82179205,
+      "sem": 1.70476093,
+      "median": 43.57,
+      "q1": 42.8425,
+      "q3": 46.2225,
+      "iqr": 3.38,
+      "min": 32.12,
+      "max": 47.68,
+      "range": 15.56,
+      "ci95_lo": 39.05638097,
+      "ci95_hi": 47.11861903,
+      "ci_half": 4.03111903,
+      "var": 23.24967857
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 86.20874737,
+        "py": 418.08219178
+      },
+      "x2": {
+        "px": 535.5145403,
+        "py": 418.08219178
+      },
+      "y1": {
+        "px": 86.20874737,
+        "py": 320.97577303
+      },
+      "y2": {
+        "px": 86.20874737,
+        "py": 15.55810264
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "8",
+      "y1": "35",
+      "y2": "50",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 54.91780822,
+    "x1": 566.80547945,
+    "ytop": 9.13242009,
+    "ybot": 418.08219178
+  },
+  "image": "line_3s_easy_08.png",
+  "marks": [
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 423.18809207,
+      "py": 256.15087249,
+      "value_x": 6,
+      "value_y": 38.18375,
+      "markId": "m001"
+    },
+    {
+      "role": "cap",
+      "groupId": "g4",
+      "group": 4,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 535.5145403,
+      "py": 27.72104608,
+      "value_x": 8,
+      "value_y": 49.40264048,
+      "markId": "m002"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 310.86164384,
+      "py": 203.80065091,
+      "value_x": 4,
+      "value_y": 40.7548302,
+      "markId": "m003"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 310.86164384,
+      "py": 244.34138924,
+      "value_x": 4,
+      "value_y": 38.76375,
+      "markId": "m004"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 86.20874737,
+      "py": 339.84627176,
+      "value_x": 0,
+      "value_y": 34.07321184,
+      "markId": "m005"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 423.18809207,
+      "py": 176.96948484,
+      "value_x": 6,
+      "value_y": 42.07259118,
+      "markId": "m006"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 310.86164384,
+      "py": 175.44888445,
+      "value_x": 4,
+      "value_y": 42.14727254,
+      "markId": "m007"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 86.20874737,
+      "py": 248.82891927,
+      "value_x": 0,
+      "value_y": 38.54335361,
+      "markId": "m008"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 198.5351956,
+      "py": 399.49356579,
+      "value_x": 2,
+      "value_y": 31.14375,
+      "markId": "m009"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 198.5351956,
+      "py": 307.05381756,
+      "value_x": 2,
+      "value_y": 35.68375,
+      "markId": "m010"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 86.20874737,
+      "py": 301.50798247,
+      "value_x": 0,
+      "value_y": 35.956123,
+      "markId": "m011"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 423.18809207,
+      "py": 212.79385655,
+      "value_x": 6,
+      "value_y": 40.31314624,
+      "markId": "m012"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 86.20874737,
+      "py": 334.94863145,
+      "value_x": 0,
+      "value_y": 34.31375,
+      "markId": "m013"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 423.18809207,
+      "py": 180.55999907,
+      "value_x": 6,
+      "value_y": 41.89625,
+      "markId": "m014"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 86.20874737,
+      "py": 291.65567667,
+      "value_x": 0,
+      "value_y": 36.44,
+      "markId": "m015"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 310.86164384,
+      "py": 242.12711113,
+      "value_x": 4,
+      "value_y": 38.8725,
+      "markId": "m016"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 310.86164384,
+      "py": 247.42284374,
+      "value_x": 4,
+      "value_y": 38.6124103,
+      "markId": "m017"
+    },
+    {
+      "role": "top",
+      "groupId": "g4",
+      "group": 4,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 535.5145403,
+      "py": 82.97905338,
+      "value_x": 8,
+      "value_y": 46.68875,
+      "markId": "m018"
+    },
+    {
+      "role": "cap",
+      "groupId": "g4",
+      "group": 4,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 535.5145403,
+      "py": 121.593805,
+      "value_x": 8,
+      "value_y": 44.79226093,
+      "markId": "m019"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 198.5351956,
+      "py": 154.217725,
+      "value_x": 2,
+      "value_y": 43.19,
+      "markId": "m020"
+    },
+    {
+      "role": "top",
+      "groupId": "g4",
+      "group": 4,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 535.5145403,
+      "py": 89.59643624,
+      "value_x": 8,
+      "value_y": 46.36375,
+      "markId": "m021"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 423.18809207,
+      "py": 223.62389059,
+      "value_x": 6,
+      "value_y": 39.78125,
+      "markId": "m022"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 310.86164384,
+      "py": 286.33631891,
+      "value_x": 4,
+      "value_y": 36.70125,
+      "markId": "m023"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 86.20874737,
+      "py": 386.56421775,
+      "value_x": 0,
+      "value_y": 31.77875,
+      "markId": "m024"
+    },
+    {
+      "role": "cap",
+      "groupId": "g4",
+      "group": 4,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 535.5145403,
+      "py": 36.03394597,
+      "value_x": 8,
+      "value_y": 48.99436843,
+      "markId": "m025"
+    },
+    {
+      "role": "top",
+      "groupId": "g4",
+      "group": 4,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 535.5145403,
+      "py": 156.30474574,
+      "value_x": 8,
+      "value_y": 43.0875,
+      "markId": "m026"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Low",
+      "px": 198.5351956,
+      "py": 357.47138764,
+      "value_x": 2,
+      "value_y": 33.20758826,
+      "markId": "m027"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 423.18809207,
+      "py": 133.62190101,
+      "value_x": 6,
+      "value_y": 44.20152418,
+      "markId": "m028"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "High",
+      "px": 198.5351956,
+      "py": 274.74615874,
+      "value_x": 2,
+      "value_y": 37.27047837,
+      "markId": "m029"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 198.5351956,
+      "py": 95.83919567,
+      "value_x": 2,
+      "value_y": 46.05714891,
+      "markId": "m030"
+    }
+  ],
+  "nMarks": 30
+}

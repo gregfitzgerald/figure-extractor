@@ -1,0 +1,659 @@
+{
+  "id": "gbar_3x4_med_02",
+  "engine": "ggplot2",
+  "chartType": "grouped-bar",
+  "difficulty": "medium",
+  "cueType": "color+position",
+  "legendStyle": "top",
+  "legendOrderMatchesPlotOrder": true,
+  "dispersionType": "SEM",
+  "flags": [
+    "categorical-x",
+    "overlapping-series"
+  ],
+  "traits": [],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "classic",
+    "base_size": 12,
+    "seed": 202,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "D1",
+      "centerPx": {
+        "px": 146.91063275,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "D7",
+      "centerPx": {
+        "px": 286.89867362,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "D14",
+      "centerPx": {
+        "px": 426.8867145,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g3",
+      "index": 3,
+      "label": "D28",
+      "centerPx": {
+        "px": 566.87475538,
+        "py": 439.64840183
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Vehicle",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 221.16164384,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 261.92785388,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Vehicle",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Low dose",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 311.82648402,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 360.59269406,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Low dose",
+      "plotOrderIndex": 1
+    },
+    {
+      "seriesId": "s2",
+      "index": 2,
+      "label": "High dose",
+      "colorHex": "#7570B3",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 2,
+      "legendKeyPx": {
+        "px": 418.4913242,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 468.75753425,
+        "py": 31.46484018
+      },
+      "legendLabelText": "High dose",
+      "plotOrderIndex": 2
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 56.46652272,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 13,
+      "mean": 154.8,
+      "sd": 37.74423113,
+      "sem": 10.46836621,
+      "median": 157.62,
+      "q1": 133.56,
+      "q3": 175.14,
+      "iqr": 41.58,
+      "min": 89.42,
+      "max": 226.91,
+      "range": 137.49,
+      "ci95_lo": 131.9913894,
+      "ci95_hi": 177.6086106,
+      "ci_half": 22.8086106,
+      "var": 1424.62698333
+    },
+    "g0|s1": {
+      "n": 6,
+      "mean": 219.97833333,
+      "sd": 24.11128816,
+      "sem": 9.84339217,
+      "median": 212.115,
+      "q1": 208.735,
+      "q3": 235.4525,
+      "iqr": 26.7175,
+      "min": 189.84,
+      "max": 254.96,
+      "range": 65.12,
+      "ci95_lo": 194.67508822,
+      "ci95_hi": 245.28157845,
+      "ci_half": 25.30324512,
+      "var": 581.35421667
+    },
+    "g0|s2": {
+      "n": 8,
+      "mean": 233.86125,
+      "sd": 50.36768364,
+      "sem": 17.80766533,
+      "median": 219.2,
+      "q1": 211.19,
+      "q3": 250.7775,
+      "iqr": 39.5875,
+      "min": 163.07,
+      "max": 328.11,
+      "range": 165.04,
+      "ci95_lo": 191.7528127,
+      "ci95_hi": 275.9696873,
+      "ci_half": 42.1084373,
+      "var": 2536.90355536
+    },
+    "g1|s0": {
+      "n": 16,
+      "mean": 181.36,
+      "sd": 30.50380064,
+      "sem": 7.62595016,
+      "median": 187.49,
+      "q1": 156.1825,
+      "q3": 194.72,
+      "iqr": 38.5375,
+      "min": 127.26,
+      "max": 233.55,
+      "range": 106.29,
+      "ci95_lo": 165.105672,
+      "ci95_hi": 197.614328,
+      "ci_half": 16.254328,
+      "var": 930.48185333
+    },
+    "g1|s1": {
+      "n": 7,
+      "mean": 308.57857143,
+      "sd": 83.27016041,
+      "sem": 31.4731623,
+      "median": 314.31,
+      "q1": 287.32,
+      "q3": 346.625,
+      "iqr": 59.305,
+      "min": 156.55,
+      "max": 421.3,
+      "range": 264.75,
+      "ci95_lo": 231.56651761,
+      "ci95_hi": 385.59062524,
+      "ci_half": 77.01205381,
+      "var": 6933.91961429
+    },
+    "g1|s2": {
+      "n": 13,
+      "mean": 277.28846154,
+      "sd": 62.0185894,
+      "sem": 17.20086185,
+      "median": 268.71,
+      "q1": 230.96,
+      "q3": 332.6,
+      "iqr": 101.64,
+      "min": 191.55,
+      "max": 387.64,
+      "range": 196.09,
+      "ci95_lo": 239.81100305,
+      "ci95_hi": 314.76592003,
+      "ci_half": 37.47745849,
+      "var": 3846.30543077
+    },
+    "g2|s0": {
+      "n": 8,
+      "mean": 246.68,
+      "sd": 54.97098689,
+      "sem": 19.4351788,
+      "median": 267.33,
+      "q1": 212.9875,
+      "q3": 273.9625,
+      "iqr": 60.975,
+      "min": 161.15,
+      "max": 326.37,
+      "range": 165.22,
+      "ci95_lo": 200.72310487,
+      "ci95_hi": 292.63689513,
+      "ci_half": 45.95689513,
+      "var": 3021.8094
+    },
+    "g2|s1": {
+      "n": 14,
+      "mean": 153.74785714,
+      "sd": 31.97272255,
+      "sem": 8.54506954,
+      "median": 155.635,
+      "q1": 126.3975,
+      "q3": 177.3,
+      "iqr": 50.9025,
+      "min": 105.74,
+      "max": 205.6,
+      "range": 99.86,
+      "ci95_lo": 135.28735675,
+      "ci95_hi": 172.20835754,
+      "ci_half": 18.46050039,
+      "var": 1022.25498736
+    },
+    "g2|s2": {
+      "n": 16,
+      "mean": 172.21625,
+      "sd": 37.72599756,
+      "sem": 9.43149939,
+      "median": 173.845,
+      "q1": 148.4125,
+      "q3": 199.9625,
+      "iqr": 51.55,
+      "min": 106.34,
+      "max": 237.8,
+      "range": 131.46,
+      "ci95_lo": 152.11348491,
+      "ci95_hi": 192.31901509,
+      "ci_half": 20.10276509,
+      "var": 1423.25089167
+    },
+    "g3|s0": {
+      "n": 9,
+      "mean": 173.85,
+      "sd": 25.22700587,
+      "sem": 8.40900196,
+      "median": 175.53,
+      "q1": 157.39,
+      "q3": 197.23,
+      "iqr": 39.84,
+      "min": 134.46,
+      "max": 203.09,
+      "range": 68.63,
+      "ci95_lo": 154.45880672,
+      "ci95_hi": 193.24119328,
+      "ci_half": 19.39119328,
+      "var": 636.401825
+    },
+    "g3|s1": {
+      "n": 8,
+      "mean": 333.63,
+      "sd": 98.10780048,
+      "sem": 34.6863455,
+      "median": 328.265,
+      "q1": 269.8075,
+      "q3": 392.4525,
+      "iqr": 122.645,
+      "min": 193.37,
+      "max": 500.02,
+      "range": 306.65,
+      "ci95_lo": 251.60982623,
+      "ci95_hi": 415.65017377,
+      "ci_half": 82.02017377,
+      "var": 9625.14051429
+    },
+    "g3|s2": {
+      "n": 8,
+      "mean": 195.035,
+      "sd": 35.55757303,
+      "sem": 12.57150051,
+      "median": 208.715,
+      "q1": 171.1275,
+      "q3": 221.9425,
+      "iqr": 50.815,
+      "min": 128.28,
+      "max": 230.59,
+      "range": 102.31,
+      "ci95_lo": 165.30812502,
+      "ci95_hi": 224.76187498,
+      "ci_half": 29.72687498,
+      "var": 1264.341
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 146.91063275,
+        "py": 439.64840183
+      },
+      "x2": {
+        "px": 286.89867362,
+        "py": 439.64840183
+      },
+      "y1": {
+        "px": 146.91063275,
+        "py": 439.64840183
+      },
+      "y2": {
+        "px": 146.91063275,
+        "py": 102.25222593
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "1",
+      "y1": "0",
+      "y2": "400",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 62.91780822,
+    "x1": 650.86757991,
+    "ytop": 72.06210046,
+    "ybot": 439.64840183
+  },
+  "image": "gbar_3x4_med_02.png",
+  "marks": [
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 286.89867362,
+      "py": 152.81801541,
+      "value_x": 2,
+      "value_y": 340.05173372,
+      "markId": "m001"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 286.89867362,
+      "py": 179.36532691,
+      "value_x": 2,
+      "value_y": 308.57857143,
+      "markId": "m002"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 566.87475538,
+      "py": 158.23468641,
+      "value_x": 4,
+      "value_y": 333.63,
+      "markId": "m003"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 464.21685874,
+      "py": 286.43026181,
+      "value_x": 3.26666667,
+      "value_y": 181.64774939,
+      "markId": "m004"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 426.8867145,
+      "py": 309.96355419,
+      "value_x": 3,
+      "value_y": 153.74785714,
+      "markId": "m005"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 529.54461115,
+      "py": 293.00758888,
+      "value_x": 3.73333333,
+      "value_y": 173.85,
+      "markId": "m006"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 249.56852939,
+      "py": 280.24055962,
+      "value_x": 1.73333333,
+      "value_y": 188.98595016,
+      "markId": "m007"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 146.91063275,
+      "py": 254.09878071,
+      "value_x": 1,
+      "value_y": 219.97833333,
+      "markId": "m008"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 146.91063275,
+      "py": 245.79597352,
+      "value_x": 1,
+      "value_y": 229.8217255,
+      "markId": "m009"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 604.20489962,
+      "py": 264.53430342,
+      "value_x": 4.26666667,
+      "value_y": 207.60650051,
+      "markId": "m010"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 109.58048851,
+      "py": 300.24611494,
+      "value_x": 0.73333333,
+      "value_y": 165.26836621,
+      "markId": "m011"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 324.22881786,
+      "py": 205.75823547,
+      "value_x": 2.26666667,
+      "value_y": 277.28846154,
+      "markId": "m012"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 249.56852939,
+      "py": 286.67297567,
+      "value_x": 1.73333333,
+      "value_y": 181.36,
+      "markId": "m013"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 426.8867145,
+      "py": 302.75586973,
+      "value_x": 3,
+      "value_y": 162.29292668,
+      "markId": "m014"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 324.22881786,
+      "py": 191.24947294,
+      "value_x": 2.26666667,
+      "value_y": 294.48932339,
+      "markId": "m015"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 464.21685874,
+      "py": 294.38564138,
+      "value_x": 3.26666667,
+      "value_y": 172.21625,
+      "markId": "m016"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 109.58048851,
+      "py": 309.07608175,
+      "value_x": 0.73333333,
+      "value_y": 154.8,
+      "markId": "m017"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Low dose",
+      "px": 566.87475538,
+      "py": 128.97708559,
+      "value_x": 4,
+      "value_y": 368.3163455,
+      "markId": "m018"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 184.24077698,
+      "py": 242.38867322,
+      "value_x": 1.26666667,
+      "value_y": 233.86125,
+      "markId": "m019"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 389.55657027,
+      "py": 231.57618015,
+      "value_x": 2.73333333,
+      "value_y": 246.68,
+      "markId": "m020"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 604.20489962,
+      "py": 275.13824391,
+      "value_x": 4.26666667,
+      "value_y": 195.035,
+      "markId": "m021"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 529.54461115,
+      "py": 285.91467612,
+      "value_x": 3.73333333,
+      "value_y": 182.25900196,
+      "markId": "m022"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Vehicle",
+      "px": 389.55657027,
+      "py": 215.18279264,
+      "value_x": 2.73333333,
+      "value_y": 266.1151788,
+      "markId": "m023"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "High dose",
+      "px": 184.24077698,
+      "py": 227.36807776,
+      "value_x": 1.26666667,
+      "value_y": 251.66891533,
+      "markId": "m024"
+    }
+  ],
+  "nMarks": 24
+}

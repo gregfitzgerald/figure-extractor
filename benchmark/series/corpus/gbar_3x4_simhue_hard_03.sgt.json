@@ -1,0 +1,661 @@
+{
+  "id": "gbar_3x4_simhue_hard_03",
+  "engine": "ggplot2",
+  "chartType": "grouped-bar",
+  "difficulty": "hard",
+  "cueType": "color+position",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": true,
+  "dispersionType": "CI95",
+  "flags": [
+    "categorical-x",
+    "overlapping-series"
+  ],
+  "traits": [
+    "low-contrast-series"
+  ],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "minimal",
+    "base_size": 12,
+    "seed": 203,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "Ctx",
+      "centerPx": {
+        "px": 126.75890411,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "Hip",
+      "centerPx": {
+        "px": 233.16073059,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "Str",
+      "centerPx": {
+        "px": 339.56255708,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g3",
+      "index": 3,
+      "label": "Cbl",
+      "centerPx": {
+        "px": 445.96438356,
+        "py": 439.64840183
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Sham",
+      "colorHex": "#3B6BA5",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 550.40273973,
+        "py": 197.99041096
+      },
+      "legendLabelPx": {
+        "px": 602.66894977,
+        "py": 197.99041096
+      },
+      "legendLabelText": "Sham",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Lesion",
+      "colorHex": "#4E7CB4",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 550.40273973,
+        "py": 224.39041096
+      },
+      "legendLabelPx": {
+        "px": 602.66894977,
+        "py": 224.39041096
+      },
+      "legendLabelText": "Lesion",
+      "plotOrderIndex": 1
+    },
+    {
+      "seriesId": "s2",
+      "index": 2,
+      "label": "Lesion+Rx",
+      "colorHex": "#6189C0",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 2,
+      "legendKeyPx": {
+        "px": 550.40273973,
+        "py": 250.79041096
+      },
+      "legendLabelPx": {
+        "px": 602.66894977,
+        "py": 250.79041096
+      },
+      "legendLabelText": "Lesion+Rx",
+      "plotOrderIndex": 2
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 55.01068626,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 14,
+      "mean": 167.13642857,
+      "sd": 29.11600395,
+      "sem": 7.78157938,
+      "median": 163.655,
+      "q1": 144.3075,
+      "q3": 182.32,
+      "iqr": 38.0125,
+      "min": 127.37,
+      "max": 229.67,
+      "range": 102.3,
+      "ci95_lo": 150.32534839,
+      "ci95_hi": 183.94750875,
+      "ci_half": 16.81108018,
+      "var": 847.74168626
+    },
+    "g0|s1": {
+      "n": 10,
+      "mean": 269.478,
+      "sd": 51.45711803,
+      "sem": 16.27216948,
+      "median": 265.965,
+      "q1": 247.185,
+      "q3": 316.03,
+      "iqr": 68.845,
+      "min": 168.68,
+      "max": 326.16,
+      "range": 157.48,
+      "ci95_lo": 232.66779526,
+      "ci95_hi": 306.28820474,
+      "ci_half": 36.81020474,
+      "var": 2647.83499556
+    },
+    "g0|s2": {
+      "n": 8,
+      "mean": 189.29875,
+      "sd": 51.84380647,
+      "sem": 18.32955356,
+      "median": 182.47,
+      "q1": 160.2175,
+      "q3": 220.7275,
+      "iqr": 60.51,
+      "min": 107.08,
+      "max": 275.17,
+      "range": 168.09,
+      "ci95_lo": 145.95624313,
+      "ci95_hi": 232.64125687,
+      "ci_half": 43.34250687,
+      "var": 2687.78026964
+    },
+    "g1|s0": {
+      "n": 13,
+      "mean": 305.03692308,
+      "sd": 56.35258636,
+      "sem": 15.62939536,
+      "median": 308.23,
+      "q1": 278.52,
+      "q3": 359.31,
+      "iqr": 80.79,
+      "min": 220.95,
+      "max": 381.96,
+      "range": 161.01,
+      "ci95_lo": 270.98339595,
+      "ci95_hi": 339.0904502,
+      "ci_half": 34.05352712,
+      "var": 3175.61398974
+    },
+    "g1|s1": {
+      "n": 15,
+      "mean": 319.25,
+      "sd": 72.63615688,
+      "sem": 18.75457506,
+      "median": 305.86,
+      "q1": 262.215,
+      "q3": 379,
+      "iqr": 116.785,
+      "min": 207.91,
+      "max": 439.33,
+      "range": 231.42,
+      "ci95_lo": 279.02543707,
+      "ci95_hi": 359.47456293,
+      "ci_half": 40.22456293,
+      "var": 5276.01128571
+    },
+    "g1|s2": {
+      "n": 7,
+      "mean": 262.09,
+      "sd": 39.64110199,
+      "sem": 14.98292822,
+      "median": 255.95,
+      "q1": 242,
+      "q3": 275.81,
+      "iqr": 33.81,
+      "min": 210.94,
+      "max": 332.12,
+      "range": 121.18,
+      "ci95_lo": 225.42809537,
+      "ci95_hi": 298.75190463,
+      "ci_half": 36.66190463,
+      "var": 1571.41696667
+    },
+    "g2|s0": {
+      "n": 9,
+      "mean": 310.83444444,
+      "sd": 48.47146431,
+      "sem": 16.15715477,
+      "median": 322.13,
+      "q1": 307.92,
+      "q3": 340.59,
+      "iqr": 32.67,
+      "min": 195.94,
+      "max": 365.61,
+      "range": 169.67,
+      "ci95_lo": 273.57597873,
+      "ci95_hi": 348.09291016,
+      "ci_half": 37.25846572,
+      "var": 2349.48285278
+    },
+    "g2|s1": {
+      "n": 8,
+      "mean": 173.05125,
+      "sd": 51.36442166,
+      "sem": 18.16006543,
+      "median": 178.21,
+      "q1": 137.925,
+      "q3": 207.8775,
+      "iqr": 69.9525,
+      "min": 100,
+      "max": 240.9,
+      "range": 140.9,
+      "ci95_lo": 130.10951886,
+      "ci95_hi": 215.99298114,
+      "ci_half": 42.94173114,
+      "var": 2638.3038125
+    },
+    "g2|s2": {
+      "n": 13,
+      "mean": 343.43846154,
+      "sd": 90.3456885,
+      "sem": 25.05738557,
+      "median": 324.78,
+      "q1": 279.13,
+      "q3": 371.23,
+      "iqr": 92.1,
+      "min": 233.33,
+      "max": 583.29,
+      "range": 349.96,
+      "ci95_lo": 288.84310838,
+      "ci95_hi": 398.0338147,
+      "ci_half": 54.59535316,
+      "var": 8162.34343077
+    },
+    "g3|s0": {
+      "n": 15,
+      "mean": 250.47466667,
+      "sd": 41.89995071,
+      "sem": 10.81852075,
+      "median": 239.36,
+      "q1": 222.055,
+      "q3": 283.18,
+      "iqr": 61.125,
+      "min": 179.84,
+      "max": 318.04,
+      "range": 138.2,
+      "ci95_lo": 227.27124737,
+      "ci95_hi": 273.67808596,
+      "ci_half": 23.2034193,
+      "var": 1755.60586952
+    },
+    "g3|s1": {
+      "n": 12,
+      "mean": 190.45416667,
+      "sd": 52.61881662,
+      "sem": 15.18974397,
+      "median": 187.16,
+      "q1": 167.7825,
+      "q3": 210.1275,
+      "iqr": 42.345,
+      "min": 88.93,
+      "max": 295.73,
+      "range": 206.8,
+      "ci95_lo": 157.0217656,
+      "ci95_hi": 223.88656773,
+      "ci_half": 33.43240107,
+      "var": 2768.73986288
+    },
+    "g3|s2": {
+      "n": 11,
+      "mean": 243.75727273,
+      "sd": 61.73367834,
+      "sem": 18.61340436,
+      "median": 231.99,
+      "q1": 206.32,
+      "q3": 276.03,
+      "iqr": 69.71,
+      "min": 169.72,
+      "max": 380.1,
+      "range": 210.38,
+      "ci95_lo": 202.2840233,
+      "ci95_hi": 285.23052216,
+      "ci_half": 41.47324943,
+      "var": 3811.04704182
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 126.75890411,
+        "py": 439.64840183
+      },
+      "x2": {
+        "px": 233.16073059,
+        "py": 439.64840183
+      },
+      "y1": {
+        "px": 126.75890411,
+        "py": 439.64840183
+      },
+      "y2": {
+        "px": 126.75890411,
+        "py": 73.99371907
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "1",
+      "y1": "0",
+      "y2": "400",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 62.91780822,
+    "x1": 509.80547945,
+    "ytop": 9.13242009,
+    "ybot": 439.64840183
+  },
+  "image": "gbar_3x4_simhue_hard_03.png",
+  "marks": [
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 417.59056317,
+      "py": 189.46921757,
+      "value_x": 3.73333333,
+      "value_y": 273.67808596,
+      "markId": "m001"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 339.56255708,
+      "py": 242.20128934,
+      "value_x": 3,
+      "value_y": 215.99298114,
+      "markId": "m002"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 339.56255708,
+      "py": 281.45590203,
+      "value_x": 3,
+      "value_y": 173.05125,
+      "markId": "m003"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 233.16073059,
+      "py": 147.81025815,
+      "value_x": 2,
+      "value_y": 319.25,
+      "markId": "m004"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 98.38508371,
+      "py": 286.86285741,
+      "value_x": 0.73333333,
+      "value_y": 167.13642857,
+      "markId": "m005"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 474.33820396,
+      "py": 216.82093125,
+      "value_x": 4.26666667,
+      "value_y": 243.75727273,
+      "markId": "m006"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 204.7869102,
+      "py": 129.67337434,
+      "value_x": 1.73333333,
+      "value_y": 339.0904502,
+      "markId": "m007"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 445.96438356,
+      "py": 265.54725709,
+      "value_x": 4,
+      "value_y": 190.45416667,
+      "markId": "m008"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 261.53455099,
+      "py": 200.06231232,
+      "value_x": 2.26666667,
+      "value_y": 262.09,
+      "markId": "m009"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 155.13272451,
+      "py": 266.60346588,
+      "value_x": 1.26666667,
+      "value_y": 189.29875,
+      "markId": "m010"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 367.93637747,
+      "py": 75.79108123,
+      "value_x": 3.26666667,
+      "value_y": 398.0338147,
+      "markId": "m011"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 417.59056317,
+      "py": 210.68031488,
+      "value_x": 3.73333333,
+      "value_y": 250.47466667,
+      "markId": "m012"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 204.7869102,
+      "py": 160.80295348,
+      "value_x": 1.73333333,
+      "value_y": 305.03692308,
+      "markId": "m013"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 311.18873668,
+      "py": 121.44389524,
+      "value_x": 2.73333333,
+      "value_y": 348.09291016,
+      "markId": "m014"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 155.13272451,
+      "py": 226.98248938,
+      "value_x": 1.26666667,
+      "value_y": 232.64125687,
+      "markId": "m015"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 98.38508371,
+      "py": 271.49523193,
+      "value_x": 0.73333333,
+      "value_y": 183.94750875,
+      "markId": "m016"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 445.96438356,
+      "py": 234.98547208,
+      "value_x": 4,
+      "value_y": 223.88656773,
+      "markId": "m017"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 126.75890411,
+      "py": 159.65911098,
+      "value_x": 1,
+      "value_y": 306.28820474,
+      "markId": "m018"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Sham",
+      "px": 311.18873668,
+      "py": 155.50322639,
+      "value_x": 2.73333333,
+      "value_y": 310.83444444,
+      "markId": "m019"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 474.33820396,
+      "py": 178.9087116,
+      "value_x": 4.26666667,
+      "value_y": 285.23052216,
+      "markId": "m020"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 233.16073059,
+      "py": 111.03950866,
+      "value_x": 2,
+      "value_y": 359.47456293,
+      "markId": "m021"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 261.53455099,
+      "py": 166.54831955,
+      "value_x": 2.26666667,
+      "value_y": 298.75190463,
+      "markId": "m022"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "Lesion+Rx",
+      "px": 367.93637747,
+      "py": 125.69869757,
+      "value_x": 3.26666667,
+      "value_y": 343.43846154,
+      "markId": "m023"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Lesion",
+      "px": 126.75890411,
+      "py": 193.30867032,
+      "value_x": 1,
+      "value_y": 269.478,
+      "markId": "m024"
+    }
+  ],
+  "nMarks": 24
+}

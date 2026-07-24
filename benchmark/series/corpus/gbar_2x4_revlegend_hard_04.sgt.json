@@ -1,0 +1,478 @@
+{
+  "id": "gbar_2x4_revlegend_hard_04",
+  "engine": "ggplot2",
+  "chartType": "grouped-bar",
+  "difficulty": "hard",
+  "cueType": "color+position",
+  "legendStyle": "right",
+  "legendOrderMatchesPlotOrder": false,
+  "dispersionType": "SD",
+  "flags": [
+    "categorical-x",
+    "overlapping-series"
+  ],
+  "traits": [
+    "legend-order-mismatch"
+  ],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "bw",
+    "base_size": 12,
+    "seed": 204,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "Q1",
+      "centerPx": {
+        "px": 129.18747554,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "Q2",
+      "centerPx": {
+        "px": 239.63692107,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "Q3",
+      "centerPx": {
+        "px": 350.0863666,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g3",
+      "index": 3,
+      "label": "Q4",
+      "centerPx": {
+        "px": 460.53581213,
+        "py": 439.64840183
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Placebo",
+      "colorHex": "#1B9E77",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 567.40273973,
+        "py": 237.59041096
+      },
+      "legendLabelPx": {
+        "px": 611.16894977,
+        "py": 237.59041096
+      },
+      "legendLabelText": "Placebo",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Active",
+      "colorHex": "#D95F02",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 567.40273973,
+        "py": 211.19041096
+      },
+      "legendLabelPx": {
+        "px": 611.16894977,
+        "py": 211.19041096
+      },
+      "legendLabelText": "Active",
+      "plotOrderIndex": 1
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 59.63283028,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "n": 15,
+      "mean": 210.02733333,
+      "sd": 30.58014119,
+      "sem": 7.8957585,
+      "median": 213.13,
+      "q1": 191.46,
+      "q3": 232.11,
+      "iqr": 40.65,
+      "min": 140.77,
+      "max": 258.22,
+      "range": 117.45,
+      "ci95_lo": 193.0926156,
+      "ci95_hi": 226.96205106,
+      "ci_half": 16.93471773,
+      "var": 935.14503524
+    },
+    "g0|s1": {
+      "n": 13,
+      "mean": 207.98230769,
+      "sd": 53.93982715,
+      "sem": 14.96021635,
+      "median": 205.59,
+      "q1": 157.91,
+      "q3": 241.03,
+      "iqr": 83.12,
+      "min": 121.6,
+      "max": 322.49,
+      "range": 200.89,
+      "ci95_lo": 175.38679637,
+      "ci95_hi": 240.57781901,
+      "ci_half": 32.59551132,
+      "var": 2909.50495256
+    },
+    "g1|s0": {
+      "n": 7,
+      "mean": 161.69142857,
+      "sd": 17.07626172,
+      "sem": 6.45422026,
+      "median": 168.84,
+      "q1": 149.535,
+      "q3": 175.325,
+      "iqr": 25.79,
+      "min": 134.61,
+      "max": 178.67,
+      "range": 44.06,
+      "ci95_lo": 145.89852052,
+      "ci95_hi": 177.48433662,
+      "ci_half": 15.79290805,
+      "var": 291.59871429
+    },
+    "g1|s1": {
+      "n": 9,
+      "mean": 287.21444444,
+      "sd": 47.75032935,
+      "sem": 15.91677645,
+      "median": 289.57,
+      "q1": 261.92,
+      "q3": 303.39,
+      "iqr": 41.47,
+      "min": 209.74,
+      "max": 375.7,
+      "range": 165.96,
+      "ci95_lo": 250.51029213,
+      "ci95_hi": 323.91859676,
+      "ci_half": 36.70415231,
+      "var": 2280.09395278
+    },
+    "g2|s0": {
+      "n": 6,
+      "mean": 167.52666667,
+      "sd": 19.94636475,
+      "sem": 8.14306931,
+      "median": 161.18,
+      "q1": 156.3275,
+      "q3": 175.205,
+      "iqr": 18.8775,
+      "min": 146.43,
+      "max": 201.78,
+      "range": 55.35,
+      "ci95_lo": 146.59424061,
+      "ci95_hi": 188.45909272,
+      "ci_half": 20.93242605,
+      "var": 397.85746667
+    },
+    "g2|s1": {
+      "n": 9,
+      "mean": 214.41222222,
+      "sd": 47.39420607,
+      "sem": 15.79806869,
+      "median": 229.54,
+      "q1": 170.09,
+      "q3": 262.84,
+      "iqr": 92.75,
+      "min": 153.5,
+      "max": 267.22,
+      "range": 113.72,
+      "ci95_lo": 177.98181049,
+      "ci95_hi": 250.84263395,
+      "ci_half": 36.43041173,
+      "var": 2246.21076944
+    },
+    "g3|s0": {
+      "n": 13,
+      "mean": 261.14846154,
+      "sd": 41.33767911,
+      "sem": 11.46500936,
+      "median": 267.75,
+      "q1": 235.11,
+      "q3": 299.07,
+      "iqr": 63.96,
+      "min": 176.06,
+      "max": 326.91,
+      "range": 150.85,
+      "ci95_lo": 236.16835206,
+      "ci95_hi": 286.12857102,
+      "ci_half": 24.98010948,
+      "var": 1708.8037141
+    },
+    "g3|s1": {
+      "n": 13,
+      "mean": 202.03307692,
+      "sd": 47.15909551,
+      "sem": 13.07957977,
+      "median": 192.43,
+      "q1": 173.7,
+      "q3": 213.57,
+      "iqr": 39.87,
+      "min": 140.82,
+      "max": 318.67,
+      "range": 177.85,
+      "ci95_lo": 173.53512072,
+      "ci95_hi": 230.53103313,
+      "ci_half": 28.4979562,
+      "var": 2223.98028974
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 129.18747554,
+        "py": 439.64840183
+      },
+      "x2": {
+        "px": 239.63692107,
+        "py": 439.64840183
+      },
+      "y1": {
+        "px": 129.18747554,
+        "py": 439.64840183
+      },
+      "y2": {
+        "px": 129.18747554,
+        "py": 113.77175831
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "1",
+      "y1": "0",
+      "y2": "300",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 62.91780822,
+    "x1": 526.80547945,
+    "ytop": 9.13242009,
+    "ybot": 439.64840183
+  },
+  "image": "gbar_2x4_revlegend_hard_04.png",
+  "marks": [
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 327.9964775,
+      "py": 257.67164238,
+      "value_x": 2.8,
+      "value_y": 167.52666667,
+      "markId": "m001"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 482.62570124,
+      "py": 220.1888652,
+      "value_x": 4.2,
+      "value_y": 202.03307692,
+      "markId": "m002"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 482.62570124,
+      "py": 168.96203934,
+      "value_x": 4.2,
+      "value_y": 249.19217244,
+      "markId": "m003"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 261.72681018,
+      "py": 75.79108123,
+      "value_x": 2.2,
+      "value_y": 334.96477379,
+      "markId": "m004"
+    },
+    {
+      "role": "cap",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 217.54703196,
+      "py": 245.46101889,
+      "value_x": 1.8,
+      "value_y": 178.76769029,
+      "markId": "m005"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 372.17625571,
+      "py": 155.25973481,
+      "value_x": 3.2,
+      "value_y": 261.8064283,
+      "markId": "m006"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 107.09758643,
+      "py": 211.50506038,
+      "value_x": 0.8,
+      "value_y": 210.02733333,
+      "markId": "m007"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 261.72681018,
+      "py": 127.66013807,
+      "value_x": 2.2,
+      "value_y": 287.21444444,
+      "markId": "m008"
+    },
+    {
+      "role": "top",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 217.54703196,
+      "py": 264.01020173,
+      "value_x": 1.8,
+      "value_y": 161.69142857,
+      "markId": "m009"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 151.27736464,
+      "py": 155.13404794,
+      "value_x": 1.2,
+      "value_y": 261.92213484,
+      "markId": "m010"
+    },
+    {
+      "role": "top",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 151.27736464,
+      "py": 213.72648069,
+      "value_x": 1.2,
+      "value_y": 207.98230769,
+      "markId": "m011"
+    },
+    {
+      "role": "cap",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 438.44592303,
+      "py": 111.07117441,
+      "value_x": 3.8,
+      "value_y": 302.48614065,
+      "markId": "m012"
+    },
+    {
+      "role": "top",
+      "groupId": "g3",
+      "group": 3,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 438.44592303,
+      "py": 155.97445481,
+      "value_x": 3.8,
+      "value_y": 261.14846154,
+      "markId": "m013"
+    },
+    {
+      "role": "top",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Active",
+      "px": 372.17625571,
+      "py": 206.7419508,
+      "value_x": 3.2,
+      "value_y": 214.41222222,
+      "markId": "m014"
+    },
+    {
+      "role": "cap",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 327.9964775,
+      "py": 236.0047944,
+      "value_x": 2.8,
+      "value_y": 187.47303141,
+      "markId": "m015"
+    },
+    {
+      "role": "cap",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Placebo",
+      "px": 107.09758643,
+      "py": 178.28721448,
+      "value_x": 0.8,
+      "value_y": 240.60747452,
+      "markId": "m016"
+    }
+  ],
+  "nMarks": 16
+}

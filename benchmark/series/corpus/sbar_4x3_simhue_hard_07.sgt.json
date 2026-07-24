@@ -1,0 +1,407 @@
+{
+  "id": "sbar_4x3_simhue_hard_07",
+  "engine": "ggplot2",
+  "chartType": "stacked-bar",
+  "difficulty": "hard",
+  "cueType": "color+position",
+  "legendStyle": "top",
+  "legendOrderMatchesPlotOrder": false,
+  "flags": [
+    "categorical-x",
+    "overlapping-series"
+  ],
+  "traits": [
+    "low-contrast-series",
+    "legend-order-mismatch"
+  ],
+  "render": {
+    "width": 660,
+    "height": 470,
+    "dpi": 110,
+    "theme": "bw",
+    "base_size": 12,
+    "seed": 207,
+    "alpha": 1,
+    "panelBg": "#FFFFFF"
+  },
+  "groups": [
+    {
+      "groupId": "g0",
+      "index": 0,
+      "label": "Cortex",
+      "centerPx": {
+        "px": 173.15839041,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g1",
+      "index": 1,
+      "label": "Striatum",
+      "centerPx": {
+        "px": 356.89269406,
+        "py": 439.64840183
+      }
+    },
+    {
+      "groupId": "g2",
+      "index": 2,
+      "label": "Hippo",
+      "centerPx": {
+        "px": 540.62699772,
+        "py": 439.64840183
+      }
+    }
+  ],
+  "series": [
+    {
+      "seriesId": "s0",
+      "index": 0,
+      "label": "Neuron",
+      "colorHex": "#B0492E",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 3,
+      "legendKeyPx": {
+        "px": 446.32374429,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 488.08995434,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Neuron",
+      "plotOrderIndex": 0
+    },
+    {
+      "seriesId": "s1",
+      "index": 1,
+      "label": "Astro",
+      "colorHex": "#BB5B3D",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 2,
+      "legendKeyPx": {
+        "px": 367.65890411,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 402.42511416,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Astro",
+      "plotOrderIndex": 1
+    },
+    {
+      "seriesId": "s2",
+      "index": 2,
+      "label": "Micro",
+      "colorHex": "#C56D4D",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 1,
+      "legendKeyPx": {
+        "px": 287.99406393,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 323.26027397,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Micro",
+      "plotOrderIndex": 2
+    },
+    {
+      "seriesId": "s3",
+      "index": 3,
+      "label": "Oligo",
+      "colorHex": "#CF7F5D",
+      "shape": null,
+      "linetype": null,
+      "legendIndex": 0,
+      "legendKeyPx": {
+        "px": 210.32922374,
+        "py": 31.46484018
+      },
+      "legendLabelPx": {
+        "px": 244.59543379,
+        "py": 31.46484018
+      },
+      "legendLabelText": "Oligo",
+      "plotOrderIndex": 3
+    }
+  ],
+  "occlusion": {
+    "index": 0,
+    "medianNearestOther": 78.11751387,
+    "bucket": "none"
+  },
+  "descriptives": {
+    "g0|s0": {
+      "value": 21.5
+    },
+    "g0|s1": {
+      "value": 36.7
+    },
+    "g0|s2": {
+      "value": 27.6
+    },
+    "g0|s3": {
+      "value": 14.1
+    },
+    "g1|s0": {
+      "value": 19.6
+    },
+    "g1|s1": {
+      "value": 27.2
+    },
+    "g1|s2": {
+      "value": 24.6
+    },
+    "g1|s3": {
+      "value": 28.6
+    },
+    "g2|s0": {
+      "value": 26.6
+    },
+    "g2|s1": {
+      "value": 28.3
+    },
+    "g2|s2": {
+      "value": 14.8
+    },
+    "g2|s3": {
+      "value": 30.4
+    }
+  },
+  "calibration": {
+    "calPixels": {
+      "x1": {
+        "px": 173.15839041,
+        "py": 439.64840183
+      },
+      "x2": {
+        "px": 356.89269406,
+        "py": 439.64840183
+      },
+      "y1": {
+        "px": 173.15839041,
+        "py": 422.93993358
+      },
+      "y2": {
+        "px": 173.15839041,
+        "py": 89.10440423
+      }
+    },
+    "calVals": {
+      "x1": "0",
+      "x2": "1",
+      "y1": "0",
+      "y2": "100",
+      "logX": false,
+      "logY": false
+    }
+  },
+  "panelPx": {
+    "x0": 62.91780822,
+    "x1": 650.86757991,
+    "ytop": 72.06210046,
+    "ybot": 439.64840183
+  },
+  "image": "sbar_4x3_simhue_hard_07.png",
+  "marks": [
+    {
+      "role": "seg",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s1",
+      "series": "Astro",
+      "px": 173.15839041,
+      "py": 222.47169821,
+      "value_x": 1,
+      "value_y": 36.7,
+      "segTopPy": 161.21287857,
+      "segBotPy": 283.73051784,
+      "segTopValue": 78.4,
+      "segBotValue": 41.7,
+      "markId": "m001"
+    },
+    {
+      "role": "seg",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s1",
+      "series": "Astro",
+      "px": 356.89269406,
+      "py": 199.93779998,
+      "value_x": 2,
+      "value_y": 27.2,
+      "segTopPy": 154.53616798,
+      "segBotPy": 245.33943197,
+      "segTopValue": 80.4,
+      "segBotValue": 53.2,
+      "markId": "m002"
+    },
+    {
+      "role": "seg",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s2",
+      "series": "Micro",
+      "px": 540.62699772,
+      "py": 296.75010349,
+      "value_x": 3,
+      "value_y": 14.8,
+      "segTopPy": 272.04627432,
+      "segBotPy": 321.45393266,
+      "segTopValue": 45.2,
+      "segBotValue": 30.4,
+      "markId": "m003"
+    },
+    {
+      "role": "seg",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s0",
+      "series": "Neuron",
+      "px": 356.89269406,
+      "py": 121.82028611,
+      "value_x": 2,
+      "value_y": 19.6,
+      "segTopPy": 89.10440423,
+      "segBotPy": 154.53616798,
+      "segTopValue": 100,
+      "segBotValue": 80.4,
+      "markId": "m004"
+    },
+    {
+      "role": "seg",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s1",
+      "series": "Astro",
+      "px": 540.62699772,
+      "py": 224.80854691,
+      "value_x": 3,
+      "value_y": 28.3,
+      "segTopPy": 177.57081951,
+      "segBotPy": 272.04627432,
+      "segTopValue": 73.5,
+      "segBotValue": 45.2,
+      "markId": "m005"
+    },
+    {
+      "role": "seg",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s0",
+      "series": "Neuron",
+      "px": 540.62699772,
+      "py": 133.1706941,
+      "value_x": 3,
+      "value_y": 26.6,
+      "segTopPy": 88.7705687,
+      "segBotPy": 177.57081951,
+      "segTopValue": 100.1,
+      "segBotValue": 73.5,
+      "markId": "m006"
+    },
+    {
+      "role": "seg",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s3",
+      "series": "Oligo",
+      "px": 356.89269406,
+      "py": 375.20145289,
+      "value_x": 2,
+      "value_y": 28.6,
+      "segTopPy": 327.46297219,
+      "segBotPy": 422.93993358,
+      "segTopValue": 28.6,
+      "segBotValue": 0,
+      "markId": "m007"
+    },
+    {
+      "role": "seg",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s3",
+      "series": "Oligo",
+      "px": 173.15839041,
+      "py": 399.40452876,
+      "value_x": 1,
+      "value_y": 14.1,
+      "segTopPy": 375.86912394,
+      "segBotPy": 422.93993358,
+      "segTopValue": 14.1,
+      "segBotValue": 0,
+      "markId": "m008"
+    },
+    {
+      "role": "seg",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s0",
+      "series": "Neuron",
+      "px": 173.15839041,
+      "py": 125.32555916,
+      "value_x": 1,
+      "value_y": 21.5,
+      "segTopPy": 89.43823976,
+      "segBotPy": 161.21287857,
+      "segTopValue": 99.9,
+      "segBotValue": 78.4,
+      "markId": "m009"
+    },
+    {
+      "role": "seg",
+      "groupId": "g0",
+      "group": 0,
+      "seriesId": "s2",
+      "series": "Micro",
+      "px": 173.15839041,
+      "py": 329.79982089,
+      "value_x": 1,
+      "value_y": 27.6,
+      "segTopPy": 283.73051784,
+      "segBotPy": 375.86912394,
+      "segTopValue": 41.7,
+      "segBotValue": 14.1,
+      "markId": "m010"
+    },
+    {
+      "role": "seg",
+      "groupId": "g1",
+      "group": 1,
+      "seriesId": "s2",
+      "series": "Micro",
+      "px": 356.89269406,
+      "py": 286.40120208,
+      "value_x": 2,
+      "value_y": 24.6,
+      "segTopPy": 245.33943197,
+      "segBotPy": 327.46297219,
+      "segTopValue": 53.2,
+      "segBotValue": 28.6,
+      "markId": "m011"
+    },
+    {
+      "role": "seg",
+      "groupId": "g2",
+      "group": 2,
+      "seriesId": "s3",
+      "series": "Oligo",
+      "px": 540.62699772,
+      "py": 372.19693312,
+      "value_x": 3,
+      "value_y": 30.4,
+      "segTopPy": 321.45393266,
+      "segBotPy": 422.93993358,
+      "segTopValue": 30.4,
+      "segBotValue": 0,
+      "markId": "m012"
+    }
+  ],
+  "nMarks": 12
+}

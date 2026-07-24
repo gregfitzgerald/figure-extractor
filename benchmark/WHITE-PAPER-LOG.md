@@ -215,6 +215,61 @@ swapping labels, which would convert a detectable error into an undetectable one
 
 Full design: `benchmark/SERIES-PIPELINE-INTEGRATION.md`.
 
+## 10b. Series parsing: measured (2026-07-24) -- and the ML case here is COST, not accuracy
+
+Built `benchmark/series/` (GT engine `sgt.R`, corpus generator, audit, leak-free anonymized tasks,
+a deterministic colour-clustering baseline, scorer with self-test). **Legend ground truth turns out to
+be free and exact**: after `grid.force()`, ggplot2 places every legend key in a viewport
+`key-<r>-<c>-bg` and its label in `label-<r>-<c>`, so `seekViewport` + `grid::deviceLoc` yields swatch
+and label pixels in the same convention as marks, **and the label string is read off the drawn text
+grob**. Mark->series binding is recovered from the *drawn aesthetics* (dodged x + fill/colour/shape),
+never row order. Audit: 495/495 and 229/229 marks on ink; 53/53 and 22/22 legend swatches correct.
+
+| reader | corpus | **bound mis-assignment** | structural | ARI | naming | sign flips |
+|---|---|---|---|---|---|---|
+| vision agent | base (19 charts, 495 marks) | **0.000** (0/495) | 0.000 | 1.00 | 57/57 | 0/145 |
+| vision agent | stress (4 charts, 229 marks) | **0.048** (11/229) | 0.048 | 0.93 | 22/22 | 0/67 |
+| colour-clustering head | base | 1.000 *(names nothing)* | 0.143 | 0.75 | 0/57 | -- |
+| colour-clustering head | stress | 1.000 | 0.459 | 0.43 | 0/22 | -- |
+
+Base tier was **zero in every stratum** -- chart type, difficulty, cue (colour/shape/both/position),
+occlusion including `severe`, legend style including inside-panel and direct-labelled, and all three
+legend-order traps. By the rule of three the 95% upper bounds are 0.61%/mark, 5.3%/label, 2.1%/effect.
+A stress tier was added because the base did not break the reader; **all 11 errors and all 10
+abstentions fall on a single chart** (six levels of one sequential blue at ~6 px overlapping markers).
+Repeated hues (8 series/4 colours x filled-open x solid-dashed), a 5-step grey ramp, and 1.5 pt
+monochrome glyphs all scored 0.000.
+
+**Revision to section 10's prediction.** I expected dense/occluded scatter to break the agent and
+therefore justify a series-aware detector head *on accuracy*. It does not: the agent is at 0.000
+across the base corpus and 3 of 4 stress charts, and on the one chart where it fails it is still
+**4.6x better than the colour head** (0.115 vs 0.531). The head also fails *complementarily* (56.8% on
+shape-cued monochrome), so it would have to be glyph-aware, not colour-clustering. **What survives is
+a cost argument** -- the agent's clean score cost ~51 tool calls / ~122k tokens on the hardest chart,
+because it crops and upscales 8-29x rather than glancing -- **and the unmeasured real-figure transfer
+gap**, which remains the only thing that could still justify a head on accuracy.
+
+**The danger asymmetry (new, and it relocates the gate).** The scorer's injected-error self-test:
+
+| injected error | structural metrics | ill-formed arms | **effect sign flips** |
+|---|---|---|---|
+| two legend labels swapped (clustering perfect) | **perfect** (0.000, ARI 1.000) | 0 | **44/145 = 30.3%** |
+| 15% random structural noise | visibly degraded (0.168, ARI 0.559) | 41 (detectable) | 3/103 = 2.9% |
+
+**Naming errors are ~10x more damaging than structural errors and are invisible to every structural
+metric, while structural errors are less damaging and self-announcing** (ill-formed arms). Therefore
+the mandatory human gate belongs on **swatch -> arm-name binding**, not on clustering -- which is
+exactly the half the model should *not* own (section 10: model reads glyphs, agent assigns meaning).
+
+**Selective prediction already works.** On the stress tier every mark above 0.5 confidence was correct
+(133/133); all 11 errors sat at 0.18-0.30 confidence and abstentions landed on alpha-blended pixels. A
+`conf <= 0.5` gate converts the residual failure into *flagged coverage loss* rather than silent
+corruption -- the abstain-and-escalate property the pipeline is built around.
+
+**Caveat to state in the paper:** these readers did not glance at images -- they cropped, upscaled
+8-29x, and built seam montages. The claim is "an agent allowed to inspect adaptively parses this
+corpus", not "VLMs parse series perfectly". Everything here is synthetic.
+
 ## 11. Evaluation-integrity practices worth reporting
 
 - **Leak-free tasks**: prompts carry the rubric and the allowed label sets but never the answers.
@@ -225,6 +280,11 @@ Full design: `benchmark/SERIES-PIPELINE-INTEGRATION.md`.
 - **Label space imported live from the tool's own vocabulary** (`CHAR_VOCAB`), so a passing prediction
   is by construction a valid tool input and the eval cannot drift from the product.
 - Corpora are **seeded and regenerable**; generated artifacts are gitignored, code and labels committed.
+- **Confidence-vs-visibility as a leak detector.** Reader confidence tracked a pixel-audit visibility
+  annotation the readers never saw (0.958 visible / 0.868 occluded / 0.600 hidden), and the single
+  lowest-confidence mark in the base corpus was the one mark the audit independently flagged as fully
+  hidden. Agreement between self-reported confidence and an unseen difficulty annotation is evidence
+  the reader is measuring the image rather than exploiting the task format.
 
 ## 12. Open questions / what would change the conclusions
 
