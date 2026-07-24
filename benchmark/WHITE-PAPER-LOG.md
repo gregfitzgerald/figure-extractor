@@ -215,6 +215,18 @@ swapping labels, which would convert a detectable error into an undetectable one
 
 Full design: `benchmark/SERIES-PIPELINE-INTEGRATION.md`.
 
+**Implemented (2026-07-24, commits 003b159 + gate preview).** All four defects fixed and the
+"make mis-assignment visible" half of the design shipped: `LANDMARK_HEADER` gains
+`groupId`/`seriesId`/`seriesLabel`/`flags`; `EXTRACT.bars`/`.boxes` pass structure through instead of
+stripping it; point rows carry the digitizer's series index; `validateCharacterization` enforces
+`role`/`encoding`/`labelSource`, unique+present series ids, refuses an unlabeled series, and refuses a
+silent legend/plot order mismatch; `validateSeries()` supplies four deterministic review triggers
+(legend-order-mismatch, similar-series-colors, series-count-uncertain, series-unlabeled) with no model
+in the loop; `previewAssignment()` emits the B4 gate artifact **ordered by the measured danger** --
+swatch->label->role binding first, structure as secondary context -- and blocks on an unassigned role;
+`digAutoTrace` gained `excludeRects` + diagnostics so the legend is no longer scanned.
+Locked in by `scripts/test_series_layer.py`; full suite green; benchmark geometry floor still 0.00%.
+
 ## 10b. Series parsing: measured (2026-07-24) -- and the ML case here is COST, not accuracy
 
 Built `benchmark/series/` (GT engine `sgt.R`, corpus generator, audit, leak-free anonymized tasks,

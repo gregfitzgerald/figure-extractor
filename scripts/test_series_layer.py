@@ -158,6 +158,25 @@ async def run(pdf_path):
         assert got == ["0", "0", "1"], f"SERIES INDEX DROPPED (two-colour scatter -> one cloud): {pts}"
         assert {p["seriesLabel"] for p in pts} == {"Male", "Female"}, f"scatter seriesLabel not resolved: {pts}"
 
+        # ---- B4 gate preview: naming first (the dangerous half) -------------
+        prev = await ev(f"() => window.figureExtractor.previewAssignment('{fid}', null)")
+        assert len(prev["affirmations"]) == 3 and "arm role" in prev["affirmations"][1], \
+            f"gate affirmations missing/mis-ordered: {prev.get('affirmations')}"
+        binds = {b["seriesId"]: b for b in prev["bindings"]}
+        assert set(binds) == {"ctl", "run"}, f"bindings missing: {prev['bindings']}"
+        assert binds["ctl"]["role"] == "control" and binds["run"]["role"] == "intervention", \
+            f"roles not surfaced for confirmation: {binds}"
+        assert binds["ctl"]["marksBound"] == 1 and binds["run"]["marksBound"] == 1, f"marks not counted: {binds}"
+        assert "dispersion-type-uncertain" in prev["reviewFlags"], f"review flags incomplete: {prev['reviewFlags']}"
+        assert prev["rows"], "gate preview must show the literal emitted rows"
+        # an unassigned role must block the gate (the arm meaning is unconfirmed)
+        await ev(f"() => window.figureExtractor.setCharacterization('{fid}', null, "
+                 "{panels:[{charType:'bar', series:[{id:'ctl',label:'Control'},{id:'run',label:'Run'}], "
+                 "statistics:{dispersion:{present:true,type:'SD'}}, extractionPlan:{method:'bar-endpoints'}}]})")
+        prev2 = await ev(f"() => window.figureExtractor.previewAssignment('{fid}', null)")
+        assert prev2["ok"] is False and any("no role" in p for p in prev2["problems"]), \
+            f"unassigned role should block the gate: {prev2['problems']}"
+
         # ---- auto-trace must not scan the legend ----------------------------
         ex = await ev("() => window.figureExtractor.setTraceExclusions([{x0:400,y0:0,x1:500,y1:60}])")
         assert ex["success"] and ex["count"] == 1, f"setTraceExclusions failed: {ex}"
@@ -167,7 +186,8 @@ async def run(pdf_path):
         assert not errors, f"console errors: {errors}"
         await browser.close()
     print("test_series_layer: PASS (role validated, series ids+labels+flags reach the CSV, "
-          "scatter series index survives, legend-order/unlabeled/hue/count guards, trace exclusions)")
+          "scatter series index survives, legend-order/unlabeled/hue/count guards, B4 gate preview, "
+          "trace exclusions)")
 
 
 def main():

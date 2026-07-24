@@ -4982,6 +4982,49 @@ window.figureExtractor = {
         }
         return { ok: problems.length === 0, flags, problems };
     },
+    // B4 HUMAN-GATE ARTIFACT. The benchmark measured a danger asymmetry: swapping two legend labels
+    // leaves every STRUCTURAL metric perfect (mis-assignment 0.000, ARI 1.000, zero ill-formed arms)
+    // yet flips 30.3% of effect signs, while 15% structural noise degrades the metrics visibly and
+    // flips only 2.9%. Naming errors are ~10x more damaging AND invisible; structural errors are
+    // milder AND self-announcing. So this preview foregrounds SWATCH -> ARM-NAME BINDING (what the
+    // human must actually check) and reports structure as secondary context.
+    previewAssignment: (figureId, subId) => {
+        const t = findTarget(figureId, subId);
+        if (!t) return { ok: false, error: 'target not found' };
+        const c = t.characterization; const p = c && (c.panels || [])[0];
+        const e = t.extraction;
+        const series = (p && p.series) || [];
+        const rows = authoritativeRows(state.currentArticle || '', [t]);
+        // what the human affirms: each series' printed label and the arm meaning bound to it
+        const bindings = series.map(s => ({
+            seriesId: s.id, label: s.label || '(unlabeled)', role: s.role || '(unassigned)',
+            color: s.color || '', encoding: s.encoding || '', labelSource: s.labelSource || '',
+            evidence: s.evidence || '',              // the agent's quoted caption/methods support
+            labelConfidence: s.labelConfidence ?? null, roleConfidence: s.roleConfidence ?? null,
+            marksBound: rows.filter(r => String(r.seriesId) === String(s.id)).length,
+        }));
+        const det = window.figureExtractor.validateSeries(figureId, subId);
+        const charFlags = (c && c.flags) || [];
+        const extFlags = (e && e.flags) || [];
+        const reviewFlags = Array.from(new Set([...det.flags, ...charFlags, ...extFlags]));
+        const unbound = rows.filter(r => r.seriesId === '' || r.seriesId == null).length;
+        const problems = [...det.problems];
+        if (series.length > 1 && unbound) problems.push(`${unbound} emitted row(s) carry no seriesId — they cannot be assigned to an arm`);
+        bindings.filter(b => b.role === '(unassigned)').forEach(b =>
+            problems.push(`series "${b.label}" has no role — the arm meaning is unconfirmed`));
+        return {
+            ok: problems.length === 0,
+            // the three affirmations the gate requires (naming first: it is the dangerous half)
+            affirmations: [
+                'Each legend swatch is bound to the correct printed label.',
+                'Each label is bound to the correct arm role (control / intervention / ...).',
+                'The emitted rows below carry the arm each number actually came from.',
+            ],
+            bindings, reviewFlags, problems,
+            structure: { seriesCount: series.length, marksBound: rows.length - unbound, marksUnbound: unbound },
+            rows,   // the literal rows R will receive -- what is actually being signed off
+        };
+    },
     // The tool's quantitative output: DATA-unit landmarks + dispersion TYPE + provenance
     // (figure_derived/Data_Source/Data_Extraction_Method) + direction/timepoint/nSource — NO yi/vi.
     // Hand this to R (escalc/metafor) for effect sizes.
