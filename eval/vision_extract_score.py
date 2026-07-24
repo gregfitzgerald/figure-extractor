@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Score vision-in-the-loop extraction: feed each agent's estimated landmark PIXELS through
-the tool's real calibration + extraction, compare recovered stats to truth. Reports the
-realistic error when an AGENT (not exact geometry) picks the landmarks."""
+the tool's real calibration + extraction, compare recovered LANDMARKS to truth. Reports the
+realistic error when an AGENT (not exact geometry) picks the landmarks. (The tool emits
+landmarks — mean + error-cap half-width, box quartiles, forest estimate+CI — not effect sizes;
+SD/variance is R's job, so we score the landmark channels the tool actually produces.)"""
 import asyncio, json, pathlib
 
 R = pathlib.Path(__file__).resolve().parent
@@ -41,8 +43,11 @@ async def run():
                     groups.append({"name": str(i), "mean": mean, "errorHalf": abs(cap - mean), "n": tr["ns"][i]})
                 res = await pg.evaluate("(g)=>window.figureExtractor.extract.bars(g,'SEM')", groups)
                 for i in range(nb):
+                    # landmarks only: mean + error-cap half-width (data units). True errorHalf is the
+                    # drawn SEM; SD derivation is R's job (tool no longer emits sd/se).
+                    teh = tr["sds"][i] / (tr["ns"][i] ** 0.5)
                     for q, t, r in (("mean", tr["means"][i], res["groups"][i]["mean"]),
-                                    ("SD", tr["sds"][i], res["groups"][i]["sd"])):
+                                    ("errorHalf(SEM)", teh, res["groups"][i]["errorHalf"])):
                         e = 100 * abs(r - t) / abs(t); errs.append(e)
                         print(f"{k:10s} {('g%d %s'%(i,q)):16s} {t:9.2f} {r:11.2f} {e:6.1f}%")
 
@@ -57,8 +62,11 @@ async def run():
                     groups.append({"name": str(i), "q1": q1, "median": med, "q3": q3, "n": 30})
                 res = await pg.evaluate("(g)=>window.figureExtractor.extract.boxes(g)", groups)
                 for i in range(len(tr["q"])):
-                    q = tr["q"][i]; tmean = (q["q1"]+q["med"]+q["q3"])/3; tsd = (q["q3"]-q["q1"])/1.35
-                    for qn, t, r in (("mean", tmean, res["groups"][i]["mean"]), ("SD", tsd, res["groups"][i]["sd"])):
+                    # landmarks only: quartiles (Wan/Hozo median->mean/SD is R's job)
+                    q = tr["q"][i]
+                    for qn, t, r in (("q1", q["q1"], res["groups"][i]["q1"]),
+                                     ("median", q["med"], res["groups"][i]["median"]),
+                                     ("q3", q["q3"], res["groups"][i]["q3"])):
                         e = 100 * abs(r - t) / abs(t); errs.append(e)
                         print(f"{k:10s} {('g%d %s'%(i,qn)):16s} {t:9.2f} {r:11.2f} {e:6.1f}%")
 
@@ -72,8 +80,11 @@ async def run():
                     rows.append({"label": str(i), "estimate": dv[3*i]["x"], "ciLo": dv[3*i+1]["x"], "ciHi": dv[3*i+2]["x"]})
                 res = await pg.evaluate("(r)=>window.figureExtractor.extract.forest(r,'linear')", rows)
                 for i in range(len(tr["rows"])):
-                    t = tr["rows"][i]; t_se = (t["hi"]-t["lo"])/(2*1.959964)
-                    for qn, tv, r in (("estimate", t["est"], res["rows"][i]["estimate"]), ("SE", t_se, res["rows"][i]["se"])):
+                    # landmarks only: estimate + CI as printed (SE from the CI is R's job)
+                    t = tr["rows"][i]
+                    for qn, tv, r in (("estimate", t["est"], res["rows"][i]["estimate"]),
+                                      ("ciLo", t["lo"], res["rows"][i]["ciLo"]),
+                                      ("ciHi", t["hi"], res["rows"][i]["ciHi"])):
                         e = 100 * abs(r - tv) / abs(tv); errs.append(e)
                         print(f"{k:10s} {('r%d %s'%(i,qn)):16s} {tv:9.3f} {r:11.3f} {e:6.1f}%")
 
