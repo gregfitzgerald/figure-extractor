@@ -3475,6 +3475,8 @@ const dig = { target: null, crop: null, scale: 1, mode: 'axes', calStep: 0,
     cal: { x1: null, x2: null, y1: null, y2: null }, points: [],
     series: [{ name: 'series 1', color: DIG_PALETTE[0] }], activeSeries: 0,
     traceColor: null, traceTol: 40, traceStep: 1, _cropData: null, _cropDataFor: null,
+    // regions auto-trace must NOT scan (legend, direct labels, insets) -- see digAutoTrace
+    excludeRects: [],
     view: { zoom: 1, panX: 0, panY: 0 } };
 
 // Read the crop's RGBA pixels once (cached per crop) for color sampling + auto-trace.
@@ -3503,24 +3505,50 @@ function updateDigSwatch() {
 // Auto-trace: scan image columns (every X-step px); in each, average the y of pixels
 // matching the target color within tolerance -> one point. Replaces the active series'
 // points so re-tracing with a new tolerance is idempotent. Returns points added.
+// Auto-trace scans the crop for pixels near the traced colour and averages them per column.
+// IMPORTANT: it must NOT scan the legend -- a legend swatch of the traced colour is the same colour
+// as the data, so it injects phantom points and (because each column is averaged) drags the whole
+// trace toward the swatch. `dig.excludeRects` holds regions to skip (the legend, direct labels, an
+// inset); `digAutoTraceLast` reports what was skipped and how much ink fell outside the calibrated
+// axes, so legend contamination is visible rather than silent.
+let digAutoTraceLast = { added: 0, skippedExcluded: 0, outsideCalBox: 0 };
+function digTraceExcluded(x, y) {
+    for (const r of (dig.excludeRects || [])) {
+        if (x >= Math.min(r.x0, r.x1) && x <= Math.max(r.x0, r.x1)
+            && y >= Math.min(r.y0, r.y1) && y <= Math.max(r.y0, r.y1)) return true;
+    }
+    return false;
+}
 function digAutoTrace() {
     if (!dig.crop || !dig.traceColor) return 0;
     const w = dig.crop.width, h = dig.crop.height, d = digCropData();
     const [tr, tg, tb] = dig.traceColor;
     const tol2 = dig.traceTol * dig.traceTol * 3; // squared distance over 3 channels
     const step = Math.max(1, dig.traceStep | 0);
-    const added = [];
+    // calibration bounding box (generously padded) -- ink far outside it is likely legend/annotation
+    const cps = ['x1', 'x2', 'y1', 'y2'].map(k => dig.cal && dig.cal[k]).filter(Boolean);
+    let cb = null;
+    if (cps.length === 4) {
+        const xs = cps.map(p => p.px), ys = cps.map(p => p.py);
+        const padX = (Math.max(...xs) - Math.min(...xs)) * 0.25, padY = (Math.max(...ys) - Math.min(...ys)) * 0.25;
+        cb = { x0: Math.min(...xs) - padX, x1: Math.max(...xs) + padX, y0: Math.min(...ys) - padY, y1: Math.max(...ys) + padY };
+    }
+    const added = []; let skipped = 0, outside = 0;
     for (let x = 0; x < w; x += step) {
         let sy = 0, n = 0;
         for (let y = 0; y < h; y++) {
             const i = (y * w + x) * 4;
             if (d[i + 3] < 20) continue; // skip transparent
             const dr = d[i] - tr, dg = d[i + 1] - tg, db = d[i + 2] - tb;
-            if (dr * dr + dg * dg + db * db <= tol2) { sy += y; n++; }
+            if (dr * dr + dg * dg + db * db > tol2) continue;
+            if (digTraceExcluded(x, y)) { skipped++; continue; }   // legend / annotation region
+            if (cb && (x < cb.x0 || x > cb.x1 || y < cb.y0 || y > cb.y1)) outside++;
+            sy += y; n++;
         }
         if (n) added.push({ px: x + 0.5, py: sy / n, s: dig.activeSeries });
     }
     dig.points = dig.points.filter(p => (p.s || 0) !== dig.activeSeries).concat(added);
+    digAutoTraceLast = { added: added.length, skippedExcluded: skipped, outsideCalBox: outside };
     return added.length;
 }
 
@@ -4115,23 +4143,47 @@ const FIGURE_PROVENANCE = { figure_derived: true, Data_Source: 'figure', Data_Ex
 // sizes are R's job (escalc/Morris/metafor); this is the honest hand-off. `direction` is carried
 // as a field (raw landmarks are never mutated — you cannot negate a mean; R flips the effect sign
 // at escalc using this field). Each row is permanently flagged figure_derived.
-const LANDMARK_HEADER = ['article', 'target', 'chartType', 'landmarkKind', 'group', 'mean', 'errorHalf', 'dispersionType', 'median', 'q1', 'q3', 'min', 'max', 'estimate', 'ciLo', 'ciHi', 'x', 'y', 'n', 'nSource', 'direction', 'timepoint', 'figure_derived', 'Data_Source', 'Data_Extraction_Method'];
+// Two structuring dimensions, not one: `group` = categorical-axis position (usually a moderator /
+// timepoint), `series` = legend entity (usually an ARM). Every landmark declares both; a plain bar
+// chart is the degenerate case (one series). Series identity is load-bearing: without it there is no
+// way to know two rows share a control arm, so the multi-arm variance correction cannot be applied
+// and those studies are silently over-weighted. `seriesId` is the join key (machine), `seriesLabel`
+// is the printed legend text (model-read); the arm's MEANING is the agent's job, never asserted here.
+// `flags` is carried through so uncertainty (e.g. dispersion-type-uncertain) is visible in the CSV R
+// receives -- a guard that fires into a void is not a guard.
+const LANDMARK_HEADER = ['article', 'target', 'chartType', 'landmarkKind', 'group', 'groupId', 'seriesId', 'seriesLabel', 'mean', 'errorHalf', 'dispersionType', 'median', 'q1', 'q3', 'min', 'max', 'estimate', 'ciLo', 'ciHi', 'x', 'y', 'n', 'nSource', 'direction', 'timepoint', 'flags', 'figure_derived', 'Data_Source', 'Data_Extraction_Method'];
 function authoritativeRows(articleName, figures) {
     const rows = [];
     const walk = (label, t) => {
         const e = t.extraction; if (!e) return;
         const prov = {
             direction: e.direction != null ? e.direction : '', timepoint: e.timepoint || '', nSource: e.nSource || '',
+            flags: (e.flags || []).join(';'),
             figure_derived: e.figure_derived != null ? e.figure_derived : FIGURE_PROVENANCE.figure_derived,
             Data_Source: e.Data_Source || FIGURE_PROVENANCE.Data_Source,
             Data_Extraction_Method: e.Data_Extraction_Method || FIGURE_PROVENANCE.Data_Extraction_Method,
         };
+        // Series label lookup: the characterization's series[] carries the legend text the model read.
+        const seriesOf = t.characterization && (t.characterization.panels || [])[0] && (t.characterization.panels[0].series || []);
+        const seriesLabel = sid => {
+            if (sid === '' || sid == null) return '';
+            const hit = (seriesOf || []).find(s => String(s.id) === String(sid) || String(s.seriesId) === String(sid));
+            return hit ? (hit.label || '') : '';
+        };
         const base = { article: articleName, target: label, chartType: e.charType || '' };
-        const push = o => rows.push({ ...base, group: '', mean: '', errorHalf: '', dispersionType: '', median: '', q1: '', q3: '', min: '', max: '', estimate: '', ciLo: '', ciHi: '', x: '', y: '', n: '', ...o, ...prov });
-        if (e.method === 'bar-endpoints') (e.groups || []).forEach(g => push({ landmarkKind: 'bar-group', group: g.name, mean: g.mean, errorHalf: g.errorHalf, dispersionType: g.dispersionType || e.dispersionType || '', n: g.n }));
-        else if (e.method === 'box-landmarks') (e.groups || []).forEach(g => push({ landmarkKind: 'box-group', group: g.name, median: g.median, q1: g.q1, q3: g.q3, min: g.min, max: g.max, n: g.n }));
-        else if (e.method === 'forest-rows') (e.rows || []).forEach(r => push({ landmarkKind: 'forest-row', group: r.label, estimate: r.estimate, ciLo: r.ciLo, ciHi: r.ciHi }));
-        else if (Array.isArray(e.points)) e.points.forEach(p => push({ landmarkKind: 'point', x: p.x, y: p.y }));
+        const push = o => {
+            const r = { ...base, group: '', groupId: '', seriesId: '', seriesLabel: '', mean: '', errorHalf: '', dispersionType: '', median: '', q1: '', q3: '', min: '', max: '', estimate: '', ciLo: '', ciHi: '', x: '', y: '', n: '', ...o, ...prov };
+            if (r.seriesLabel === '' && r.seriesId !== '') r.seriesLabel = seriesLabel(r.seriesId);
+            rows.push(r);
+        };
+        // g.groupId/g.seriesId are used when the reader supplied structured (group x series) cells;
+        // otherwise the legacy free-text g.name is preserved in `group` and the row is single-series.
+        if (e.method === 'bar-endpoints') (e.groups || []).forEach(g => push({ landmarkKind: 'bar-group', group: g.name, groupId: g.groupId ?? '', seriesId: g.seriesId ?? '', seriesLabel: g.seriesLabel ?? '', mean: g.mean, errorHalf: g.errorHalf, dispersionType: g.dispersionType || e.dispersionType || '', n: g.n }));
+        else if (e.method === 'box-landmarks') (e.groups || []).forEach(g => push({ landmarkKind: 'box-group', group: g.name, groupId: g.groupId ?? '', seriesId: g.seriesId ?? '', seriesLabel: g.seriesLabel ?? '', median: g.median, q1: g.q1, q3: g.q3, min: g.min, max: g.max, n: g.n }));
+        else if (e.method === 'forest-rows') (e.rows || []).forEach(r => push({ landmarkKind: 'forest-row', group: r.label, groupId: r.groupId ?? '', seriesId: r.seriesId ?? '', estimate: r.estimate, ciLo: r.ciLo, ciHi: r.ciHi }));
+        // p.s is the digitizer's series index -- preserved all the way through runExtraction and,
+        // until this fix, DROPPED here, so a two-colour scatter exported as one undifferentiated cloud.
+        else if (Array.isArray(e.points)) e.points.forEach(p => push({ landmarkKind: 'point', x: p.x, y: p.y, seriesId: p.s ?? '' }));
     };
     for (const f of figures) { walk(f.label, f); for (const s of (f.subfigures || [])) walk(s.label, s); }
     return rows;
@@ -4508,7 +4560,15 @@ const CHAR_VOCAB = {
     dispersion: ['SD', 'SEM', 'CI95', 'CI', 'IQR', 'range', 'minmax', 'none', 'unknown'],
     encodes: ['mean', 'median', 'dispersion', 'proportion', 'count', 'correlation', 'effect-size', 'pvalue', 'survival', 'raw-points', 'density'],
     method: ['digitize_points', 'auto_trace', 'bar-endpoints', 'box-landmarks', 'forest-rows', 'segment-boundary', 'colorbar-calibration', 'angle-digitizer', 'read_labels', 'read_table', 'not_extractable'],
-    flags: ['multi-panel', 'dispersion-type-uncertain', 'dual-y-axis', 'broken-axis', 'log-axis', 'no-legend', 'overlapping-series', 'occluded', 'n-unknown', 'axis-partially-visible', 'categorical-x', 'error-bars-one-sided', 'low-resolution', 'needs-ocr'],
+    flags: ['multi-panel', 'dispersion-type-uncertain', 'dual-y-axis', 'broken-axis', 'log-axis', 'no-legend', 'overlapping-series', 'occluded', 'n-unknown', 'axis-partially-visible', 'categorical-x', 'error-bars-one-sided', 'low-resolution', 'needs-ocr',
+        // series/group parsing: a mark bound to the WRONG series is a SILENT catastrophic error
+        // (Direction fixes outcome polarity, not arm order -- a swapped arm yields a legitimate-looking
+        // negative effect that no downstream check catches), so every uncertainty here must be visible.
+        'series-assignment-uncertain', 'legend-order-mismatch', 'series-count-uncertain', 'similar-series-colors', 'series-unlabeled'],
+    // How series are visually distinguished, and where their labels come from. Both are model-read
+    // OBSERVATIONS; neither asserts what a series MEANS (that binding is the agent's job, and gated).
+    seriesEncoding: ['color', 'shape', 'linetype', 'fill', 'position', 'direct-label', 'none', 'unknown'],
+    labelSource: ['legend', 'direct-label', 'axis', 'caption', 'none', 'unknown'],
     // Does the panel show the STUDY'S OWN measurements ('primary') or a summary of OTHER
     // sources ('derived', e.g. a forest/funnel plot of other studies)? Extraction prioritises primary.
     dataProvenance: ['primary', 'derived', 'unknown'],
@@ -4560,6 +4620,37 @@ function validateCharacterization(c) {
             && !((c.flags || []).includes('dispersion-type-uncertain'))) {
             errs.push(`panels[${i}]: dispersion present but type unknown — add the 'dispersion-type-uncertain' flag`);
         }
+        // ---- series / group structure ----
+        // `role` was defined in CHAR_VOCAB but never validated and never read; a mis-bound arm is a
+        // silent catastrophic error, so the vocabulary is now enforced. NOTE the deliberate split:
+        // `id` is the join key, `label` is the printed legend text (model-read), `role` is the MEANING
+        // (agent-assigned from the caption) -- three fields, never collapsed into one.
+        const seriesArr = p.series || [];
+        if (!Array.isArray(seriesArr)) errs.push(`panels[${i}]: series must be an array`);
+        const seenIds = new Set();
+        (Array.isArray(seriesArr) ? seriesArr : []).forEach((s, j) => {
+            if (s.id == null || s.id === '') errs.push(`panels[${i}].series[${j}]: missing id (the join key landmarks bind to)`);
+            else if (seenIds.has(String(s.id))) errs.push(`panels[${i}].series[${j}]: duplicate series id "${s.id}"`);
+            else seenIds.add(String(s.id));
+            if (s.role && !CHAR_VOCAB.role.includes(s.role)) errs.push(`panels[${i}].series[${j}]: unknown role "${s.role}"`);
+            if (s.encoding && !CHAR_VOCAB.seriesEncoding.includes(s.encoding)) errs.push(`panels[${i}].series[${j}]: unknown seriesEncoding "${s.encoding}"`);
+            if (s.labelSource && !CHAR_VOCAB.labelSource.includes(s.labelSource)) errs.push(`panels[${i}].series[${j}]: unknown labelSource "${s.labelSource}"`);
+        });
+        // Series discipline: an unlabeled series cannot be bound to an arm downstream, so it must be
+        // flagged rather than silently emitted (mirrors the dispersion-type-uncertain rule).
+        const unlabeled = (Array.isArray(seriesArr) ? seriesArr : []).filter(s => !s.label);
+        if (seriesArr.length > 1 && unlabeled.length
+            && !((c.flags || []).includes('series-unlabeled')) && !((c.flags || []).includes('series-assignment-uncertain'))) {
+            errs.push(`panels[${i}]: ${unlabeled.length} series without a label — add the 'series-unlabeled' flag (an unlabeled series cannot be bound to an arm)`);
+        }
+        // Legend order != plot order is a classic trap; if the model reports both and they disagree,
+        // that must be declared, never silently repaired (auto-swapping turns a detectable error into
+        // an undetectable one).
+        if (Array.isArray(p.legendOrder) && Array.isArray(p.plotOrder) && p.legendOrder.length === p.plotOrder.length
+            && p.legendOrder.join('|') !== p.plotOrder.join('|')
+            && !((c.flags || []).includes('legend-order-mismatch'))) {
+            errs.push(`panels[${i}]: legendOrder differs from plotOrder — add the 'legend-order-mismatch' flag (do NOT reorder silently)`);
+        }
         const m = p.extractionPlan && p.extractionPlan.method;
         if (m && !CHAR_VOCAB.method.includes(m)) errs.push(`panels[${i}]: unknown extraction method "${m}"`);
         if (p.dataProvenance && !CHAR_VOCAB.dataProvenance.includes(p.dataProvenance)) errs.push(`panels[${i}]: unknown dataProvenance "${p.dataProvenance}"`);
@@ -4594,7 +4685,10 @@ const EXTRACT = {
         // tool no longer derives sd/se. If the dispersion type is not variance-bearing, flag it so
         // the uncertainty is never silent (a wrong SD/SEM/CI reweights the study by ~sqrt(n)).
         const knownDisp = DISPERSION_WITH_VARIANCE.has(dispersionType);
-        const out = groups.map(g => ({ name: g.name, n: g.n ?? null, mean: g.mean, errorHalf: g.errorHalf, dispersionType }));
+        // groupId/seriesId are carried through verbatim: which ARM a bar belongs to is structure the
+        // reader supplied, and dropping it here would silently merge arms downstream.
+        const out = groups.map(g => ({ name: g.name, groupId: g.groupId ?? '', seriesId: g.seriesId ?? '',
+            seriesLabel: g.seriesLabel ?? '', n: g.n ?? null, mean: g.mean, errorHalf: g.errorHalf, dispersionType }));
         const flags = knownDisp ? [] : ['dispersion-type-uncertain'];
         return { method: 'bar-endpoints', groups: out, flags };
     },
@@ -4603,7 +4697,8 @@ const EXTRACT = {
     boxes(groups) {
         // AUTHORITATIVE box landmarks: median + quartiles (+ min/max). R does the Wan/Hozo
         // median->mean/SD conversion; the tool does not (that conversion's small-n bias is R's).
-        const out = groups.map(g => ({ name: g.name, n: g.n ?? null, median: g.median,
+        const out = groups.map(g => ({ name: g.name, groupId: g.groupId ?? '', seriesId: g.seriesId ?? '',
+            seriesLabel: g.seriesLabel ?? '', n: g.n ?? null, median: g.median,
             q1: g.q1 ?? null, q3: g.q3 ?? null, min: g.min ?? null, max: g.max ?? null }));
         return { method: 'box-landmarks', groups: out };
     },
@@ -4853,6 +4948,40 @@ window.figureExtractor = {
     // Verify a calibration before trusting numbers: round-trip residual (hard: 'calibration-
     // roundtrip-error') + nonlinear-axis check (flags 'log-axis-needs-human-review' for review).
     verifyCalibration: (cal, vals) => verifyCalibration(cal || {}, vals || {}),
+    // Auto-trace must not read the legend (a swatch of the traced colour injects phantom points and
+    // drags the column average). Set the regions to skip, in CROP pixels: [{x0,y0,x1,y1}, ...].
+    setTraceExclusions: (rects) => { dig.excludeRects = Array.isArray(rects) ? rects.slice() : []; return { success: true, count: dig.excludeRects.length }; },
+    getTraceDiagnostics: () => ({ ...digAutoTraceLast, exclusions: (dig.excludeRects || []).length }),
+    // Deterministic series-structure checks -- four of the review triggers are pure arithmetic, so
+    // they run without a model. Returns { ok, flags[], problems[] } for the B4 human gate.
+    validateSeries: (figureId, subId) => {
+        const t = findTarget(figureId, subId);
+        if (!t) return { ok: false, flags: [], problems: ['target not found'] };
+        const c = t.characterization; const p = c && (c.panels || [])[0];
+        if (!p) return { ok: false, flags: [], problems: ['no characterization'] };
+        const series = p.series || [], flags = [], problems = [];
+        if (series.length > 1 && series.some(s => !s.label)) { flags.push('series-unlabeled'); problems.push('a series has no label — it cannot be bound to an arm'); }
+        if (Array.isArray(p.legendOrder) && Array.isArray(p.plotOrder)
+            && p.legendOrder.length === p.plotOrder.length && p.legendOrder.join('|') !== p.plotOrder.join('|')) {
+            flags.push('legend-order-mismatch'); problems.push('legend order differs from plot order — confirm the binding; do NOT reorder silently');
+        }
+        // near-identical hues are the measured failure mode (a sequential ramp at small marker size)
+        const hex2rgb = h => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h || '')); if (!m) return null; const v = parseInt(m[1], 16); return [v >> 16 & 255, v >> 8 & 255, v & 255]; };
+        for (let a = 0; a < series.length; a++) for (let b = a + 1; b < series.length; b++) {
+            const ca = hex2rgb(series[a].color), cb2 = hex2rgb(series[b].color);
+            if (!ca || !cb2) continue;
+            const d2 = Math.pow(ca[0] - cb2[0], 2) + Math.pow(ca[1] - cb2[1], 2) + Math.pow(ca[2] - cb2[2], 2);
+            if (d2 < 900) { // < ~30 per-channel: the regime where assignment errors were observed
+                if (!flags.includes('similar-series-colors')) flags.push('similar-series-colors');
+                problems.push(`series "${series[a].label || series[a].id}" and "${series[b].label || series[b].id}" are near-identical colours — confirm assignment`);
+            }
+        }
+        const declared = p.seriesCount;
+        if (declared != null && series.length && declared !== series.length) {
+            flags.push('series-count-uncertain'); problems.push(`declared seriesCount ${declared} != series[].length ${series.length}`);
+        }
+        return { ok: problems.length === 0, flags, problems };
+    },
     // The tool's quantitative output: DATA-unit landmarks + dispersion TYPE + provenance
     // (figure_derived/Data_Source/Data_Extraction_Method) + direction/timepoint/nSource — NO yi/vi.
     // Hand this to R (escalc/metafor) for effect sizes.
