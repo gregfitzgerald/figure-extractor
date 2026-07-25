@@ -6,9 +6,11 @@ metadata) into meta-analysis/corpus/candidates.json. This is the "identification
 Uses NCBI E-utilities (no key needed; email set for the polite pool). Screening happens next
 (screen.py): an agent reads each title+abstract against the protocol's inclusion/exclusion.
 """
-import json, pathlib, time, urllib.parse, urllib.request, xml.etree.ElementTree as ET
+import json, os, pathlib, time, urllib.parse, urllib.request, xml.etree.ElementTree as ET
 
-EMAIL = "greg.s.fitzgerald@gmail.com"
+# NCBI asks API users to identify themselves (the "polite pool" -- higher rate limits, and they can
+# contact you before blocking a runaway script). Set NCBI_EMAIL to your own address before running.
+EMAIL = os.environ.get("NCBI_EMAIL", "")
 TOOL = "figure-extractor-meta"
 OUT = pathlib.Path(__file__).resolve().parent / "corpus"
 OUT.mkdir(exist_ok=True)

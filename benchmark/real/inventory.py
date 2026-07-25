@@ -26,12 +26,13 @@ import csv, json, re, pathlib, statistics
 from collections import Counter, defaultdict
 
 HERE = pathlib.Path(__file__).resolve().parent
-# Dissertation data (read-only). Override with env RODENT_CSV / HUMAN_CSV if relocated.
+# Hand-coded reference data from the companion meta-analysis, used as the real-figure gold standard:
+#   https://github.com/gregfitzgerald/GSF-dissertation-meta-analysis
+# Default expects that repo cloned as a SIBLING of this one; override with RODENT_CSV / HUMAN_CSV.
 import os
-RODENT = os.environ.get("RODENT_CSV",
-    "/mnt/c/Users/gregs/GSF-dissertation-meta-analysis/data/raw/rodent_data.csv")
-HUMAN = os.environ.get("HUMAN_CSV",
-    "/mnt/c/Users/gregs/GSF-dissertation-meta-analysis/data/raw/human_data.csv")
+_SIBLING = pathlib.Path(__file__).resolve().parents[2].parent / "GSF-dissertation-meta-analysis" / "data" / "raw"
+RODENT = os.environ.get("RODENT_CSV", str(_SIBLING / "rodent_data.csv"))
+HUMAN = os.environ.get("HUMAN_CSV", str(_SIBLING / "human_data.csv"))
 
 _FIG_METHODS = ("estimated from figure", "extracted from figure", "direct from figure",
                 "figure analysis", "visual analysis of figure", "reported in figure",

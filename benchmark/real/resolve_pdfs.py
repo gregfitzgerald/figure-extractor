@@ -13,8 +13,11 @@ import json, os, pathlib, sqlite3, sys
 from collections import defaultdict
 
 HERE = pathlib.Path(__file__).resolve().parent
-ZOTERO_DB = os.environ.get("ZOTERO_DB", "/mnt/c/Users/gregs/Zotero/zotero.sqlite")
-ZOTERO_STORAGE = os.environ.get("ZOTERO_STORAGE", "/mnt/c/Users/gregs/Zotero/storage")
+# Zotero's default data directory is ~/Zotero on all platforms.
+# Override with ZOTERO_HOME, or point ZOTERO_DB / ZOTERO_STORAGE at non-standard locations.
+_ZHOME = pathlib.Path(os.environ.get("ZOTERO_HOME", pathlib.Path.home() / "Zotero"))
+ZOTERO_DB = os.environ.get("ZOTERO_DB", str(_ZHOME / "zotero.sqlite"))
+ZOTERO_STORAGE = os.environ.get("ZOTERO_STORAGE", str(_ZHOME / "storage"))
 
 
 def _norm(doi):

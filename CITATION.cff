@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+title: "Academic Figure Extractor: figure digitization with a measured accuracy benchmark"
+message: "If you use this software or its benchmark results, please cite it."
+type: software
+authors:
+  - family-names: Fitzgerald
+    given-names: Greg S.
+repository-code: "https://github.com/gregfitzgerald/figure-extractor"
+abstract: >-
+  A browser-based tool for extracting, annotating, and digitizing figures from academic papers,
+  paired with an extraction-accuracy benchmark in which R is the ground-truth engine (R simulates
+  the data, computes the descriptives, renders the chart from that data, and exports the exact
+  device pixels of every drawn mark). The benchmark isolates the dispersion (error-bar) channel and
+  shows that while central tendency recovers to ~0.5% for every reader, dispersion carries 4-18%
+  error -- including for a correct human click with sub-pixel jitter -- which propagates into study
+  weights in a meta-analysis.
+keywords:
+  - meta-analysis
+  - evidence synthesis
+  - figure digitization
+  - data extraction
+  - chart understanding
+  - reproducibility
+license: MIT

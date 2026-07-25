@@ -58,3 +58,9 @@ benchmark/series/corpus_stress/*.png
 benchmark/series/tasks/img/
 benchmark/series/tasks_stress/img/
 benchmark/series/__pycache__/
+# generated: maps DOIs to a LOCAL Zotero library (personal paths); regenerate with resolve_pdfs.py
+benchmark/real/pdf_map.json
+# editor / OS / office cruft
+.obsidian/
+~$*
+Rplots.pdf

@@ -14,7 +14,7 @@ Run:  python3 scripts/test_series_e2e.py
 """
 import asyncio, json, glob, pathlib
 
-REPO = pathlib.Path("/mnt/c/Users/gregs/figure-extractor")
+REPO = pathlib.Path(__file__).resolve().parent.parent
 URL = "http://localhost:8001/figure-extractor.html"
 
 
