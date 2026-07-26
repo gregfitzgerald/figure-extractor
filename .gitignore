@@ -64,3 +64,10 @@ benchmark/real/pdf_map.json
 .obsidian/
 ~$*
 Rplots.pdf
+# images
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+screenshot.png

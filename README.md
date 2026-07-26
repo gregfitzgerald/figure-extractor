@@ -4,7 +4,6 @@ A browser-based tool for extracting, annotating, and digitizing figures from aca
 plus a measurement suite for the question that matters if you feed those numbers into a
 meta-analysis: **how accurate is figure extraction, and where exactly does it break?**
 
-![Figure Extractor: a multi-panel figure boxed on the page (blue) with its six panels marked as nested subfigures (orange), and the extracted figure card with per-panel crops in the right pane](screenshot.png)
 
 ## What's here
 
