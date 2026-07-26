@@ -282,6 +282,54 @@ corruption -- the abstain-and-escalate property the pipeline is built around.
 8-29x, and built seam montages. The claim is "an agent allowed to inspect adaptively parses this
 corpus", not "VLMs parse series perfectly". Everything here is synthetic.
 
+## 10c. Subfigure (panel) detection: measured diagnosis (2026-07-26)
+
+Panel decomposition -- splitting a compound figure into A/B/C -- is the weakest link in the tool.
+Investigated by probing the real corpus rather than reasoning from intuition. Four findings:
+
+**1. Every PDF in the corpus is born-digital (43/43).** A text layer exists throughout, which
+initially suggested panel structure could be recovered exactly from PDF vector objects instead of
+pixels.
+
+**2. That hypothesis is FALSE for these papers, and the negative result is the important one.**
+Inside Docling-identified figure regions there are **zero panel-label text spans** -- the only text
+is the page header/footer. The figures are **flattened bitmaps**: e.g. Chandler 2020 Fig. 2 is a
+single 2012x1402 px image XObject covering the entire 483x336 pt figure, with the letters A-F baked
+into pixels. Authors export from Illustrator/GraphPad and the labels stop being text. So panel
+localization **cannot** be read off the PDF; it is genuinely a computer-vision problem. (Partial
+exception worth exploiting: some figures are composed of *several* image XObjects -- Chandler Fig. 4
+is 8 -- and those boundaries are exact and free when present.)
+
+**3. Docling solves the OUTER problem well, but not the panel problem.** In 33 s it returned exact
+figure bounding boxes *and correctly associated each caption* (the genuinely hard part) for all 4
+figures. What it does not do is decompose a compound figure -- DocLayNet's classes are page-level
+(Picture, Caption, Text...), so "Picture" is the whole multi-panel figure. Docling is the right tool
+for figure+caption detection and the wrong tool for panels.
+
+**4. The current detector's failure modes are specific and code-level.** `suggestSubfigures`
+(recursive XY-cut projection) (a) downsamples to 480 px on the long edge, so an 8 px gutter in a
+2000 px figure survives as ~2 px; (b) requires a gutter >= 2.5% of the dimension, i.e. ~12 px at that
+scale, so tight journal gutters never split; (c) thresholds ink at grey < 205, so light axes vanish
+and tinted backgrounds read as solid ink; (d) requires a gutter to hold <= 6% of peak ink, so a
+legend or shared axis label sitting in the gutter blocks the cut; (e) only recurses into regions
+>= ~19% of the figure; and (f) being XY-cut, it can only express **guillotine** partitions, so any
+non-guillotine layout is unreachable in principle.
+
+**The lever that is being underused: the caption is ground truth.** "(A) ... (B) ... (F)" states the
+panel count and letters exactly. Today that count is used only to *merge* an over-split result; it
+should be a **hard constraint** that turns unconstrained detection into constrained assignment
+(find exactly N panels; if the detector disagrees with the caption, that is a flag, not a silent
+answer). Combined with the panel-label glyphs (detectable by OCR/detector since they are pixels) and
+the existing chart classifier as a verifier -- a correct crop classifies confidently, a bad split
+classifies "unknown" -- this is the path from ~80% to near-perfect on chart panels.
+
+**Free training data already exists:** the R generator knows the exact pixel box of every panel it
+draws, so a panel-detector training/eval set with exact ground truth costs nothing to produce.
+
+**Honest bound:** near-perfect is reachable for *chart* panels with gutters and captions. Flush
+micrograph montages with no gutters and no labels are ambiguous even to a human reader, and no
+method will resolve them without the caption's help.
+
 ## 11. Evaluation-integrity practices worth reporting
 
 - **Leak-free tasks**: prompts carry the rubric and the allowed label sets but never the answers.
