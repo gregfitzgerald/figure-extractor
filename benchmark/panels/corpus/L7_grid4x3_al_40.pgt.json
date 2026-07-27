@@ -1,0 +1,507 @@
+{
+ "id": "L7_grid4x3_al_40",
+ "image": "L7_grid4x3_al_40.png",
+ "level": "L7_manypanels",
+ "figure": {
+  "width": 1000,
+  "height": 1120,
+  "dpi": 110,
+  "seed": 1740
+ },
+ "layoutName": "grid4x3",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 28,
+  "bucketNominal": "medium",
+  "measuredPx": 30.0,
+  "measuredFrac": 0.03,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "B",
+   "C"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 40. Lesion alters regional signalling in the rodent model. (A) Quantification of BDNF across groups. (B) Correlation between hippocampal CA1 and cell density. (C) Dose-response curves for dendritic spines. (D) Distribution of synaptophysin by condition. (E) Dendritic spines levels by treatment group. (F) Correlation between hippocampal CA1 and cell density. (G) Time course of GFAP immunoreactivity. (H) Microglial density across the three cohorts. (I) Quantification of dendritic spines across groups. (J) BDNF plotted against distance. (K) Dose-response curves for mitochondrial area. (L) Distribution of BDNF by condition. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "I",
+  "J",
+  "K",
+  "L"
+ ],
+ "notes": [
+  "twelve panels A-L: 'I' and 'l' are both expected, so a stem is ambiguous twice over"
+ ],
+ "nPanels": 12,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 27,
+    "y": 27,
+    "width": 293,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 27,
+    "y": 27,
+    "width": 293,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 30,
+    "y": 30,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 24,
+    "y": 24,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 63.57,
+    "y": 27.04,
+    "width": 256.05,
+    "height": 225.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 354,
+    "y": 27,
+    "width": 296,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 354,
+    "y": 27,
+    "width": 296,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 358,
+    "y": 30,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 350.67,
+    "y": 24,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 384.23,
+    "y": 27.04,
+    "width": 262.05,
+    "height": 212.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 680,
+    "y": 27,
+    "width": 293,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 680,
+    "y": 27,
+    "width": 293,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 683,
+    "y": 30,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 677.33,
+    "y": 24,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 710.9,
+    "y": 27.04,
+    "width": 262.05,
+    "height": 212.39
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 27,
+    "y": 302,
+    "width": 293,
+    "height": 239
+   },
+   "bboxCore": {
+    "x": 27,
+    "y": 302,
+    "width": 293,
+    "height": 239
+   },
+   "labelBbox": {
+    "x": 31,
+    "y": 305,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 24,
+    "y": 299,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 57.57,
+    "y": 302.04,
+    "width": 262.05,
+    "height": 225.43
+   }
+  },
+  {
+   "index": 4,
+   "label": "E",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 354,
+    "y": 302,
+    "width": 293,
+    "height": 239
+   },
+   "bboxCore": {
+    "x": 354,
+    "y": 302,
+    "width": 293,
+    "height": 239
+   },
+   "labelBbox": {
+    "x": 358,
+    "y": 305,
+    "width": 10,
+    "height": 12
+   },
+   "inkEscapePx": -2.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 350.67,
+    "y": 299,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 384.23,
+    "y": 302.04,
+    "width": 262.05,
+    "height": 225.43
+   }
+  },
+  {
+   "index": 5,
+   "label": "F",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 680,
+    "y": 302,
+    "width": 293,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 680,
+    "y": 302,
+    "width": 293,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 684,
+    "y": 305,
+    "width": 9,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 677.33,
+    "y": 299,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 710.9,
+    "y": 302.04,
+    "width": 262.05,
+    "height": 212.39
+   }
+  },
+  {
+   "index": 6,
+   "label": "G",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 27,
+    "y": 577,
+    "width": 293,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 27,
+    "y": 577,
+    "width": 293,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 30,
+    "y": 580,
+    "width": 13,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 24,
+    "y": 574,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 57.57,
+    "y": 577.04,
+    "width": 262.05,
+    "height": 212.39
+   }
+  },
+  {
+   "index": 7,
+   "label": "H",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 354,
+    "y": 575,
+    "width": 293,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 354,
+    "y": 575,
+    "width": 293,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 358,
+    "y": 580,
+    "width": 10,
+    "height": 12
+   },
+   "inkEscapePx": -1,
+   "labelContrast": 255,
+   "tile": {
+    "x": 350.67,
+    "y": 574,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 384.23,
+    "y": 577.04,
+    "width": 262.05,
+    "height": 225.43
+   }
+  },
+  {
+   "index": 8,
+   "label": "I",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 680,
+    "y": 577,
+    "width": 293,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 680,
+    "y": 577,
+    "width": 293,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 684,
+    "y": 580,
+    "width": 3,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 115,
+   "tile": {
+    "x": 677.33,
+    "y": 574,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 710.9,
+    "y": 577.04,
+    "width": 262.05,
+    "height": 225.43
+   }
+  },
+  {
+   "index": 9,
+   "label": "J",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 27,
+    "y": 852,
+    "width": 295,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 27,
+    "y": 852,
+    "width": 295,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 30,
+    "y": 855,
+    "width": 9,
+    "height": 12
+   },
+   "inkEscapePx": -0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 24,
+    "y": 849,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 57.57,
+    "y": 852.04,
+    "width": 262.05,
+    "height": 212.39
+   }
+  },
+  {
+   "index": 10,
+   "label": "K",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 354,
+    "y": 852,
+    "width": 293,
+    "height": 241
+   },
+   "bboxCore": {
+    "x": 354,
+    "y": 852,
+    "width": 293,
+    "height": 241
+   },
+   "labelBbox": {
+    "x": 358,
+    "y": 855,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 350.67,
+    "y": 849,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 384.23,
+    "y": 852.04,
+    "width": 262.05,
+    "height": 212.39
+   }
+  },
+  {
+   "index": 11,
+   "label": "L",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 680,
+    "y": 852,
+    "width": 293,
+    "height": 239
+   },
+   "bboxCore": {
+    "x": 680,
+    "y": 852,
+    "width": 293,
+    "height": 239
+   },
+   "labelBbox": {
+    "x": 684,
+    "y": 855,
+    "width": 9,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 677.33,
+    "y": 849,
+    "width": 298.67,
+    "height": 247
+   },
+   "plotRect": {
+    "x": 710.9,
+    "y": 852.04,
+    "width": 262.05,
+    "height": 225.43
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

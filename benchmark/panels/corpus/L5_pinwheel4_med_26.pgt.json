@@ -1,0 +1,195 @@
+{
+ "id": "L5_pinwheel4_med_26",
+ "image": "L5_pinwheel4_med_26.png",
+ "level": "L5_nonguillotine",
+ "figure": {
+  "width": 880,
+  "height": 720,
+  "dpi": 110,
+  "seed": 1526
+ },
+ "layoutName": "pinwheel4",
+ "layoutClass": "non-guillotine",
+ "gutter": {
+  "nominalPx": 25,
+  "bucketNominal": "medium",
+  "measuredPx": 30.0,
+  "measuredFrac": 0.0341,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "C",
+   "D"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 26. Lesion alters regional signalling in the murine model. (A) Quantification of c-Fos across groups. (B) Dose-response curves for GFAP immunoreactivity. (C) Distribution of hippocampal CA1 by condition. (D) Dendritic spines plotted against distance. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "no full-width or full-height cut separates these panels"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 26,
+    "y": 25,
+    "width": 542,
+    "height": 201
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 25,
+    "width": 542,
+    "height": 201
+   },
+   "labelBbox": {
+    "x": 29,
+    "y": 29,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 22.5,
+    "y": 22.5,
+    "width": 548.33,
+    "height": 208.33
+   },
+   "plotRect": {
+    "x": 56.07,
+    "y": 25.54,
+    "width": 511.72,
+    "height": 186.77
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 599,
+    "y": 25,
+    "width": 256,
+    "height": 436
+   },
+   "bboxCore": {
+    "x": 599,
+    "y": 25,
+    "width": 256,
+    "height": 436
+   },
+   "labelBbox": {
+    "x": 603,
+    "y": 29,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 595.83,
+    "y": 22.5,
+    "width": 261.67,
+    "height": 441.67
+   },
+   "plotRect": {
+    "x": 629.4,
+    "y": 25.54,
+    "width": 225.05,
+    "height": 407.05
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 312,
+    "y": 492,
+    "width": 543,
+    "height": 200
+   },
+   "bboxCore": {
+    "x": 312,
+    "y": 492,
+    "width": 543,
+    "height": 200
+   },
+   "labelBbox": {
+    "x": 315,
+    "y": 495,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 309.17,
+    "y": 489.17,
+    "width": 548.33,
+    "height": 208.33
+   },
+   "plotRect": {
+    "x": 342.73,
+    "y": 492.21,
+    "width": 511.72,
+    "height": 186.77
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 26,
+    "y": 258,
+    "width": 256,
+    "height": 436
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 258,
+    "width": 256,
+    "height": 436
+   },
+   "labelBbox": {
+    "x": 30,
+    "y": 262,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 22.5,
+    "y": 255.83,
+    "width": 261.67,
+    "height": 441.67
+   },
+   "plotRect": {
+    "x": 65.07,
+    "y": 258.88,
+    "width": 216.05,
+    "height": 407.05
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

@@ -1,0 +1,172 @@
+{
+ "id": "L2_grid1x3_heat_cbar_12",
+ "image": "L2_grid1x3_heat_cbar_12.png",
+ "level": "L2_medium",
+ "figure": {
+  "width": 1000,
+  "height": 400,
+  "dpi": 110,
+  "seed": 1212
+ },
+ "layoutName": "grid1x3",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 28,
+  "bucketNominal": "medium",
+  "measuredPx": 33.0,
+  "measuredFrac": 0.033,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 12. Lesion alters regional signalling in the rodent model. (A) Heat map of synaptophysin across samples. (B) Clustered c-Fos expression matrix. (C) Clustered dendritic spines expression matrix. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C"
+ ],
+ "notes": [
+  "colourbar in the right margin belongs to no panel"
+ ],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 27,
+    "y": 27,
+    "width": 272,
+    "height": 344
+   },
+   "bboxCore": {
+    "x": 27,
+    "y": 27,
+    "width": 272,
+    "height": 344
+   },
+   "labelBbox": {
+    "x": 29,
+    "y": 29,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": -2.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 24,
+    "y": 24,
+    "width": 277.33,
+    "height": 352
+   },
+   "plotRect": {
+    "x": 51.57,
+    "y": 27.04,
+    "width": 246.72,
+    "height": 317.39
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 332,
+    "y": 27,
+    "width": 272,
+    "height": 344
+   },
+   "bboxCore": {
+    "x": 332,
+    "y": 27,
+    "width": 272,
+    "height": 344
+   },
+   "labelBbox": {
+    "x": 335,
+    "y": 29,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 329.33,
+    "y": 24,
+    "width": 277.33,
+    "height": 352
+   },
+   "plotRect": {
+    "x": 356.9,
+    "y": 27.04,
+    "width": 246.72,
+    "height": 317.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 638,
+    "y": 27,
+    "width": 271,
+    "height": 344
+   },
+   "bboxCore": {
+    "x": 638,
+    "y": 27,
+    "width": 271,
+    "height": 344
+   },
+   "labelBbox": {
+    "x": 640,
+    "y": 29,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": -3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 634.67,
+    "y": 24,
+    "width": 277.33,
+    "height": 352
+   },
+   "plotRect": {
+    "x": 662.23,
+    "y": 27.04,
+    "width": 246.72,
+    "height": 317.39
+   }
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "colourbar",
+   "bbox": {
+    "x": 936,
+    "y": 114,
+    "width": 42,
+    "height": 162
+   },
+   "rect": {
+    "x": 935,
+    "y": 100,
+    "width": 60,
+    "height": 200
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

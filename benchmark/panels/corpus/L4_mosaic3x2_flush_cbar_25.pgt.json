@@ -1,0 +1,257 @@
+{
+ "id": "L4_mosaic3x2_flush_cbar_25",
+ "image": "L4_mosaic3x2_flush_cbar_25.png",
+ "level": "L4_flush",
+ "figure": {
+  "width": 900,
+  "height": 620,
+  "dpi": 110,
+  "seed": 1425
+ },
+ "layoutName": "mosaic2x3",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 0,
+  "bucketNominal": "zero",
+  "measuredPx": -1.0,
+  "measuredFrac": -0.0011,
+  "measuredAxis": "x",
+  "bucket": "flush",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "bottom-right",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 25. Lesion alters regional signalling in the transgenic model. (A) Confocal images of BDNF. (B) Representative micrographs of BDNF. (C) Confocal images of mitochondrial area. (D) Representative micrographs of dendritic spines. (E) Confocal images of mitochondrial area. (F) Representative micrographs of GFAP immunoreactivity. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F"
+ ],
+ "notes": [],
+ "nPanels": 6,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 10,
+    "width": 274,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 10,
+    "width": 274,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 264,
+    "y": 291,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 10,
+    "width": 273.33,
+    "height": 300
+   },
+   "plotRect": null
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 283,
+    "y": 10,
+    "width": 274,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 283,
+    "y": 10,
+    "width": 274,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 539,
+    "y": 291,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 283.33,
+    "y": 10,
+    "width": 273.33,
+    "height": 300
+   },
+   "plotRect": null
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 556,
+    "y": 10,
+    "width": 274,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 556,
+    "y": 10,
+    "width": 274,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 811,
+    "y": 291,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 556.67,
+    "y": 10,
+    "width": 273.33,
+    "height": 300
+   },
+   "plotRect": null
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 310,
+    "width": 274,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 310,
+    "width": 274,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 265,
+    "y": 591,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 310,
+    "width": 273.33,
+    "height": 300
+   },
+   "plotRect": null
+  },
+  {
+   "index": 4,
+   "label": "E",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 283,
+    "y": 310,
+    "width": 274,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 283,
+    "y": 310,
+    "width": 274,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 540,
+    "y": 591,
+    "width": 12,
+    "height": 14
+   },
+   "inkEscapePx": 0.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 283.33,
+    "y": 310,
+    "width": 273.33,
+    "height": 300
+   },
+   "plotRect": null
+  },
+  {
+   "index": 5,
+   "label": "F",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 556,
+    "y": 310,
+    "width": 274,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 556,
+    "y": 310,
+    "width": 274,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 814,
+    "y": 591,
+    "width": 11,
+    "height": 14
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 556.67,
+    "y": 310,
+    "width": 273.33,
+    "height": 300
+   },
+   "plotRect": null
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "colourbar",
+   "bbox": {
+    "x": 842,
+    "y": 163,
+    "width": 43,
+    "height": 276
+   },
+   "rect": {
+    "x": 846,
+    "y": 136.4,
+    "width": 49.5,
+    "height": 347.2
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

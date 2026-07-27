@@ -1,0 +1,172 @@
+{
+ "id": "L6_legend_keys_37",
+ "image": "L6_legend_keys_37.png",
+ "level": "L6_strayletters",
+ "figure": {
+  "width": 1020,
+  "height": 460,
+  "dpi": 110,
+  "seed": 1637
+ },
+ "layoutName": "grid1x3",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 29,
+  "bucketNominal": "medium",
+  "measuredPx": 34.0,
+  "measuredFrac": 0.0333,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 37. Lesion alters regional signalling in the transgenic model. (A) GFAP immunoreactivity levels by treatment group. (B) Dose-response curves for mitochondrial area. (C) BDNF across the three cohorts. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C"
+ ],
+ "notes": [
+  "the shared legend's keys ARE the letters A, B and C, at label weight, in a figure whose panels are also A, B and C -- three perfect decoys sitting in the right margin, belonging to no panel"
+ ],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 28,
+    "y": 27,
+    "width": 270,
+    "height": 405
+   },
+   "bboxCore": {
+    "x": 28,
+    "y": 27,
+    "width": 270,
+    "height": 405
+   },
+   "labelBbox": {
+    "x": 31,
+    "y": 31,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 24.5,
+    "y": 24.5,
+    "width": 275.67,
+    "height": 411
+   },
+   "plotRect": {
+    "x": 58.07,
+    "y": 27.54,
+    "width": 239.05,
+    "height": 389.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 332,
+    "y": 27,
+    "width": 270,
+    "height": 405
+   },
+   "bboxCore": {
+    "x": 332,
+    "y": 27,
+    "width": 270,
+    "height": 405
+   },
+   "labelBbox": {
+    "x": 336,
+    "y": 31,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 329.17,
+    "y": 24.5,
+    "width": 275.67,
+    "height": 411
+   },
+   "plotRect": {
+    "x": 362.73,
+    "y": 27.54,
+    "width": 239.05,
+    "height": 376.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 637,
+    "y": 27,
+    "width": 270,
+    "height": 403
+   },
+   "bboxCore": {
+    "x": 637,
+    "y": 27,
+    "width": 270,
+    "height": 403
+   },
+   "labelBbox": {
+    "x": 640,
+    "y": 31,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 633.83,
+    "y": 24.5,
+    "width": 275.67,
+    "height": 411
+   },
+   "plotRect": {
+    "x": 667.4,
+    "y": 27.54,
+    "width": 239.05,
+    "height": 389.43
+   }
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "legend",
+   "bbox": {
+    "x": 922,
+    "y": 128,
+    "width": 89,
+    "height": 140
+   },
+   "rect": {
+    "x": 923.1,
+    "y": 128.8,
+    "width": 86.7,
+    "height": 138
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

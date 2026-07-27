@@ -1,0 +1,185 @@
+{
+ "id": "L4_mixed_flush_24",
+ "image": "L4_mixed_flush_24.png",
+ "level": "L4_flush",
+ "figure": {
+  "width": 840,
+  "height": 640,
+  "dpi": 110,
+  "seed": 1424
+ },
+ "layoutName": "mixed2x2-flush",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 0,
+  "bucketNominal": "zero",
+  "measuredPx": 0.0,
+  "measuredFrac": 0.0,
+  "measuredAxis": "x",
+  "bucket": "flush",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 24. Exercise increases plasticity markers in the rodent model. (A) Confocal images of dendritic spines. (B) Representative micrographs of hippocampal CA1. (C) Quantification of mitochondrial area across groups. (D) Distribution of mitochondrial area by condition. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "raster row flush against a chart row"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 10,
+    "width": 410,
+    "height": 310
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 10,
+    "width": 410,
+    "height": 310
+   },
+   "labelBbox": {
+    "x": 15,
+    "y": 15,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 10,
+    "width": 410,
+    "height": 310
+   },
+   "plotRect": null
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 420,
+    "y": 10,
+    "width": 410,
+    "height": 310
+   },
+   "bboxCore": {
+    "x": 420,
+    "y": 10,
+    "width": 410,
+    "height": 310
+   },
+   "labelBbox": {
+    "x": 426,
+    "y": 15,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 420,
+    "y": 10,
+    "width": 410,
+    "height": 310
+   },
+   "plotRect": null
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 320,
+    "width": 410,
+    "height": 308
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 320,
+    "width": 410,
+    "height": 308
+   },
+   "labelBbox": {
+    "x": 16,
+    "y": 326,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 320,
+    "width": 410,
+    "height": 310
+   },
+   "plotRect": {
+    "x": 40.52,
+    "y": 320,
+    "width": 379.48,
+    "height": 294.52
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 420,
+    "y": 320,
+    "width": 410,
+    "height": 308
+   },
+   "bboxCore": {
+    "x": 420,
+    "y": 320,
+    "width": 410,
+    "height": 308
+   },
+   "labelBbox": {
+    "x": 427,
+    "y": 326,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 420,
+    "y": 320,
+    "width": 410,
+    "height": 310
+   },
+   "plotRect": {
+    "x": 450.52,
+    "y": 320,
+    "width": 379.48,
+    "height": 294.52
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

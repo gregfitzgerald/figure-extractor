@@ -1,0 +1,107 @@
+{
+ "id": "L6_units_crossed_36",
+ "image": "L6_units_crossed_36.png",
+ "level": "L6_strayletters",
+ "figure": {
+  "width": 900,
+  "height": 560,
+  "dpi": 110,
+  "seed": 1636
+ },
+ "layoutName": "grid2x1",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 25,
+  "bucketNominal": "medium",
+  "measuredPx": 31.0,
+  "measuredFrac": 0.0554,
+  "measuredAxis": "y",
+  "bucket": "wide",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "none",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 36. Dose-dependent recovery of function in the rodent model. (A) Dose-response curves for microglial density. (B) BDNF plotted against distance. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B"
+ ],
+ "notes": [
+  "crossed parenthesised axis units: the TOP panel is annotated '(B)' and the BOTTOM one '(A)', at mid-height against the y axis. The detector's glyph templates deliberately include the '(X)' label form, so these read as perfect swapped labels. Placement -- mid-panel, not in a label band -- is the only thing that distinguishes them"
+ ],
+ "nPanels": 2,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "line",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 26,
+    "y": 25,
+    "width": 849,
+    "height": 239
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 25,
+    "width": 849,
+    "height": 239
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2.5,
+   "labelContrast": null,
+   "tile": {
+    "x": 22.5,
+    "y": 22.5,
+    "width": 855,
+    "height": 245
+   },
+   "plotRect": {
+    "x": 56.07,
+    "y": 25.54,
+    "width": 818.39,
+    "height": 210.39
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 26,
+    "y": 295,
+    "width": 849,
+    "height": 239
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 295,
+    "width": 849,
+    "height": 239
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2.5,
+   "labelContrast": null,
+   "tile": {
+    "x": 22.5,
+    "y": 292.5,
+    "width": 855,
+    "height": 245
+   },
+   "plotRect": {
+    "x": 56.07,
+    "y": 295.54,
+    "width": 818.39,
+    "height": 210.39
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

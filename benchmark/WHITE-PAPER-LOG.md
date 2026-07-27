@@ -330,6 +330,76 @@ draws, so a panel-detector training/eval set with exact ground truth costs nothi
 micrograph montages with no gutters and no labels are ambiguous even to a human reader, and no
 method will resolve them without the caption's help.
 
+## 10d. Panel detection rebuilt: the measured arc, and the limit of pixel-level verification (2026-07-26)
+
+Rebuilt subfigure decomposition as a **cascade with verification and abstention**, driven by three
+adversarial rounds. Independently re-measured at every step against `benchmark/panels` (41 figures /
+159 panels, GT audited to 0.0 px with all ink claimed).
+
+| metric | legacy XY-cut | final cascade |
+|---|---|---|
+| median panel IoU | 0.407 | **1.000** |
+| IoU >= 0.9 | 10.1% | **88.1%** |
+| exact panel count | 75.8% | **95.1%** |
+| label accuracy | 87.5% | **100.0%** |
+| silent mislabels | -- | **0.0%** |
+| answered-only exactly right | -- | **100.0%** |
+| error rate on answered | 66.7% | **0.0%** |
+| coverage | -- | 65.9% (75.8% on the original corpus) |
+
+Strata that were completely dead now work: **flush (zero-gutter) 0.000 -> 0.997 medIoU**,
+**bottom-right labels 0% -> 100%**, **non-guillotine 0.107 -> 0.925**.
+
+**The caption is the single biggest lever, quantified.** Removing the caption prior drops exact-count
+from 75.8% to **9.1%** and raises spurious boxes from 69 to **226** (a single-panel control shatters
+into 7). Panel decomposition is not really unconstrained detection; it is constrained assignment, and
+the constraint is free text the paper already gives you.
+
+**The adversarial arc is the finding.** Each round's fix created the next round's exploit:
+- *Round 1* found 7 defects, all of one class: **letter identity was never verified on any `ok=true`
+  path**. The XObject fast path invented letters by reading order at conf 0.95 with zero flags;
+  `label-order-mismatch` was non-critical so the detector saw the mislabel and shipped it; a caption
+  citing *another paper's* "(a) and (b)" manufactured a 2-panel split of a single-panel figure; and
+  the glyph matcher could not discriminate at all (cross-letter Dice >= 0.7 for nearly every pair,
+  b<->h 0.94) -- the "verification" was noise.
+- *Round 2* fixed those and reached 0.0% error on answered -- but **abstained on 31 of 33 figures**
+  (coverage 6.1%, abstention precision 0.48, net figures saved -1). Correct and useless. The dominant
+  cause was mundane: a single scatter dot touching a glyph merges the connected component.
+- *Round 3* recovered coverage to 72.7% at unchanged 0.0% error -- and an adversary then **broke it
+  with three runnable kills**, because the safety argument was unsound. "Every box owns exactly one
+  distinct expected letter" proves nothing about whether those glyphs are *labels*. Stray
+  compact-letter-display letters, crossed axis units "(A)"/"(B)", and legend keys all forged the
+  verification and shipped swapped names at conf 0.8-0.92.
+
+**The repair, and the general principle.** Verification now tests **label plausibility over the anchor
+SET**, not letter identity per glyph: every anchor must sit in its panel's edge band, at a consistent
+position and size *across the whole figure*. Real-world distractors (CLD letters, axis units, legend
+keys, inset letters) all fail this because none of them sit at panel corners. Coverage went **up**
+(72.7% -> 75.8%) while the exploits died -- the gate cost nothing on real figures (0
+`label-placement-implausible` flags across the original 33).
+
+**The irreducible limit, stated honestly.** A deliberately forged stray letter placed *at a panel
+corner, at label size, consistently across panels* remains indistinguishable from a real label --
+because at the pixel level it **is** one. No geometric predicate can separate them; only semantics can
+(does panel A's content match what the caption says "(A)" shows?). That is precisely the
+model-reads-glyphs / agent-assigns-meaning boundary this project already draws elsewhere, and the
+escalation path already exists: the meaning-aware agent and the human gate. The detector should not
+claim to solve it.
+
+**A benchmark lesson worth publishing.** Round 3's exploits scored **100% on the benchmark** before
+they were found, because the corpus contained no figure with a stray expected-letter glyph. A metric
+that cannot see a failure mode reports its absence as success. The corpus was extended (L6 stray
+letters, L7 9-and-12-panel, L8 serif-italic) and the pre-fix detector scores 5.0% silent mislabels /
+50% error-on-answered on those 8 -- the corpus now proves itself. `score.py` also gained an
+**answered-only** exactness figure, because the headline "whole figure exactly right" counts
+abstained-but-would-have-been-right figures and therefore flatters.
+
+**Still open (all abstain honestly -- coverage cost, not correctness):** two flush pinwheels need true
+rectangle-tiling inference from anchors (the pixel-vote carve provably produces overlapping boxes, and
+grid seams cannot express a pinwheel -- a different algorithm, not a threshold); figures with mixed
+label conventions (A-C top-left, D bottom-right) are rejected by the consistency requirement; and two
+12px bold-sans glyphs (G, D) fail the runner-up margin, which was deliberately *not* loosened.
+
 ## 11. Evaluation-integrity practices worth reporting
 
 - **Leak-free tasks**: prompts carry the rubric and the allowed label sets but never the answers.

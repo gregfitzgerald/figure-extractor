@@ -1,0 +1,115 @@
+{
+ "id": "L1_grid1x2_wide_01",
+ "image": "L1_grid1x2_wide_01.png",
+ "level": "L1_easy",
+ "figure": {
+  "width": 860,
+  "height": 420,
+  "dpi": 110,
+  "seed": 1101
+ },
+ "layoutName": "grid1x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 43,
+  "bucketNominal": "wide",
+  "measuredPx": 49.0,
+  "measuredFrac": 0.057,
+  "measuredAxis": "x",
+  "bucket": "wide",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 1. Exercise increases plasticity markers in the rat model. (A) Quantification of synaptophysin across groups. (B) Mitochondrial area plotted against distance. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B"
+ ],
+ "notes": [],
+ "nPanels": 2,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 35,
+    "y": 34,
+    "width": 371,
+    "height": 349
+   },
+   "bboxCore": {
+    "x": 35,
+    "y": 34,
+    "width": 371,
+    "height": 349
+   },
+   "labelBbox": {
+    "x": 38,
+    "y": 38,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 31.5,
+    "y": 31.5,
+    "width": 377,
+    "height": 357
+   },
+   "plotRect": {
+    "x": 65.07,
+    "y": 34.54,
+    "width": 340.39,
+    "height": 335.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 455,
+    "y": 34,
+    "width": 379,
+    "height": 351
+   },
+   "bboxCore": {
+    "x": 455,
+    "y": 34,
+    "width": 379,
+    "height": 351
+   },
+   "labelBbox": {
+    "x": 459,
+    "y": 38,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 5.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 451.5,
+    "y": 31.5,
+    "width": 377,
+    "height": 357
+   },
+   "plotRect": {
+    "x": 494.07,
+    "y": 34.54,
+    "width": 331.39,
+    "height": 322.39
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

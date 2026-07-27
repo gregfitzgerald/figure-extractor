@@ -1,0 +1,146 @@
+{
+ "id": "L3_mixed_tight_19",
+ "image": "L3_mixed_tight_19.png",
+ "level": "L3_tight",
+ "figure": {
+  "width": 960,
+  "height": 400,
+  "dpi": 110,
+  "seed": 1319
+ },
+ "layoutName": "grid1x3-mixed",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 12,
+  "bucketNominal": "tight",
+  "measuredPx": 11.0,
+  "measuredFrac": 0.0115,
+  "measuredAxis": "x",
+  "bucket": "tight",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 19. Lesion alters regional signalling in the rodent model. (A) Representative micrographs of synaptophysin. (B) Confocal images of BDNF. (C) C-Fos levels by treatment group. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C"
+ ],
+ "notes": [
+  "raster panels abut a chart panel"
+ ],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 16,
+    "width": 308,
+    "height": 368
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 16,
+    "width": 308,
+    "height": 368
+   },
+   "labelBbox": {
+    "x": 21,
+    "y": 21,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0.4,
+   "labelContrast": 255,
+   "tile": {
+    "x": 16,
+    "y": 16,
+    "width": 307.6,
+    "height": 368
+   },
+   "plotRect": null
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 335,
+    "y": 16,
+    "width": 309,
+    "height": 368
+   },
+   "bboxCore": {
+    "x": 335,
+    "y": 16,
+    "width": 309,
+    "height": 368
+   },
+   "labelBbox": {
+    "x": 342,
+    "y": 21,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0.8,
+   "labelContrast": 255,
+   "tile": {
+    "x": 335.6,
+    "y": 16,
+    "width": 307.6,
+    "height": 368
+   },
+   "plotRect": null
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 658,
+    "y": 19,
+    "width": 283,
+    "height": 362
+   },
+   "bboxCore": {
+    "x": 658,
+    "y": 19,
+    "width": 283,
+    "height": 362
+   },
+   "labelBbox": {
+    "x": 661,
+    "y": 22,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.8,
+   "labelContrast": 255,
+   "tile": {
+    "x": 655.2,
+    "y": 16,
+    "width": 288.8,
+    "height": 368
+   },
+   "plotRect": {
+    "x": 694.77,
+    "y": 19.04,
+    "width": 246.19,
+    "height": 346.43
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

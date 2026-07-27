@@ -1,0 +1,84 @@
+{
+ "id": "C_single_chart_32",
+ "image": "C_single_chart_32.png",
+ "level": "C_control",
+ "figure": {
+  "width": 620,
+  "height": 460,
+  "dpi": 110,
+  "seed": 1632
+ },
+ "layoutName": "single",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 31,
+  "bucketNominal": "wide",
+  "measuredPx": null,
+  "measuredFrac": null,
+  "measuredAxis": null,
+  "bucket": "n/a",
+  "tightestPair": null
+ },
+ "labelPlacement": "none",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 32. Lesion alters regional signalling in the rodent model. Dose-response curves for GFAP immunoreactivity. Data are mean +/- s.e.m.",
+ "expectedLetters": [],
+ "notes": [
+  "ONE panel with an inset legend: over-splitting here is a false positive"
+ ],
+ "nPanels": 1,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "line",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 29,
+    "y": 28,
+    "width": 563,
+    "height": 403
+   },
+   "bboxCore": {
+    "x": 29,
+    "y": 28,
+    "width": 563,
+    "height": 403
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2.5,
+   "labelContrast": null,
+   "tile": {
+    "x": 25.5,
+    "y": 25.5,
+    "width": 569,
+    "height": 409
+   },
+   "plotRect": {
+    "x": 59.07,
+    "y": 28.54,
+    "width": 532.39,
+    "height": 374.39
+   }
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "legend",
+   "bbox": {
+    "x": 384,
+    "y": 64,
+    "width": 125,
+    "height": 66
+   },
+   "rect": {
+    "x": 384.4,
+    "y": 64.4,
+    "width": 124,
+    "height": 64.4
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

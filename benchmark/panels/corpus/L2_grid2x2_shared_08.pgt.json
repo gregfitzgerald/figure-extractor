@@ -1,0 +1,226 @@
+{
+ "id": "L2_grid2x2_shared_08",
+ "image": "L2_grid2x2_shared_08.png",
+ "level": "L2_medium",
+ "figure": {
+  "width": 880,
+  "height": 680,
+  "dpi": 110,
+  "seed": 1208
+ },
+ "layoutName": "grid2x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 25,
+  "bucketNominal": "medium",
+  "measuredPx": 30.0,
+  "measuredFrac": 0.0341,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": true,
+ "caption": "Figure 8. Lesion alters regional signalling in the transgenic model. (A) Correlation between mitochondrial area and cell density. (B) Correlation between synaptophysin and cell density. (C) Correlation between mitochondrial area and cell density. (D) Correlation between GFAP immunoreactivity and cell density. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "figure-level shared axis titles are ink that belongs to no panel"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 50,
+    "y": 25,
+    "width": 387,
+    "height": 288
+   },
+   "bboxCore": {
+    "x": 50,
+    "y": 25,
+    "width": 387,
+    "height": 288
+   },
+   "labelBbox": {
+    "x": 53,
+    "y": 29,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 46.5,
+    "y": 22.5,
+    "width": 393,
+    "height": 293
+   },
+   "plotRect": {
+    "x": 67.02,
+    "y": 25.54,
+    "width": 369.43,
+    "height": 286.91
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 467,
+    "y": 25,
+    "width": 388,
+    "height": 288
+   },
+   "bboxCore": {
+    "x": 467,
+    "y": 25,
+    "width": 388,
+    "height": 288
+   },
+   "labelBbox": {
+    "x": 472,
+    "y": 29,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 464.5,
+    "y": 22.5,
+    "width": 393,
+    "height": 293
+   },
+   "plotRect": {
+    "x": 467.54,
+    "y": 25.54,
+    "width": 386.91,
+    "height": 286.91
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 50,
+    "y": 343,
+    "width": 387,
+    "height": 285
+   },
+   "bboxCore": {
+    "x": 50,
+    "y": 343,
+    "width": 387,
+    "height": 285
+   },
+   "labelBbox": {
+    "x": 53,
+    "y": 347,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 46.5,
+    "y": 340.5,
+    "width": 393,
+    "height": 293
+   },
+   "plotRect": {
+    "x": 67.02,
+    "y": 343.54,
+    "width": 369.43,
+    "height": 271.43
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 467,
+    "y": 343,
+    "width": 388,
+    "height": 285
+   },
+   "bboxCore": {
+    "x": 467,
+    "y": 343,
+    "width": 388,
+    "height": 285
+   },
+   "labelBbox": {
+    "x": 472,
+    "y": 347,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 464.5,
+    "y": 340.5,
+    "width": 393,
+    "height": 293
+   },
+   "plotRect": {
+    "x": 467.54,
+    "y": 343.54,
+    "width": 386.91,
+    "height": 271.43
+   }
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "axis-title",
+   "bbox": {
+    "x": 376,
+    "y": 652,
+    "width": 173,
+    "height": 14
+   },
+   "rect": {
+    "x": 88,
+    "y": 639.2,
+    "width": 748,
+    "height": 37.4
+   }
+  },
+  {
+   "kind": "axis-title",
+   "bbox": {
+    "x": 12,
+    "y": 304,
+    "width": 14,
+    "height": 73
+   },
+   "rect": {
+    "x": 3.52,
+    "y": 54.4,
+    "width": 28.16,
+    "height": 571.2
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

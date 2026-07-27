@@ -1,0 +1,173 @@
+{
+ "id": "L1_grid2x2_wide_micro_05",
+ "image": "L1_grid2x2_wide_micro_05.png",
+ "level": "L1_easy",
+ "figure": {
+  "width": 840,
+  "height": 700,
+  "dpi": 110,
+  "seed": 1105
+ },
+ "layoutName": "grid2x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 42,
+  "bucketNominal": "wide",
+  "measuredPx": 42.0,
+  "measuredFrac": 0.05,
+  "measuredAxis": "x",
+  "bucket": "wide",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 5. Dose-dependent recovery of function in the rodent model. (A) Representative micrographs of mitochondrial area. (B) Representative micrographs of GFAP immunoreactivity. (C) Representative micrographs of synaptophysin. (D) Representative micrographs of synaptophysin. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 31,
+    "y": 31,
+    "width": 368,
+    "height": 298
+   },
+   "bboxCore": {
+    "x": 31,
+    "y": 31,
+    "width": 368,
+    "height": 298
+   },
+   "labelBbox": {
+    "x": 36,
+    "y": 36,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 31,
+    "y": 31,
+    "width": 368,
+    "height": 298
+   },
+   "plotRect": null
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 441,
+    "y": 31,
+    "width": 368,
+    "height": 298
+   },
+   "bboxCore": {
+    "x": 441,
+    "y": 31,
+    "width": 368,
+    "height": 298
+   },
+   "labelBbox": {
+    "x": 447,
+    "y": 36,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 441,
+    "y": 31,
+    "width": 368,
+    "height": 298
+   },
+   "plotRect": null
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 31,
+    "y": 371,
+    "width": 368,
+    "height": 298
+   },
+   "bboxCore": {
+    "x": 31,
+    "y": 371,
+    "width": 368,
+    "height": 298
+   },
+   "labelBbox": {
+    "x": 36,
+    "y": 376,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 31,
+    "y": 371,
+    "width": 368,
+    "height": 298
+   },
+   "plotRect": null
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 441,
+    "y": 371,
+    "width": 368,
+    "height": 298
+   },
+   "bboxCore": {
+    "x": 441,
+    "y": 371,
+    "width": 368,
+    "height": 298
+   },
+   "labelBbox": {
+    "x": 447,
+    "y": 376,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 441,
+    "y": 371,
+    "width": 368,
+    "height": 298
+   },
+   "plotRect": null
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

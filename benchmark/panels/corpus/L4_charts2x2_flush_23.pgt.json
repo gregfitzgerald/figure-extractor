@@ -1,0 +1,224 @@
+{
+ "id": "L4_charts2x2_flush_23",
+ "image": "L4_charts2x2_flush_23.png",
+ "level": "L4_flush",
+ "figure": {
+  "width": 860,
+  "height": 660,
+  "dpi": 110,
+  "seed": 1423
+ },
+ "layoutName": "charts2x2-flush",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 0,
+  "bucketNominal": "zero",
+  "measuredPx": 0.0,
+  "measuredFrac": 0.0,
+  "measuredAxis": "x",
+  "bucket": "flush",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": true,
+ "caption": "Figure 23. Treatment normalises cellular morphology in the rodent model. (A) Clustered hippocampal CA1 expression matrix. (B) Clustered dendritic spines expression matrix. (C) Clustered c-Fos expression matrix. (D) Clustered hippocampal CA1 expression matrix. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 36,
+    "y": 10,
+    "width": 407,
+    "height": 310
+   },
+   "bboxCore": {
+    "x": 36,
+    "y": 10,
+    "width": 407,
+    "height": 310
+   },
+   "labelBbox": {
+    "x": 41,
+    "y": 15,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 36,
+    "y": 10,
+    "width": 407,
+    "height": 310
+   },
+   "plotRect": {
+    "x": 47.48,
+    "y": 10,
+    "width": 395.52,
+    "height": 310
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 443,
+    "y": 10,
+    "width": 407,
+    "height": 310
+   },
+   "bboxCore": {
+    "x": 443,
+    "y": 10,
+    "width": 407,
+    "height": 310
+   },
+   "labelBbox": {
+    "x": 449,
+    "y": 15,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 443,
+    "y": 10,
+    "width": 407,
+    "height": 310
+   },
+   "plotRect": {
+    "x": 443,
+    "y": 10,
+    "width": 407,
+    "height": 310
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 36,
+    "y": 320,
+    "width": 407,
+    "height": 308
+   },
+   "bboxCore": {
+    "x": 36,
+    "y": 320,
+    "width": 407,
+    "height": 308
+   },
+   "labelBbox": {
+    "x": 41,
+    "y": 325,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 36,
+    "y": 320,
+    "width": 407,
+    "height": 310
+   },
+   "plotRect": {
+    "x": 47.48,
+    "y": 320,
+    "width": 395.52,
+    "height": 294.52
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 443,
+    "y": 320,
+    "width": 407,
+    "height": 308
+   },
+   "bboxCore": {
+    "x": 443,
+    "y": 320,
+    "width": 407,
+    "height": 308
+   },
+   "labelBbox": {
+    "x": 449,
+    "y": 325,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 443,
+    "y": 320,
+    "width": 407,
+    "height": 310
+   },
+   "plotRect": {
+    "x": 443,
+    "y": 320,
+    "width": 407,
+    "height": 294.52
+   }
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "axis-title",
+   "bbox": {
+    "x": 434,
+    "y": 632,
+    "width": 34,
+    "height": 10
+   },
+   "rect": {
+    "x": 86,
+    "y": 620.4,
+    "width": 731,
+    "height": 33
+   }
+  },
+  {
+   "kind": "axis-title",
+   "bbox": {
+    "x": 12,
+    "y": 301,
+    "width": 14,
+    "height": 46
+   },
+   "rect": {
+    "x": 3.44,
+    "y": 66,
+    "width": 29.24,
+    "height": 514.8
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

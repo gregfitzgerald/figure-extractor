@@ -1,0 +1,153 @@
+{
+ "id": "L4_mosaic1x4_flush_nolabel_21",
+ "image": "L4_mosaic1x4_flush_nolabel_21.png",
+ "level": "L4_flush",
+ "figure": {
+  "width": 1080,
+  "height": 300,
+  "dpi": 110,
+  "seed": 1421
+ },
+ "layoutName": "mosaic1x4",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 0,
+  "bucketNominal": "zero",
+  "measuredPx": 0.0,
+  "measuredFrac": 0.0,
+  "measuredAxis": "x",
+  "bucket": "flush",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "none",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 21. Lesion alters regional signalling in the transgenic model. (A) Confocal images of microglial density. (B) Confocal images of microglial density. (C) Confocal images of c-Fos. (D) Representative micrographs of synaptophysin. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 10,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "labelBbox": null,
+   "inkEscapePx": 0,
+   "labelContrast": null,
+   "tile": {
+    "x": 10,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "plotRect": null
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "micrograph",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 275,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "bboxCore": {
+    "x": 275,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "labelBbox": null,
+   "inkEscapePx": 0,
+   "labelContrast": null,
+   "tile": {
+    "x": 275,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "plotRect": null
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "micrograph",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 540,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "bboxCore": {
+    "x": 540,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "labelBbox": null,
+   "inkEscapePx": 0,
+   "labelContrast": null,
+   "tile": {
+    "x": 540,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "plotRect": null
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "micrograph",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 805,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "bboxCore": {
+    "x": 805,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "labelBbox": null,
+   "inkEscapePx": 0,
+   "labelContrast": null,
+   "tile": {
+    "x": 805,
+    "y": 10,
+    "width": 265,
+    "height": 280
+   },
+   "plotRect": null
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

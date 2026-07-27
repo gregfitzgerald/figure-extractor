@@ -1,0 +1,175 @@
+{
+ "id": "L4_mosaic2x2_flush_20",
+ "image": "L4_mosaic2x2_flush_20.png",
+ "level": "L4_flush",
+ "figure": {
+  "width": 720,
+  "height": 720,
+  "dpi": 110,
+  "seed": 1420
+ },
+ "layoutName": "mosaic2x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 0,
+  "bucketNominal": "zero",
+  "measuredPx": 0.0,
+  "measuredFrac": 0.0,
+  "measuredAxis": "x",
+  "bucket": "flush",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 20. Treatment normalises cellular morphology in the rat model. (A) Representative micrographs of synaptophysin. (B) Representative micrographs of synaptophysin. (C) Representative micrographs of c-Fos. (D) Confocal images of dendritic spines. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "image mosaic with zero gutter: neighbouring panels share an edge"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 10,
+    "width": 350,
+    "height": 350
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 10,
+    "width": 350,
+    "height": 350
+   },
+   "labelBbox": {
+    "x": 15,
+    "y": 15,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 10,
+    "width": 350,
+    "height": 350
+   },
+   "plotRect": null
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 360,
+    "y": 10,
+    "width": 350,
+    "height": 350
+   },
+   "bboxCore": {
+    "x": 360,
+    "y": 10,
+    "width": 350,
+    "height": 350
+   },
+   "labelBbox": {
+    "x": 366,
+    "y": 15,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 360,
+    "y": 10,
+    "width": 350,
+    "height": 350
+   },
+   "plotRect": null
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 360,
+    "width": 350,
+    "height": 350
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 360,
+    "width": 350,
+    "height": 350
+   },
+   "labelBbox": {
+    "x": 15,
+    "y": 365,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 360,
+    "width": 350,
+    "height": 350
+   },
+   "plotRect": null
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 360,
+    "y": 360,
+    "width": 350,
+    "height": 350
+   },
+   "bboxCore": {
+    "x": 360,
+    "y": 360,
+    "width": 350,
+    "height": 350
+   },
+   "labelBbox": {
+    "x": 366,
+    "y": 365,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0,
+   "labelContrast": 255,
+   "tile": {
+    "x": 360,
+    "y": 360,
+    "width": 350,
+    "height": 350
+   },
+   "plotRect": null
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

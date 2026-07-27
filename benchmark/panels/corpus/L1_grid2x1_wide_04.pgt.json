@@ -1,0 +1,115 @@
+{
+ "id": "L1_grid2x1_wide_04",
+ "image": "L1_grid2x1_wide_04.png",
+ "level": "L1_easy",
+ "figure": {
+  "width": 520,
+  "height": 760,
+  "dpi": 110,
+  "seed": 1104
+ },
+ "layoutName": "grid2x1",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 26,
+  "bucketNominal": "wide",
+  "measuredPx": 32.0,
+  "measuredFrac": 0.0421,
+  "measuredAxis": "y",
+  "bucket": "wide",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "top-centre",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 4. Lesion alters regional signalling in the murine model. (A) Correlation between c-Fos and cell density. (B) C-Fos levels by treatment group. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B"
+ ],
+ "notes": [],
+ "nPanels": 2,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 26,
+    "y": 26,
+    "width": 470,
+    "height": 338
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 48,
+    "width": 470,
+    "height": 316
+   },
+   "labelBbox": {
+    "x": 254,
+    "y": 26,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -1,
+   "labelContrast": 255,
+   "tile": {
+    "x": 23,
+    "y": 23,
+    "width": 474,
+    "height": 344
+   },
+   "plotRect": {
+    "x": 56.57,
+    "y": 52.04,
+    "width": 437.39,
+    "height": 283.39
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 26,
+    "y": 396,
+    "width": 468,
+    "height": 336
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 422,
+    "width": 468,
+    "height": 310
+   },
+   "labelBbox": {
+    "x": 255,
+    "y": 396,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 23,
+    "y": 393,
+    "width": 474,
+    "height": 344
+   },
+   "plotRect": {
+    "x": 62.57,
+    "y": 422.04,
+    "width": 431.39,
+    "height": 296.43
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

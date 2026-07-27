@@ -1,0 +1,195 @@
+{
+ "id": "L3_grid2x2_vtight_15",
+ "image": "L3_grid2x2_vtight_15.png",
+ "level": "L3_tight",
+ "figure": {
+  "width": 900,
+  "height": 700,
+  "dpi": 110,
+  "seed": 1315
+ },
+ "layoutName": "grid2x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 5,
+  "bucketNominal": "vtight",
+  "measuredPx": 4.0,
+  "measuredFrac": 0.0057,
+  "measuredAxis": "y",
+  "bucket": "tight",
+  "tightestPair": [
+   "A",
+   "C"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 15. Dose-dependent recovery of function in the rodent model. (A) Hippocampal CA1 plotted against distance. (B) Mitochondrial area levels by treatment group. (C) Microglial density across the three cohorts. (D) Time course of hippocampal CA1. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "gutter is 0.6% of figure width -- below any fixed minimum-gutter threshold"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 13,
+    "y": 12,
+    "width": 435,
+    "height": 336
+   },
+   "bboxCore": {
+    "x": 13,
+    "y": 12,
+    "width": 435,
+    "height": 336
+   },
+   "labelBbox": {
+    "x": 19,
+    "y": 19,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 12.5,
+    "y": 12.5,
+    "width": 435,
+    "height": 335
+   },
+   "plotRect": {
+    "x": 43.02,
+    "y": 12.5,
+    "width": 404.48,
+    "height": 306.48
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 453,
+    "y": 12,
+    "width": 435,
+    "height": 334
+   },
+   "bboxCore": {
+    "x": 453,
+    "y": 12,
+    "width": 435,
+    "height": 334
+   },
+   "labelBbox": {
+    "x": 460,
+    "y": 19,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 452.5,
+    "y": 12.5,
+    "width": 435,
+    "height": 335
+   },
+   "plotRect": {
+    "x": 489.02,
+    "y": 12.5,
+    "width": 398.48,
+    "height": 319.52
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 13,
+    "y": 352,
+    "width": 435,
+    "height": 334
+   },
+   "bboxCore": {
+    "x": 13,
+    "y": 352,
+    "width": 435,
+    "height": 334
+   },
+   "labelBbox": {
+    "x": 19,
+    "y": 359,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 12.5,
+    "y": 352.5,
+    "width": 435,
+    "height": 335
+   },
+   "plotRect": {
+    "x": 43.02,
+    "y": 352.5,
+    "width": 404.48,
+    "height": 319.52
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 453,
+    "y": 352,
+    "width": 435,
+    "height": 336
+   },
+   "bboxCore": {
+    "x": 453,
+    "y": 352,
+    "width": 435,
+    "height": 336
+   },
+   "labelBbox": {
+    "x": 460,
+    "y": 359,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 452.5,
+    "y": 352.5,
+    "width": 435,
+    "height": 335
+   },
+   "plotRect": {
+    "x": 483.02,
+    "y": 352.5,
+    "width": 404.48,
+    "height": 306.48
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

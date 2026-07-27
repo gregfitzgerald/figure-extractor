@@ -1,0 +1,156 @@
+{
+ "id": "L3_span_left_18",
+ "image": "L3_span_left_18.png",
+ "level": "L3_tight",
+ "figure": {
+  "width": 900,
+  "height": 640,
+  "dpi": 110,
+  "seed": 1318
+ },
+ "layoutName": "span-left-tall",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 11,
+  "bucketNominal": "tight",
+  "measuredPx": 10.0,
+  "measuredFrac": 0.0156,
+  "measuredAxis": "y",
+  "bucket": "medium",
+  "tightestPair": [
+   "B",
+   "C"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 18. Lesion alters regional signalling in the murine model. (A) Clustered microglial density expression matrix. (B) Quantification of hippocampal CA1 across groups. (C) GFAP immunoreactivity plotted against distance. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C"
+ ],
+ "notes": [
+  "one tall panel beside two stacked (still guillotine: cut x then y)"
+ ],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 15,
+    "width": 429,
+    "height": 608
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 15,
+    "width": 429,
+    "height": 608
+   },
+   "labelBbox": {
+    "x": 21,
+    "y": 21,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 15.5,
+    "y": 15.5,
+    "width": 429,
+    "height": 609
+   },
+   "plotRect": {
+    "x": 40.02,
+    "y": 15.5,
+    "width": 404.48,
+    "height": 580.48
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 456,
+    "y": 15,
+    "width": 429,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 456,
+    "y": 15,
+    "width": 429,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 463,
+    "y": 22,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 455.5,
+    "y": 15.5,
+    "width": 429,
+    "height": 299
+   },
+   "plotRect": {
+    "x": 486.02,
+    "y": 15.5,
+    "width": 398.48,
+    "height": 283.52
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 456,
+    "y": 325,
+    "width": 429,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 456,
+    "y": 325,
+    "width": 429,
+    "height": 300
+   },
+   "labelBbox": {
+    "x": 462,
+    "y": 332,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 455.5,
+    "y": 325.5,
+    "width": 429,
+    "height": 299
+   },
+   "plotRect": {
+    "x": 486.02,
+    "y": 325.5,
+    "width": 398.48,
+    "height": 270.48
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

@@ -1,0 +1,63 @@
+{
+ "id": "C_single_micro_33",
+ "image": "C_single_micro_33.png",
+ "level": "C_control",
+ "figure": {
+  "width": 520,
+  "height": 520,
+  "dpi": 110,
+  "seed": 1633
+ },
+ "layoutName": "single",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 26,
+  "bucketNominal": "wide",
+  "measuredPx": null,
+  "measuredFrac": null,
+  "measuredAxis": null,
+  "bucket": "n/a",
+  "tightestPair": null
+ },
+ "labelPlacement": "none",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 33. Treatment normalises cellular morphology in the rat model. Confocal images of microglial density. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [],
+ "notes": [
+  "ONE raster panel"
+ ],
+ "nPanels": 1,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 23,
+    "y": 23,
+    "width": 474,
+    "height": 474
+   },
+   "bboxCore": {
+    "x": 23,
+    "y": 23,
+    "width": 474,
+    "height": 474
+   },
+   "labelBbox": null,
+   "inkEscapePx": 0,
+   "labelContrast": null,
+   "tile": {
+    "x": 23,
+    "y": 23,
+    "width": 474,
+    "height": 474
+   },
+   "plotRect": null
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

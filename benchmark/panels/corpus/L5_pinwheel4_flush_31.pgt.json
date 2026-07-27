@@ -1,0 +1,175 @@
+{
+ "id": "L5_pinwheel4_flush_31",
+ "image": "L5_pinwheel4_flush_31.png",
+ "level": "L5_nonguillotine",
+ "figure": {
+  "width": 840,
+  "height": 700,
+  "dpi": 110,
+  "seed": 1531
+ },
+ "layoutName": "pinwheel4",
+ "layoutClass": "non-guillotine",
+ "gutter": {
+  "nominalPx": 0,
+  "bucketNominal": "zero",
+  "measuredPx": -1.0,
+  "measuredFrac": -0.0012,
+  "measuredAxis": "x",
+  "bucket": "flush",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 31. Exercise increases plasticity markers in the transgenic model. (A) Representative micrographs of mitochondrial area. (B) Confocal images of microglial density. (C) Confocal images of GFAP immunoreactivity. (D) Confocal images of synaptophysin. Scale bars, 50 um. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "non-guillotine AND flush: the hardest cell of the ladder"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 10,
+    "width": 547,
+    "height": 227
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 10,
+    "width": 547,
+    "height": 227
+   },
+   "labelBbox": {
+    "x": 15,
+    "y": 15,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 10,
+    "width": 546.67,
+    "height": 226.67
+   },
+   "plotRect": null
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 556,
+    "y": 10,
+    "width": 274,
+    "height": 454
+   },
+   "bboxCore": {
+    "x": 556,
+    "y": 10,
+    "width": 274,
+    "height": 454
+   },
+   "labelBbox": {
+    "x": 563,
+    "y": 15,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 556.67,
+    "y": 10,
+    "width": 273.33,
+    "height": 453.33
+   },
+   "plotRect": null
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 283,
+    "y": 463,
+    "width": 547,
+    "height": 227
+   },
+   "bboxCore": {
+    "x": 283,
+    "y": 463,
+    "width": 547,
+    "height": 227
+   },
+   "labelBbox": {
+    "x": 288,
+    "y": 468,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 283.33,
+    "y": 463.33,
+    "width": 546.67,
+    "height": 226.67
+   },
+   "plotRect": null
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "micrograph",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 10,
+    "y": 236,
+    "width": 274,
+    "height": 454
+   },
+   "bboxCore": {
+    "x": 10,
+    "y": 236,
+    "width": 274,
+    "height": 454
+   },
+   "labelBbox": {
+    "x": 16,
+    "y": 242,
+    "width": 13,
+    "height": 14
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 10,
+    "y": 236.67,
+    "width": 273.33,
+    "height": 453.33
+   },
+   "plotRect": null
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

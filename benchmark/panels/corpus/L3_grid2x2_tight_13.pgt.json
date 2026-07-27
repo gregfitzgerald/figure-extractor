@@ -1,0 +1,193 @@
+{
+ "id": "L3_grid2x2_tight_13",
+ "image": "L3_grid2x2_tight_13.png",
+ "level": "L3_tight",
+ "figure": {
+  "width": 900,
+  "height": 700,
+  "dpi": 110,
+  "seed": 1313
+ },
+ "layoutName": "grid2x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 11,
+  "bucketNominal": "tight",
+  "measuredPx": 10.0,
+  "measuredFrac": 0.0143,
+  "measuredAxis": "y",
+  "bucket": "tight",
+  "tightestPair": [
+   "A",
+   "C"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 13. Lesion alters regional signalling in the transgenic model. (A) GFAP immunoreactivity levels by treatment group. (B) Correlation between dendritic spines and cell density. (C) Dose-response curves for mitochondrial area. (D) C-Fos across the three cohorts. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 15,
+    "width": 429,
+    "height": 330
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 15,
+    "width": 429,
+    "height": 330
+   },
+   "labelBbox": {
+    "x": 22,
+    "y": 22,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 15.5,
+    "y": 15.5,
+    "width": 429,
+    "height": 329
+   },
+   "plotRect": {
+    "x": 46.02,
+    "y": 15.5,
+    "width": 398.48,
+    "height": 313.52
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 456,
+    "y": 15,
+    "width": 429,
+    "height": 330
+   },
+   "bboxCore": {
+    "x": 456,
+    "y": 15,
+    "width": 429,
+    "height": 330
+   },
+   "labelBbox": {
+    "x": 463,
+    "y": 22,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 455.5,
+    "y": 15.5,
+    "width": 429,
+    "height": 329
+   },
+   "plotRect": {
+    "x": 486.02,
+    "y": 15.5,
+    "width": 398.48,
+    "height": 300.48
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 355,
+    "width": 429,
+    "height": 330
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 355,
+    "width": 429,
+    "height": 330
+   },
+   "labelBbox": {
+    "x": 22,
+    "y": 362,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 15.5,
+    "y": 355.5,
+    "width": 429,
+    "height": 329
+   },
+   "plotRect": {
+    "x": 46.02,
+    "y": 355.5,
+    "width": 398.48,
+    "height": 300.48
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 456,
+    "y": 355,
+    "width": 429,
+    "height": 328
+   },
+   "bboxCore": {
+    "x": 456,
+    "y": 355,
+    "width": 429,
+    "height": 328
+   },
+   "labelBbox": {
+    "x": 463,
+    "y": 362,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 455.5,
+    "y": 355.5,
+    "width": 429,
+    "height": 329
+   },
+   "plotRect": {
+    "x": 486.02,
+    "y": 355.5,
+    "width": 398.48,
+    "height": 313.52
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

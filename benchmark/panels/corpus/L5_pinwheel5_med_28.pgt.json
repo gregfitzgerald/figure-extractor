@@ -1,0 +1,232 @@
+{
+ "id": "L5_pinwheel5_med_28",
+ "image": "L5_pinwheel5_med_28.png",
+ "level": "L5_nonguillotine",
+ "figure": {
+  "width": 920,
+  "height": 780,
+  "dpi": 110,
+  "seed": 1528
+ },
+ "layoutName": "pinwheel5",
+ "layoutClass": "non-guillotine",
+ "gutter": {
+  "nominalPx": 26,
+  "bucketNominal": "medium",
+  "measuredPx": 31.0,
+  "measuredFrac": 0.0337,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "C",
+   "D"
+  ]
+ },
+ "labelPlacement": "outside-al",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 28. Exercise increases plasticity markers in the transgenic model. (A) Quantification of c-Fos across groups. (B) Dose-response curves for BDNF. (C) Microglial density across the three cohorts. (D) Dendritic spines plotted against distance. (E) Clustered c-Fos expression matrix. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E"
+ ],
+ "notes": [],
+ "nPanels": 5,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 25,
+    "y": 26,
+    "width": 569,
+    "height": 219
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 51,
+    "width": 568,
+    "height": 194
+   },
+   "labelBbox": {
+    "x": 25,
+    "y": 26,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 23,
+    "y": 23,
+    "width": 574,
+    "height": 227.33
+   },
+   "plotRect": {
+    "x": 56.57,
+    "y": 52.04,
+    "width": 537.39,
+    "height": 179.77
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 626,
+    "y": 26,
+    "width": 268,
+    "height": 475
+   },
+   "bboxCore": {
+    "x": 626,
+    "y": 52,
+    "width": 268,
+    "height": 449
+   },
+   "labelBbox": {
+    "x": 626,
+    "y": 26,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 623,
+    "y": 23,
+    "width": 274,
+    "height": 480.67
+   },
+   "plotRect": {
+    "x": 656.57,
+    "y": 52.04,
+    "width": 237.39,
+    "height": 420.05
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 325,
+    "y": 533,
+    "width": 569,
+    "height": 219
+   },
+   "bboxCore": {
+    "x": 326,
+    "y": 558,
+    "width": 568,
+    "height": 194
+   },
+   "labelBbox": {
+    "x": 325,
+    "y": 533,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 323,
+    "y": 529.67,
+    "width": 574,
+    "height": 227.33
+   },
+   "plotRect": {
+    "x": 356.57,
+    "y": 558.71,
+    "width": 537.39,
+    "height": 179.77
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 26,
+    "y": 279,
+    "width": 268,
+    "height": 475
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 305,
+    "width": 268,
+    "height": 449
+   },
+   "labelBbox": {
+    "x": 26,
+    "y": 279,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 23,
+    "y": 276.33,
+    "width": 274,
+    "height": 480.67
+   },
+   "plotRect": {
+    "x": 56.57,
+    "y": 305.38,
+    "width": 237.39,
+    "height": 420.05
+   }
+  },
+  {
+   "index": 4,
+   "label": "E",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 326,
+    "y": 279,
+    "width": 268,
+    "height": 220
+   },
+   "bboxCore": {
+    "x": 326,
+    "y": 305,
+    "width": 268,
+    "height": 194
+   },
+   "labelBbox": {
+    "x": 326,
+    "y": 279,
+    "width": 10,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 323,
+    "y": 276.33,
+    "width": 274,
+    "height": 227.33
+   },
+   "plotRect": {
+    "x": 350.57,
+    "y": 305.38,
+    "width": 243.39,
+    "height": 166.72
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

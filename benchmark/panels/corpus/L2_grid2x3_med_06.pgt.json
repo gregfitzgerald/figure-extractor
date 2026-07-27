@@ -1,0 +1,271 @@
+{
+ "id": "L2_grid2x3_med_06",
+ "image": "L2_grid2x3_med_06.png",
+ "level": "L2_medium",
+ "figure": {
+  "width": 1080,
+  "height": 640,
+  "dpi": 110,
+  "seed": 1206
+ },
+ "layoutName": "grid2x3",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 30,
+  "bucketNominal": "medium",
+  "measuredPx": 32.0,
+  "measuredFrac": 0.0296,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "B",
+   "C"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 6. Lesion alters regional signalling in the rodent model. (A) BDNF levels by treatment group. (B) Correlation between mitochondrial area and cell density. (C) Time course of dendritic spines. (D) Distribution of hippocampal CA1 by condition. (E) Quantification of hippocampal CA1 across groups. (F) Microglial density plotted against distance. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F"
+ ],
+ "notes": [],
+ "nPanels": 6,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 28,
+    "y": 28,
+    "width": 318,
+    "height": 272
+   },
+   "bboxCore": {
+    "x": 28,
+    "y": 28,
+    "width": 318,
+    "height": 272
+   },
+   "labelBbox": {
+    "x": 31,
+    "y": 31,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 25,
+    "y": 25,
+    "width": 323.33,
+    "height": 280
+   },
+   "plotRect": {
+    "x": 58.57,
+    "y": 28.04,
+    "width": 286.72,
+    "height": 258.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 381,
+    "y": 27,
+    "width": 322,
+    "height": 275
+   },
+   "bboxCore": {
+    "x": 381,
+    "y": 27,
+    "width": 322,
+    "height": 275
+   },
+   "labelBbox": {
+    "x": 385,
+    "y": 31,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 1.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 378.33,
+    "y": 25,
+    "width": 323.33,
+    "height": 280
+   },
+   "plotRect": {
+    "x": 411.9,
+    "y": 28.04,
+    "width": 286.72,
+    "height": 245.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 735,
+    "y": 28,
+    "width": 317,
+    "height": 274
+   },
+   "bboxCore": {
+    "x": 735,
+    "y": 28,
+    "width": 317,
+    "height": 274
+   },
+   "labelBbox": {
+    "x": 738,
+    "y": 31,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 731.67,
+    "y": 25,
+    "width": 323.33,
+    "height": 280
+   },
+   "plotRect": {
+    "x": 765.23,
+    "y": 28.04,
+    "width": 286.72,
+    "height": 245.39
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 28,
+    "y": 338,
+    "width": 318,
+    "height": 272
+   },
+   "bboxCore": {
+    "x": 28,
+    "y": 338,
+    "width": 318,
+    "height": 272
+   },
+   "labelBbox": {
+    "x": 32,
+    "y": 341,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 25,
+    "y": 335,
+    "width": 323.33,
+    "height": 280
+   },
+   "plotRect": {
+    "x": 58.57,
+    "y": 338.04,
+    "width": 286.72,
+    "height": 258.43
+   }
+  },
+  {
+   "index": 4,
+   "label": "E",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 381,
+    "y": 338,
+    "width": 318,
+    "height": 274
+   },
+   "bboxCore": {
+    "x": 381,
+    "y": 338,
+    "width": 318,
+    "height": 274
+   },
+   "labelBbox": {
+    "x": 385,
+    "y": 341,
+    "width": 10,
+    "height": 12
+   },
+   "inkEscapePx": -2.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 378.33,
+    "y": 335,
+    "width": 323.33,
+    "height": 280
+   },
+   "plotRect": {
+    "x": 411.9,
+    "y": 338.04,
+    "width": 286.72,
+    "height": 258.43
+   }
+  },
+  {
+   "index": 5,
+   "label": "F",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 735,
+    "y": 338,
+    "width": 317,
+    "height": 274
+   },
+   "bboxCore": {
+    "x": 735,
+    "y": 338,
+    "width": 317,
+    "height": 274
+   },
+   "labelBbox": {
+    "x": 739,
+    "y": 341,
+    "width": 9,
+    "height": 12
+   },
+   "inkEscapePx": -3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 731.67,
+    "y": 335,
+    "width": 323.33,
+    "height": 280
+   },
+   "plotRect": {
+    "x": 765.23,
+    "y": 338.04,
+    "width": 286.72,
+    "height": 245.39
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

@@ -1,0 +1,193 @@
+{
+ "id": "L2_grid1x4_med_07",
+ "image": "L2_grid1x4_med_07.png",
+ "level": "L2_medium",
+ "figure": {
+  "width": 1160,
+  "height": 340,
+  "dpi": 110,
+  "seed": 1207
+ },
+ "layoutName": "grid1x4",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 32,
+  "bucketNominal": "medium",
+  "measuredPx": 37.0,
+  "measuredFrac": 0.0319,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "B",
+   "C"
+  ]
+ },
+ "labelPlacement": "outside-al",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 7. Dose-dependent recovery of function in the murine model. (A) Microglial density levels by treatment group. (B) Time course of BDNF. (C) Distribution of mitochondrial area by condition. (D) Correlation between dendritic spines and cell density. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 28,
+    "y": 29,
+    "width": 248,
+    "height": 280
+   },
+   "bboxCore": {
+    "x": 29,
+    "y": 55,
+    "width": 247,
+    "height": 254
+   },
+   "labelBbox": {
+    "x": 28,
+    "y": 29,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 26,
+    "y": 26,
+    "width": 253,
+    "height": 288
+   },
+   "plotRect": {
+    "x": 59.57,
+    "y": 55.04,
+    "width": 216.39,
+    "height": 240.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 314,
+    "y": 29,
+    "width": 247,
+    "height": 282
+   },
+   "bboxCore": {
+    "x": 314,
+    "y": 54,
+    "width": 247,
+    "height": 257
+   },
+   "labelBbox": {
+    "x": 314,
+    "y": 29,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 311,
+    "y": 26,
+    "width": 253,
+    "height": 288
+   },
+   "plotRect": {
+    "x": 344.57,
+    "y": 55.04,
+    "width": 216.39,
+    "height": 227.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 598,
+    "y": 29,
+    "width": 248,
+    "height": 280
+   },
+   "bboxCore": {
+    "x": 599,
+    "y": 55,
+    "width": 247,
+    "height": 254
+   },
+   "labelBbox": {
+    "x": 598,
+    "y": 29,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 596,
+    "y": 26,
+    "width": 253,
+    "height": 288
+   },
+   "plotRect": {
+    "x": 629.57,
+    "y": 55.04,
+    "width": 216.39,
+    "height": 240.43
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 884,
+    "y": 29,
+    "width": 256,
+    "height": 282
+   },
+   "bboxCore": {
+    "x": 884,
+    "y": 55,
+    "width": 256,
+    "height": 256
+   },
+   "labelBbox": {
+    "x": 884,
+    "y": 29,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 6,
+   "labelContrast": 255,
+   "tile": {
+    "x": 881,
+    "y": 26,
+    "width": 253,
+    "height": 288
+   },
+   "plotRect": {
+    "x": 914.57,
+    "y": 55.04,
+    "width": 216.39,
+    "height": 227.39
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

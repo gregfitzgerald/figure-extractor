@@ -2014,6 +2014,38 @@ async function pageNativeDpi(page) {
     return DPI_FLOOR;
 }
 
+// Where each image XObject is PAINTED on the rendered page, in canvas px at the render
+// viewport. Walks the operator list tracking the CTM (save/restore/transform); an image is
+// painted into the unit square transformed by the CTM. When a figure is composed of k
+// sub-images these placements are EXACT panel boundaries for free (panel-detection fast path).
+async function pageImagePlacements(page, viewport) {
+    try {
+        const ops = await page.getOperatorList();
+        const OPS = window.pdfjsLib.OPS;
+        const mul = (m, n) => [
+            m[0] * n[0] + m[2] * n[1], m[1] * n[0] + m[3] * n[1],
+            m[0] * n[2] + m[2] * n[3], m[1] * n[2] + m[3] * n[3],
+            m[0] * n[4] + m[2] * n[5] + m[4], m[1] * n[4] + m[3] * n[5] + m[5]
+        ];
+        let ctm = viewport.transform.slice();
+        const stack = [], rects = [];
+        for (let i = 0; i < ops.fnArray.length; i++) {
+            const fn = ops.fnArray[i], args = ops.argsArray[i];
+            if (fn === OPS.save) stack.push(ctm.slice());
+            else if (fn === OPS.restore) { if (stack.length) ctm = stack.pop(); }
+            else if (fn === OPS.transform) ctm = mul(ctm, args);
+            else if (fn === OPS.paintImageXObject || fn === OPS.paintInlineImageXObject) {
+                const pts = [[0, 0], [1, 0], [0, 1], [1, 1]].map(([x, y]) =>
+                    [ctm[0] * x + ctm[2] * y + ctm[4], ctm[1] * x + ctm[3] * y + ctm[5]]);
+                const xs = pts.map(p => p[0]), ys = pts.map(p => p[1]);
+                const x0 = Math.min(...xs), y0 = Math.min(...ys), x1 = Math.max(...xs), y1 = Math.max(...ys);
+                if (x1 - x0 >= 4 && y1 - y0 >= 4) rects.push({ x: x0, y: y0, width: x1 - x0, height: y1 - y0 });
+            }
+        }
+        return rects;
+    } catch (e) { return []; }
+}
+
 // Render one PDF File into a virtual article (pages + text + metadata). Reused by the
 // single-load flow and batch render. `dpi` is a number, or 'original' for native rendering.
 async function buildPdfArticle(file, dpi, onProgress) {
@@ -2023,7 +2055,7 @@ async function buildPdfArticle(file, dpi, onProgress) {
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await window.pdfjsLib.getDocument({ data: arrayBuffer }).promise;
     const numPages = pdf.numPages;
-    const pdfPages = [], pdfPageTexts = [], pageDpis = [];
+    const pdfPages = [], pdfPageTexts = [], pageDpis = [], imageRectsPerPage = [];
     for (let i = 1; i <= numPages; i++) {
         if (onProgress) onProgress(i, numPages);
         const page = await pdf.getPage(i);
@@ -2040,6 +2072,7 @@ async function buildPdfArticle(file, dpi, onProgress) {
         const canvas = document.createElement('canvas');
         canvas.width = viewport.width; canvas.height = viewport.height;
         await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        imageRectsPerPage.push(await pageImagePlacements(page, viewport));
         pdfPages.push(await canvasToObjectURL(canvas));
         try { pdfPageTexts.push(await extractPageText(page, viewport)); }
         catch (e) { pdfPageTexts.push(null); }
@@ -2050,6 +2083,7 @@ async function buildPdfArticle(file, dpi, onProgress) {
     return {
         name: file.name.replace(/\.pdf$/i, ''), files: [], pageCount: numPages,
         annotationsFile: null, pdfPages, pdfPageTexts, metadata,
+        imageRects: imageRectsPerPage,
         dpi: repDpi, dpiMode: original ? 'original' : 'fixed'
     };
 }
@@ -2848,30 +2882,46 @@ function createFigureCard(fig) {
         autoBtn.textContent = '✨ Auto-panels';
         autoBtn.title = 'Suggest subfigure boxes by detecting panels in the crop';
         autoBtn.onclick = () => {
-            // Caption panel markers (A)(B)… are a prior: feed the expected count into detection
-            // (to reconcile over-splits) and, if the final count matches AND no subfigures exist
-            // yet, pre-fill each panel's caption in reading order.
-            const parsed = splitPanelCaption(fig.caption);
-            const capLetters = parsed ? Object.keys(parsed.panels) : [];
-            const boxes = suggestSubfigures(fig, capLetters.length >= 2 ? capLetters.length : 0);
-            if (boxes.length < 2) { showToast('No distinct panels detected'); return; }
-            const assignCaps = parsed && fig.subfigures.length === 0 && boxes.length === capLetters.length;
-            commit(() => {
-                boxes.forEach((bnd, k) => {
-                    const n = fig.subfigures.length;
-                    const cap = assignCaps ? (parsed.panels[String.fromCharCode(97 + k)] || '') : '';
-                    fig.subfigures.push({
-                        id: fig.id + '_s' + (n + 1), label: fig.label + String.fromCharCode(97 + n),
-                        bounds: bnd, caption: cap, captionSource: cap ? 'panel-split' : '', createdAt: nowISO()
-                    });
-                });
-            });
-            let msg = `Suggested ${boxes.length} panel(s)`;
-            if (assignCaps) msg += ' with captions';
-            else if (capLetters.length >= 2 && capLetters.length !== boxes.length) msg += ` — caption mentions ${capLetters.length}`;
-            showToast(msg);
+            // Cascade detector: caption constraint -> XObject fast path -> structural pass ->
+            // label anchoring -> structural AND letter verification. A verified result is
+            // applied; an unverified one is never applied silently -- the user is told exactly
+            // what could not be proven and has to say yes, and its panel letters stay
+            // unnamed by the caption (applyPanelResult routes caption text by letter only
+            // when the letters were verified).
+            const res = detectPanelsCore(fig);
+            if (res.panels.length < 2) {
+                let msg = 'No reliable panel split';
+                if (res.expected.count) msg += ` — caption mentions ${res.expected.count} panel(s)`;
+                const warn = res.flags.filter(f => f !== 'no-caption-letters');
+                if (warn.length) msg += ` [${warn.join(', ')}]`;
+                showToast(msg + ' — draw panels manually');
+                return;
+            }
+            if (!res.ok) {
+                const warn = res.flags.filter(f => f !== 'label-seeded-cut');
+                const unnamed = !res.lettersVerified;
+                const ask = `Found ${res.count} panel(s) (${res.method}, ${Math.round(res.confidence * 100)}%) but could not verify:\n\n`
+                    + warn.join('\n')
+                    + (unnamed ? '\n\nPanel LETTERS are a guess from reading order, so no caption text will be attached.' : '')
+                    + '\n\nInsert these boxes for review anyway?';
+                if (!confirm(ask)) { showToast('Not applied — draw panels manually'); return; }
+                applyPanelResult(fig, res);
+                showToast(`Inserted ${res.count} unverified panel(s) — review: ${warn.join(', ')}`);
+                return;
+            }
+            applyPanelResult(fig, res);
+            showToast(`Suggested ${res.count} panel(s) (${res.method}, ${Math.round(res.confidence * 100)}%)`);
         };
         subPanel.appendChild(autoBtn);
+        // Surface the last detection's flags so a flagged (unverified) split is visible.
+        if (fig.panelDetection && (fig.panelDetection.flags || []).length) {
+            const fd = document.createElement('div');
+            fd.className = 'subfigure-hint';
+            fd.style.color = '#c5221f';
+            fd.title = `Panel detection: ${fig.panelDetection.method}, confidence ${Math.round((fig.panelDetection.confidence || 0) * 100)}%`;
+            fd.textContent = '⚠ ' + fig.panelDetection.flags.join(', ');
+            subPanel.appendChild(fd);
+        }
     }
 
     const hint = document.createElement('div');
@@ -3187,20 +3237,82 @@ function associateCaption(fig, page) {
     fig.captionConfidence = Math.min(1, +confidence.toFixed(2));
 }
 
-// Split a figure caption on panel markers "(A) ... (B) ..." into per-letter segments.
+// ---- Panel-marker parsing -------------------------------------------------------------
+// A figure's OWN panel markers -- "(A)", "(C,D)", "(A-F)" -- start the caption, follow the
+// "Figure N" lead-in, or follow sentence/clause punctuation. A CITATION does not: "as shown
+// in (a) and (b) of Smith et al. (2019)" has its letters mid-clause after "in"/"and".
+// Matching "(x)" ANYWHERE is what let a citation invent panels on a single-panel figure, so
+// position is now part of the match. Anything ambiguous (letters out of order, a repeated
+// marker, a mixed-case group) makes the parser return the safe answer rather than a
+// confident wrong one -- a bad hard constraint is worse than no constraint.
+const PANEL_FIG_LEADIN = /^\s*(?:supplementary\s+|supp\.?\s*|extended\s+data\s+)?(?:fig(?:ure)?s?|panel|plate|scheme)\s*\.?\s*\d+\s*[a-z]?\s*[.:)\]|\-–—]?\s*/i;
+// Citation cues that end in a period, i.e. ones the clause-boundary rule would otherwise let through.
+const PANEL_CITE_CUE = /(?:\bet\s+al|\bcf|\be\.g|\bi\.e|\bvs|\brefs?|\bibid)\.\s*$/i;
+// Letters named by one marker body: "A" | "C,D" | "A and B" | "A-F".
+function panelMarkerLetters(inner) {
+    const t = inner.trim();
+    if (/^[A-Za-z]$/.test(t)) return [t.toLowerCase()];
+    const upper = s => s === s.toUpperCase();
+    let m = /^([A-Za-z])\s*[-–—]\s*([A-Za-z])$/.exec(t);
+    if (m) {
+        if (upper(m[1]) !== upper(m[2])) return null;                    // "(A-f)" is not a range
+        const a = m[1].toLowerCase().charCodeAt(0), b = m[2].toLowerCase().charCodeAt(0);
+        if (b <= a || b - a > 11) return null;
+        const out = [];
+        for (let c = a; c <= b; c++) out.push(String.fromCharCode(c));
+        return out;
+    }
+    if (!/^[A-Za-z](\s*(?:,\s*and|,|and|&)\s*[A-Za-z])+$/i.test(t)) return null;
+    const parts = t.split(/\s*(?:,\s*and|,|and|&)\s*/i).filter(s => s.length);
+    if (parts.some(p => !/^[A-Za-z]$/.test(p) || upper(p) !== upper(parts[0]))) return null;
+    const out = parts.map(p => p.toLowerCase());
+    for (let i = 1; i < out.length; i++) if (out[i] <= out[i - 1]) return null;  // must ascend
+    return out;
+}
+
+// Split a figure caption on its OWN panel markers into per-letter segments.
+// Returns { preamble, panels: {letter: text}, letters: [ordered] } or null when the caption
+// names no unambiguous panel run.
 function splitPanelCaption(text) {
     if (!text) return null;
-    const re = /\(([A-Za-z])\)/g;
+    // "Figure 2A-F shows ..." -- a range welded to the figure number, with no per-panel text.
+    const bare = /^\s*(?:supplementary\s+|extended\s+data\s+)?fig(?:ure)?s?\.?\s*\d+\s*([A-Za-z])\s*[-–—]\s*([A-Za-z])\b/i.exec(text);
+    if (bare) {
+        const letters = panelMarkerLetters(bare[1] + '-' + bare[2]);
+        if (letters && letters.length >= 2) return { preamble: text.trim(), panels: {}, letters };
+    }
+    const lead = PANEL_FIG_LEADIN.exec(text);
+    const leadEnd = lead ? lead[0].length : -1;
     const markers = [];
+    const re = /\(([^()]{1,40})\)/g;
     let m;
-    while ((m = re.exec(text))) markers.push({ letter: m[1].toLowerCase(), idx: m.index, end: re.lastIndex });
-    if (markers.length < 2) return null;
+    let next = null;   // the letter that would continue the run accepted so far
+    while ((m = re.exec(text))) {
+        const letters = panelMarkerLetters(m[1]);
+        if (!letters) continue;
+        const pre = text.slice(0, m.index);
+        // Starts the caption / follows the "Figure N" lead-in / follows clause punctuation,
+        // or continues a run already anchored by one of those ("(a) Foo (b) Bar" needs no
+        // punctuation). A citation's letters can do neither: they sit mid-clause after
+        // "in"/"and", and with the first one refused there is no run for the rest to join.
+        const placed = /^\s*$/.test(pre) || m.index <= leadEnd || /[.,;:!?]\s*$/.test(pre) || /\n\s*$/.test(pre);
+        if (!(placed || letters[0] === next) || PANEL_CITE_CUE.test(pre)) continue;
+        markers.push({ letters, idx: m.index, end: re.lastIndex });
+        next = String.fromCharCode(letters[letters.length - 1].charCodeAt(0) + 1);
+    }
+    if (!markers.length) return null;
+    const ordered = [].concat(...markers.map(k => k.letters));
+    for (let i = 1; i < ordered.length; i++) if (ordered[i] <= ordered[i - 1]) return null;  // ambiguous
+    if (ordered.length < 2) return null;
     const panels = {};
     for (let i = 0; i < markers.length; i++) {
         const stop = i + 1 < markers.length ? markers[i + 1].idx : text.length;
-        panels[markers[i].letter] = text.slice(markers[i].end, stop).trim();
+        const seg = text.slice(markers[i].end, stop).trim();
+        // A group ("(C,D) both things") describes every letter it names. First write wins, so a
+        // later cross-reference to a letter can never blank the segment it already earned.
+        for (const L of markers[i].letters) if (!panels[L]) panels[L] = seg;
     }
-    return { preamble: text.slice(0, markers[0].idx).trim(), panels };
+    return { preamble: text.slice(0, markers[0].idx).trim(), panels, letters: ordered };
 }
 
 function showCaptionHighlight(fig, scroll = true) {
@@ -3321,9 +3433,10 @@ function setupSubfigureDrawing(overlay, fig) {
     };
 }
 
-// Auto-detect panels in a figure crop via recursive XY-cut projection profiles.
-// Returns suggested subfigure boxes in figure-natural px. Heuristic — user can adjust.
-function suggestSubfigures(fig, expectedCount = 0) {
+// LEGACY panel detector (recursive XY-cut at 480px, fixed thresholds). Kept only for A/B
+// comparison against the cascade detector (detectPanelsCore below), which replaces it.
+// Returns bare suggested boxes in figure-natural px with no confidence or flags.
+function suggestSubfiguresLegacy(fig, expectedCount = 0) {
     const page = state.pages.find(p => p.pageNum === fig.pageNum);
     if (!page) return [];
     const crop = cropImage(page.img, fig.bounds);
@@ -3424,12 +3537,18 @@ function _overlap1d(a0, a1, b0, b1) { return Math.max(0, Math.min(a1, b1) - Math
 // Repeatedly merge the adjacent pair with the smallest gap until we hit `target` boxes.
 // "Adjacent" = the two boxes overlap >=30% (of the smaller) in the perpendicular axis, so we
 // only ever merge true neighbours (same row horizontally, or same column vertically).
-function reconcileToCount(boxes, target) {
+// `anchors` (found panel labels) veto a merge: two boxes that each carry their own label are
+// two real panels, and no caption-derived count may fuse them. Without anchors this is a
+// caption-driven guess -- the caller flags it (panel-count-mismatch) rather than merging
+// silently, because a caption count is not allowed to destroy a good structural answer.
+function reconcileToCount(boxes, target, anchors = []) {
     boxes = boxes.slice();
+    const anchored = b => anchors.some(a => _centerIn(b, a));
     while (boxes.length > target) {
         let best = null;
         for (let i = 0; i < boxes.length; i++) for (let j = i + 1; j < boxes.length; j++) {
             const a = boxes[i], b = boxes[j];
+            if (anchored(a) && anchored(b)) continue;
             const ax1 = a.x + a.width, ay1 = a.y + a.height, bx1 = b.x + b.width, by1 = b.y + b.height;
             const ovY = _overlap1d(a.y, ay1, b.y, by1), ovX = _overlap1d(a.x, ax1, b.x, bx1);
             let gap = Infinity;
@@ -3453,20 +3572,1771 @@ function sortReadingOrder(boxes) {
     if (boxes.length < 2) return boxes;
     const heights = boxes.map(b => b.height).sort((a, b) => a - b);
     const medH = heights[heights.length >> 1];
-    const tol = medH * 0.5; // two boxes share a row if their vertical centers are within half a panel
-    const bs = boxes.slice().sort((a, b) => (a.y + a.height / 2) - (b.y + b.height / 2));
+    // Two boxes share a row if their TOP edges align. Banding on centres mislabels span
+    // layouts: a tall panel starting level with its neighbours has a much lower centre and
+    // was sorted into a later "row", though a reader names it first.
+    const tol = medH * 0.35;
+    const bs = boxes.slice().sort((a, b) => a.y - b.y);
     const rows = [];
     for (const b of bs) {
-        const cy = b.y + b.height / 2;
-        let row = rows.find(r => Math.abs(r.cy - cy) <= tol);
-        if (!row) { row = { cy, items: [] }; rows.push(row); }
+        let row = rows.find(r => Math.abs(r.ty - b.y) <= tol);
+        if (!row) { row = { ty: b.y, items: [] }; rows.push(row); }
         row.items.push(b);
-        row.cy = row.items.reduce((s, x) => s + x.y + x.height / 2, 0) / row.items.length;
+        row.ty = Math.min(row.ty, b.y);
     }
-    rows.sort((a, b) => a.cy - b.cy);
+    rows.sort((a, b) => a.ty - b.ty);
     const out = [];
     for (const r of rows) { r.items.sort((a, b) => a.x - b.x); out.push(...r.items); }
     return out;
+}
+
+// ========== Panel detection cascade ==========
+// Replaces the legacy XY-cut as the default detector. Decision flow:
+//   1. caption constraint  -> expected letters/count N ("(A) ... (F)" is a HARD prior)
+//   2. XObject fast path   -> if the PDF paints N sub-images that tile the figure, use them
+//   3. structural pass     -> full-res XY-cut with background estimation + gutters that may
+//                             hold a little ink (labels) without blocking the cut
+//   4. label anchoring     -> per-component glyph identification for the EXPECTED letters;
+//                             anchors seed splits the gutter pass missed, carve simple
+//                             non-guillotine layouts, and verify panel NAMING
+//   5. verification        -> count/overlap/coverage/size checks AND letter verification; on
+//                             failure the best guess is returned CLEARLY FLAGGED (never a
+//                             silent wrong split, and never a silent wrong LETTER)
+// A panel whose box is right but whose LETTER is wrong is a silent catastrophic error: the
+// caption segment, and everything extracted downstream, is attached to the wrong picture.
+// So letter identity is a first-class, verified-or-flagged property here. Reading order is
+// only the PRIOR; anchors are the evidence; every path -- including the XObject fast path --
+// goes through the same verification, and an unverified prior can never be ok=true.
+// Returns a result OBJECT -- never a bare array:
+//   { panels: [{bounds, letter, source}], count, lettersVerified: bool,
+//     letterSource: 'anchors'|'reading-order', expected: {count, letters},
+//     method: 'xobject'|'gutter'|'gutter+labels'|'labels'|'seam'|'none',
+//     confidence: 0..1, flags: [...], ok: bool }
+// Flag vocabulary: no-caption-letters, panel-labels-unverified, label-placement-implausible,
+//   label-order-mismatch, panel-count-mismatch, non-guillotine-layout, labels-not-found,
+//   label-seeded-cut, flush-seam-cut, weak-gutter, boundary-repaired, ink-orphaned,
+//   overlapping-panels, sliver-panel, xobject-tiling-rejected, low-confidence, single-panel,
+//   no-page.
+// CRITICAL (any one of them forces ok=false): panel-count-mismatch, overlapping-panels,
+//   low-confidence, no-caption-letters, no-page, panel-labels-unverified,
+//   label-placement-implausible, boundary-repaired -- plus, when the letters were NOT
+//   verified against drawn labels, non-guillotine-layout and label-order-mismatch.
+// Letters count as VERIFIED only when the anchors both (a) map one distinct expected letter
+// onto each box and (b) are PLACED like panel labels (anchorPlacementPlausible). (a) alone
+// is satisfied by any stray letter-shaped glyph of the right identity, so it is not on its
+// own evidence for the partition or for overruling reading order.
+
+const PANEL_ANALYSIS_MAX = 1600;   // analysis raster cap in px (long edge) -- legacy used 480
+
+function defaultPanelLetters(n) { return Array.from({ length: n }, (_, i) => String.fromCharCode(97 + i)); }
+
+// Stage 1: parse the expected panel letters from the caption. Only trusts a consecutive run
+// starting at 'a': a gap ("(A) (B) (D)") means the caption does not pin the count, and N is
+// returned as unknown rather than silently truncated to the letters before the gap.
+function expectedPanelsFromCaption(caption) {
+    const parsed = splitPanelCaption(caption);
+    if (!parsed) return null;
+    const letters = parsed.letters;
+    if (letters.length < 2) return null;
+    for (let i = 0; i < letters.length; i++)
+        if (letters[i] !== String.fromCharCode(97 + i)) return null;
+    return { count: letters.length, letters: letters.slice(), panels: parsed.panels };
+}
+
+function _boxIntersectArea(a, b) {
+    return _overlap1d(a.x, a.x + a.width, b.x, b.x + b.width) *
+           _overlap1d(a.y, a.y + a.height, b.y, b.y + b.height);
+}
+function _boxIoU(a, b) {
+    const i = _boxIntersectArea(a, b);
+    return i / Math.max(1, a.width * a.height + b.width * b.height - i);
+}
+
+// Stage 2: XObject fast path. If the page's operator list painted exactly N sub-images
+// inside this figure and they tile it sensibly, those placements are exact panel bounds.
+function xobjectPanels(fig, N) {
+    const art = state.articles.find(a => a.name === state.currentArticle);
+    const all = art && art.imageRects && art.imageRects[fig.pageNum - 1];
+    if (!all || !all.length) return null;
+    const fx0 = fig.bounds.x, fy0 = fig.bounds.y;
+    const fx1 = fx0 + fig.bounds.width, fy1 = fy0 + fig.bounds.height;
+    const figArea = fig.bounds.width * fig.bounds.height;
+    const rects = [];
+    for (const r of all) {
+        const x0 = Math.max(r.x, fx0), y0 = Math.max(r.y, fy0);
+        const x1 = Math.min(r.x + r.width, fx1), y1 = Math.min(r.y + r.height, fy1);
+        const w = x1 - x0, h = y1 - y0;
+        if (w <= 0 || h <= 0) continue;
+        if (w * h < 0.02 * figArea) continue;                 // icons / ornaments
+        if (w * h < 0.5 * r.width * r.height) continue;       // image mostly outside the figure
+        rects.push({ x: Math.round(x0 - fx0), y: Math.round(y0 - fy0), width: Math.round(w), height: Math.round(h) });
+    }
+    const uniq = [];
+    for (const r of rects) if (!uniq.some(u => _boxIoU(u, r) > 0.9)) uniq.push(r);
+    if (uniq.length !== N) return null;
+    for (let i = 0; i < uniq.length; i++) for (let j = i + 1; j < uniq.length; j++) {
+        const inter = _boxIntersectArea(uniq[i], uniq[j]);
+        if (inter > 0.15 * Math.min(uniq[i].width * uniq[i].height, uniq[j].width * uniq[j].height)) return null;
+    }
+    const covered = uniq.reduce((s, r) => s + r.width * r.height, 0);
+    if (covered < 0.5 * figArea) return null;
+    return sortReadingOrder(uniq);
+}
+
+// Full-resolution ink raster with real background estimation: the background is the MODAL
+// (quantised) colour of the crop and "ink" is any pixel differing from it by a modest
+// contrast -- so light-grey axes count as ink and a tinted panel background does not read
+// as solid ink (fixes the grey<205 defect), at up to PANEL_ANALYSIS_MAX px (fixes 480px cap).
+function panelInkAnalysis(imgEl, bounds) {
+    const crop = cropImage(imgEl, bounds);
+    const W = crop.width, H = crop.height;
+    const s = Math.min(1, PANEL_ANALYSIS_MAX / Math.max(W, H));
+    const aw = Math.max(2, Math.round(W * s)), ah = Math.max(2, Math.round(H * s));
+    const c = document.createElement('canvas'); c.width = aw; c.height = ah;
+    const ctx = c.getContext('2d', { willReadFrequently: true });
+    ctx.drawImage(crop, 0, 0, aw, ah);
+    const data = ctx.getImageData(0, 0, aw, ah).data;
+    const hist = new Map();
+    for (let i = 0; i < data.length; i += 4) {
+        const key = (data[i] >> 3 << 10) | (data[i + 1] >> 3 << 5) | (data[i + 2] >> 3);
+        hist.set(key, (hist.get(key) || 0) + 1);
+    }
+    let bgKey = 0, bgCount = -1;
+    hist.forEach((v, k) => { if (v > bgCount) { bgCount = v; bgKey = k; } });
+    const br = (((bgKey >> 10) & 31) << 3) + 4, bg = (((bgKey >> 5) & 31) << 3) + 4, bb = ((bgKey & 31) << 3) + 4;
+    const ink = new Uint8Array(aw * ah);
+    const lum = new Uint8Array(aw * ah);   // luminance, kept for seam (flush-boundary) detection
+    let total = 0;
+    for (let p = 0, i = 0; p < aw * ah; p++, i += 4) {
+        if (Math.abs(data[i] - br) + Math.abs(data[i + 1] - bg) + Math.abs(data[i + 2] - bb) > 42) { ink[p] = 1; total++; }
+        lum[p] = (data[i] * 3 + data[i + 1] * 6 + data[i + 2]) / 10 | 0;
+    }
+    return { aw, ah, s, ink, total, lum };
+}
+
+// Per-position ink stats along one axis of a region: total ink, longest contiguous ink run,
+// and number of runs. Distinguishes a gutter that holds a LABEL (few short runs) from a
+// panel interior (an axis spine is one long run; plotted series are many runs).
+function profileStats(A, x0, x1, y0, y1, axis) {
+    const len = axis === 'x' ? x1 - x0 : y1 - y0;
+    const cross = axis === 'x' ? y1 - y0 : x1 - x0;
+    const tot = new Int32Array(len), run = new Int32Array(len), runs = new Int32Array(len);
+    for (let k = 0; k < len; k++) {
+        let t = 0, r = 0, mr = 0, nr = 0;
+        if (axis === 'x') {
+            const x = x0 + k;
+            for (let y = y0; y < y1; y++) {
+                if (A.ink[y * A.aw + x]) { if (!r) nr++; t++; r++; if (r > mr) mr = r; } else r = 0;
+            }
+        } else {
+            const y = y0 + k, base = y * A.aw;
+            for (let x = x0; x < x1; x++) {
+                if (A.ink[base + x]) { if (!r) nr++; t++; r++; if (r > mr) mr = r; } else r = 0;
+            }
+        }
+        tot[k] = t; run[k] = mr; runs[k] = nr;
+    }
+    return { tot, run, runs, len, cross };
+}
+
+function _bestCutInRun(tot, i, j) {
+    const mid = (i + j - 1) / 2;
+    let bi = i;
+    for (let k = i; k < j; k++)
+        if (tot[k] < tot[bi] || (tot[k] === tot[bi] && Math.abs(k - mid) < Math.abs(bi - mid))) bi = k;
+    return bi;
+}
+
+// Best gutter cut for one axis of a region. A position is gutter-like when it holds little
+// ink, no long solid run, and few runs -- so a legend line or shared axis label inside the
+// gutter no longer blocks the cut, while a cut through a plot's interior is still refused.
+// Crucially the run must contain a near-EMPTY floor position (the actual cut line): panel
+// interiors always have borders/spines/curves crossing every line, a real gutter does not.
+// `permissive` (caption count known) tolerates more label ink and tighter gutters.
+function bestGutterCut(ps, minGut, minPanel, permissive) {
+    const { tot, run, runs, len, cross } = ps;
+    const runCap = Math.max(8, Math.round(cross * 0.06));
+    const inkCap = permissive ? cross * 0.12 : Math.max(2, cross * 0.02);
+    const runsCap = permissive ? 5 : 3;
+    const noiseCap = permissive ? Math.max(1, Math.round(cross * 0.001)) : 0;
+    const okPos = k => run[k] <= runCap && tot[k] <= inkCap && runs[k] <= runsCap;
+    let best = null, i = 0;
+    while (i < len) {
+        if (!okPos(i)) { i++; continue; }
+        let j = i, sum = 0, floor = Infinity;
+        while (j < len && okPos(j)) { sum += tot[j]; if (tot[j] < floor) floor = tot[j]; j++; }
+        const w = j - i;
+        if (w >= minGut && floor <= noiseCap) {
+            const cutAt = _bestCutInRun(tot, i, j);
+            if (cutAt >= minPanel && len - cutAt >= minPanel) {
+                const score = w * (1 - (sum / w) / Math.max(1, cross));
+                if (!best || score > best.score) best = { cutAt, w, score };
+            }
+        }
+        i = j;
+    }
+    return best;
+}
+
+// Ink bounding box of a region (null if empty or a speck).
+function _inkBBox(A, x0, y0, x1, y1) {
+    let minx = x1, maxx = -1, miny = y1, maxy = -1;
+    for (let y = y0; y < y1; y++) {
+        const base = y * A.aw;
+        for (let x = x0; x < x1; x++) if (A.ink[base + x]) {
+            if (x < minx) minx = x; if (x > maxx) maxx = x;
+            if (y < miny) miny = y; if (y > maxy) maxy = y;
+        }
+    }
+    if (maxx < 0) return null;
+    const w = maxx - minx + 1, h = maxy - miny + 1;
+    if (w < A.aw * 0.02 || h < A.ah * 0.02) return null;
+    return { x: minx, y: miny, width: w, height: h };
+}
+
+// Stage 3: recursive guillotine cut on the analysis raster. Gutter width threshold is a
+// small ABSOLUTE minimum (3px when the caption pins the count), not 2.5% of the dimension,
+// so tight journal gutters split; minimum panel size is 4.5% per axis (legacy: ~19% area).
+function guillotineLeaves(A, permissive, depthMax = 6) {
+    const minPX = Math.max(12, Math.round(A.aw * 0.045));
+    const minPY = Math.max(12, Math.round(A.ah * 0.045));
+    const minGutX = permissive ? 3 : Math.max(4, Math.round(A.aw * 0.006));
+    const minGutY = permissive ? 3 : Math.max(4, Math.round(A.ah * 0.006));
+    const leaves = [];
+    function rec(x0, y0, x1, y1, depth) {
+        if (depth < depthMax) {
+            const cx = (x1 - x0 >= 2 * minPX) ? bestGutterCut(profileStats(A, x0, x1, y0, y1, 'x'), minGutX, minPX, permissive) : null;
+            const cy = (y1 - y0 >= 2 * minPY) ? bestGutterCut(profileStats(A, x0, x1, y0, y1, 'y'), minGutY, minPY, permissive) : null;
+            let cut = null, axis = null;
+            if (cx && cy) { if (cx.w >= cy.w) { cut = cx; axis = 'x'; } else { cut = cy; axis = 'y'; } }
+            else if (cx) { cut = cx; axis = 'x'; }
+            else if (cy) { cut = cy; axis = 'y'; }
+            if (cut) {
+                if (axis === 'x') { const c0 = x0 + cut.cutAt; rec(x0, y0, c0, y1, depth + 1); rec(c0, y0, x1, y1, depth + 1); }
+                else { const c0 = y0 + cut.cutAt; rec(x0, y0, x1, c0, depth + 1); rec(x0, c0, x1, y1, depth + 1); }
+                return;
+            }
+        }
+        const t = _inkBBox(A, x0, y0, x1, y1);
+        if (t) leaves.push(t);
+    }
+    rec(0, 0, A.aw, A.ah, 0);
+    return leaves;
+}
+
+// 8-connected components of the ink raster (bboxes + a label map, for glyph matching and
+// the non-guillotine carve).
+function computeComponents(A) {
+    const { aw, ah, ink } = A;
+    const lab = new Int32Array(aw * ah);
+    const stack = new Int32Array(aw * ah);
+    const comps = [];
+    let nc = 0;
+    for (let p0 = 0; p0 < aw * ah; p0++) {
+        if (!ink[p0] || lab[p0]) continue;
+        nc++;
+        let sp = 0; stack[sp++] = p0; lab[p0] = nc;
+        let minx = aw, maxx = 0, miny = ah, maxy = 0, area = 0;
+        while (sp) {
+            const q = stack[--sp], x = q % aw, y = (q / aw) | 0;
+            area++;
+            if (x < minx) minx = x; if (x > maxx) maxx = x;
+            if (y < miny) miny = y; if (y > maxy) maxy = y;
+            for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+                const nx = x + dx, ny = y + dy;
+                if (nx < 0 || ny < 0 || nx >= aw || ny >= ah) continue;
+                const np = ny * aw + nx;
+                if (ink[np] && !lab[np]) { lab[np] = nc; stack[sp++] = np; }
+            }
+        }
+        comps.push({ id: nc, x0: minx, y0: miny, x1: maxx, y1: maxy, area });
+    }
+    return { comps, lab };
+}
+
+// Stage 4 support: glyph templates for one character (several fonts/weights, both cases),
+// bbox-trimmed and resampled to a fixed GRAYSCALE coverage grid (per cell: the fraction of
+// the source that is inked), plus the glyph's aspect ratio.
+//
+// Why coverage + correlation rather than a binary Dice score: measured on the old 20x20
+// binary grid, cross-letter Dice reached 0.94 (b/h), 0.92 (8/b), 0.91 (c/g), 0.87 (b/e) --
+// all above any usable absolute floor. A "match" therefore said a component was letter-SHAPED
+// but nothing about WHICH letter, so anchors were noise in both directions: they missed real
+// labels and fabricated confirmation for wrong ones. Coverage grids compared by zero-mean
+// normalised cross-correlation, gated on aspect ratio and accepted only with a MARGIN over
+// the runner-up character (identifyGlyph), do carry letter identity.
+const GLYPH_GRID = 18;
+const _glyphTemplateCache = new Map();
+// Serif and ITALIC variants are carried because journals set panel letters in the figure's
+// own typeface: a Times-Italic 'B' correlated only against upright templates scored 0.58
+// with a 0.13 margin and went unanchored (measured), costing a whole figure's coverage.
+const GLYPH_FONTS = ['bold 64px Arial', '64px Arial', 'bold 64px "Times New Roman"', '64px "Times New Roman"',
+                     'italic 64px "Times New Roman"', 'bold italic 64px "Times New Roman"', 'bold italic 64px Arial'];
+
+// Resample an ink region to the coverage grid. `isOn(x, y)` reports ink at a source pixel.
+function _covGrid(isOn, x0, y0, w, h) {
+    const g = new Float32Array(GLYPH_GRID * GLYPH_GRID);
+    for (let gy = 0; gy < GLYPH_GRID; gy++) {
+        const sy0 = y0 + Math.floor(gy * h / GLYPH_GRID), sy1 = Math.max(sy0 + 1, y0 + Math.ceil((gy + 1) * h / GLYPH_GRID));
+        for (let gx = 0; gx < GLYPH_GRID; gx++) {
+            const sx0 = x0 + Math.floor(gx * w / GLYPH_GRID), sx1 = Math.max(sx0 + 1, x0 + Math.ceil((gx + 1) * w / GLYPH_GRID));
+            let on = 0, n = 0;
+            for (let sy = sy0; sy < sy1; sy++) for (let sx = sx0; sx < sx1; sx++) { n++; if (isOn(sx, sy)) on++; }
+            g[gy * GLYPH_GRID + gx] = on / Math.max(1, n);
+        }
+    }
+    return g;
+}
+
+// Pre-compute the mean and L2 norm a correlation needs.
+function _glyphPattern(cov, aspect) {
+    let mean = 0;
+    for (let i = 0; i < cov.length; i++) mean += cov[i];
+    mean /= cov.length;
+    let ss = 0;
+    for (let i = 0; i < cov.length; i++) { const d = cov[i] - mean; ss += d * d; }
+    return { cov, mean, norm: Math.sqrt(ss) || 1e-6, aspect };
+}
+
+// Zero-mean normalised cross-correlation of two coverage grids, in [-1, 1].
+function _zncc(p, q) {
+    let s = 0;
+    for (let i = 0; i < p.cov.length; i++) s += (p.cov[i] - p.mean) * (q.cov[i] - q.mean);
+    return s / (p.norm * q.norm);
+}
+
+function glyphTemplates(ch) {
+    let t = _glyphTemplateCache.get(ch);
+    if (t) return t;
+    t = [];
+    const S = 96;
+    const cv = document.createElement('canvas'); cv.width = S; cv.height = S;
+    const ctx = cv.getContext('2d', { willReadFrequently: true });
+    const forms = /[a-z]/i.test(ch) ? [ch.toUpperCase(), ch.toLowerCase()] : [ch];
+    // Filled variants for normal labels; stroked (outline-only) variants for letters drawn
+    // with a contrasting outline over a raster or heatmap -- the ink mask then sees only the
+    // outline ring, which correlates with no filled template.
+    const draw = (form, font, outline) => {
+        ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, S, S);
+        ctx.font = font; ctx.textBaseline = 'top';
+        if (outline) { ctx.strokeStyle = '#000'; ctx.lineWidth = 4; ctx.strokeText(form, 12, 8); }
+        else { ctx.fillStyle = '#000'; ctx.fillText(form, 12, 8); }
+        const d = ctx.getImageData(0, 0, S, S).data;
+        let x0 = S, x1 = -1, y0 = S, y1 = -1;
+        for (let y = 0; y < S; y++) for (let x = 0; x < S; x++)
+            if (d[(y * S + x) * 4] < 128) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+        if (x1 < 0) return;
+        const w = x1 - x0 + 1, h = y1 - y0 + 1;
+        t.push(_glyphPattern(_covGrid((x, y) => d[(y * S + x) * 4] < 128, x0, y0, w, h), w / h));
+    };
+    for (const font of GLYPH_FONTS) for (const form of forms) draw(form, font, false);
+    for (const form of forms) { draw(form, 'bold 64px Arial', true); draw(form, 'bold 64px "Times New Roman"', true); }
+    // Parenthesised label forms -- "(A)" and the weld fragments "(A" / "A)" that survive
+    // when one paren fuses to the letter -- and SMALL-size renders, whose anti-aliased,
+    // binarised shape is what a 12px label actually looks like in the ink mask.
+    for (const form of forms) for (const font of ['bold 64px Arial', 'bold 64px "Times New Roman"']) {
+        draw('(' + form + ')', font, false);
+        draw('(' + form, font, false);
+        draw(form + ')', font, false);
+    }
+    for (const form of forms) { draw(form, 'bold 13px Arial', false); draw(form, 'bold 13px "Times New Roman"', false); }
+    _glyphTemplateCache.set(ch, t);
+    return t;
+}
+
+// A component's own ink (other components excluded via the label map) as a coverage pattern.
+function compPatch(A, cc, comp) {
+    const w = comp.x1 - comp.x0 + 1, h = comp.y1 - comp.y0 + 1;
+    return _glyphPattern(_covGrid((x, y) => cc.lab[y * A.aw + x] === comp.id, comp.x0, comp.y0, w, h), w / h);
+}
+// The same, 1px-dilated. A letter drawn as a white FILL inside a dark outline (the raster-
+// label convention) survives in the mask as a 1-2px-thin skeleton that correlates with no
+// normal-weight template; thickening it restores the match.
+function compPatchDilated(A, cc, comp) {
+    const w = comp.x1 - comp.x0 + 3, h = comp.y1 - comp.y0 + 3;
+    const isOn = (x, y) => {
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+            const nx = x + dx, ny = y + dy;
+            if (nx < 0 || ny < 0 || nx >= A.aw || ny >= A.ah) continue;
+            if (cc.lab[ny * A.aw + nx] === comp.id) return true;
+        }
+        return false;
+    };
+    return _glyphPattern(_covGrid(isOn, comp.x0 - 1, comp.y0 - 1, w, h), w / h);
+}
+// Identify with the thin-glyph fallback.
+function identifyGlyphOfComp(A, cc, comp) {
+    return identifyGlyph(compPatch(A, cc, comp)) || identifyGlyph(compPatchDilated(A, cc, comp));
+}
+
+// Which character is this patch, if any? A character is returned ONLY when its correlation
+// clears an absolute floor AND beats every other character by a margin. The distractor set is
+// the whole alphabet plus the digits (tick numbers are the classic false label), so a patch
+// that merely looks letter-shaped -- or looks equally like 'b' and 'h' -- returns null.
+// Returning null is the honest answer and costs only an unverified flag downstream.
+const GLYPH_ALPHABET = 'abcdefghijklmnopqrstuvwxyz0123456789';
+const GLYPH_SCORE_MIN = 0.55;    // correlation floor for "this is that character at all"
+const GLYPH_MARGIN_MIN = 0.12;   // required lead over the runner-up character
+const GLYPH_ASPECT_TOL = 1.6;    // patch/template width:height ratios may differ by this factor
+function identifyGlyph(patch) {
+    let bestCh = null, best = -2, second = -2;
+    for (const ch of GLYPH_ALPHABET) {
+        let s = -2;
+        for (const t of glyphTemplates(ch)) {
+            const lo = Math.min(patch.aspect, t.aspect), hi = Math.max(patch.aspect, t.aspect);
+            if (hi > lo * GLYPH_ASPECT_TOL) continue;
+            const v = _zncc(patch, t);
+            if (v > s) s = v;
+        }
+        if (s > best) { second = best; best = s; bestCh = ch; }
+        else if (s > second) second = s;
+    }
+    if (!bestCh || best < GLYPH_SCORE_MIN) return null;
+    const margin = best - Math.max(0, second);
+    // Graduated margin: a strong absolute match earns a little margin slack (tiny 10-14px
+    // glyphs -- a white-filled 'b' on a micrograph -- top out near 0.65 with a runner-up
+    // close behind). The set verification downstream is the backstop: a swapped letter
+    // creates a duplicate + a missing letter and fails verification, so the residual risk
+    // of this slack is an abstention, not a silent mislabel.
+    if (margin < GLYPH_MARGIN_MIN && !(best >= 0.63 && margin >= 0.095)) return null;
+    return { letter: bestCh, score: best, margin };
+}
+
+// Stage 4: find the expected panel letters in the crop. Every label-sized candidate is
+// identified INDEPENDENTLY (identifyGlyph); we keep the ones whose identity is an expected
+// letter. Deliberately no reading-order DP: a DP that forces letters to ascend in reading
+// order can only ever agree with the reading-order prior, so it could never expose -- let
+// alone correct -- a column-major or otherwise permuted labelling. Anchors are evidence;
+// where the evidence is absent or contradictory we return fewer anchors, not guesses.
+//
+// Candidates come from three sources, because measurement showed three distinct ways a
+// perfectly legible label evades a naive component pass:
+//   (a) clean ink components -- the easy case;
+//   (b) TRIM-RESCUED components: a single scatter dot / tick touching the glyph merges the
+//       connected component, so the blob reads as no character until its sparse margins are
+//       stripped ("contact kills a label" -- the largest source of needless abstention);
+//   (c) HOLE glyphs: letters drawn light-on-dark over a raster are background-coloured, so
+//       they are invisible to the ink mask but are exactly the label-sized non-ink
+//       components fully enclosed by ink.
+function _labelSizeGates(long) {
+    // Floor ~0.9% of the long edge (measured journal sizes); identity + margin + downstream
+    // verification carry the burden of rejecting small lookalikes such as tick digits.
+    return { minH: Math.max(9, Math.round(long * 0.009)), maxH: Math.round(long * 0.06) };
+}
+function _passesLabelGates(w, h, area, g) {
+    if (h < g.minH || h > g.maxH || w > g.maxH * 1.4) return false;
+    const asp = w / h;
+    if (asp < 0.2 || asp > 1.6) return false;
+    const dens = area / (w * h);
+    return dens >= 0.12 && dens <= 0.92;
+}
+// Strip sparse edge rows/columns off a merged component: the glyph body is dense, the
+// attached speck/tick contributes thin margins. Returns an identified letter or null.
+function _trimmedGlyphHit(A, cc, comp, g) {
+    const w0 = comp.x1 - comp.x0 + 1, h0 = comp.y1 - comp.y0 + 1;
+    if (h0 < g.minH || h0 > 3 * g.maxH || w0 > 3 * g.maxH) return null;
+    const rows = new Int32Array(h0), cols = new Int32Array(w0);
+    for (let y = 0; y < h0; y++) for (let x = 0; x < w0; x++)
+        if (cc.lab[(comp.y0 + y) * A.aw + comp.x0 + x] === comp.id) { rows[y]++; cols[x]++; }
+    let maxR = 0, maxC = 0;
+    for (const v of rows) if (v > maxR) maxR = v;
+    for (const v of cols) if (v > maxC) maxC = v;
+    const rT = Math.max(2.5, 0.32 * maxR), cT = Math.max(2.5, 0.32 * maxC);
+    let y0 = 0, y1 = h0 - 1, x0 = 0, x1 = w0 - 1;
+    while (y0 < y1 && rows[y0] < rT) y0++;
+    while (y1 > y0 && rows[y1] < rT) y1--;
+    while (x0 < x1 && cols[x0] < cT) x0++;
+    while (x1 > x0 && cols[x1] < cT) x1--;
+    if (x0 === 0 && y0 === 0 && x1 === w0 - 1 && y1 === h0 - 1) return null; // nothing stripped
+    const w = x1 - x0 + 1, h = y1 - y0 + 1;
+    let area = 0;
+    for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++)
+        if (cc.lab[(comp.y0 + y) * A.aw + comp.x0 + x] === comp.id) area++;
+    if (!_passesLabelGates(w, h, area, g)) return null;
+    const patch = _glyphPattern(_covGrid(
+        (x, y) => cc.lab[y * A.aw + x] === comp.id, comp.x0 + x0, comp.y0 + y0, w, h), w / h);
+    const id = identifyGlyph(patch);
+    if (!id) return null;
+    return { letter: id.letter, x0: comp.x0 + x0, y0: comp.y0 + y0,
+             x1: comp.x0 + x1, y1: comp.y0 + y1, compId: comp.id,
+             score: id.score, margin: id.margin };
+}
+// Sort anchors into reading order (top band first, left to right within a band).
+function _sortAnchorsReadingOrder(anchors) {
+    const hs = anchors.map(a => a.y1 - a.y0 + 1).sort((x, y) => x - y);
+    const bandH = anchors.length ? Math.max(8, hs[hs.length >> 1] * 2) : 8;
+    anchors.sort((p, q) => {
+        const bp = Math.floor(p.y0 / bandH), bq = Math.floor(q.y0 / bandH);
+        return bp !== bq ? bp - bq : p.x0 - q.x0;
+    });
+    return anchors;
+}
+// Resolve duplicate hits for one letter. Two hits at (nearly) the same place are the SAME
+// physical label seen through different channels (e.g. a white fill and its dark outline):
+// keep the stronger. Two hits at different places are genuinely ambiguous: keep the
+// stronger only if it clearly wins, otherwise the letter goes unanchored.
+function _dedupAnchorHits(hits) {
+    const anchors = [];
+    const coloc = (a, b) => {
+        const sz = Math.max(a.x1 - a.x0, a.y1 - a.y0, b.x1 - b.x0, b.y1 - b.y0) + 1;
+        return Math.abs((a.x0 + a.x1) - (b.x0 + b.x1)) / 2 < sz &&
+               Math.abs((a.y0 + a.y1) - (b.y0 + b.y1)) / 2 < sz;
+    };
+    const distinctOf = list => {
+        list.sort((a, b) => b.score - a.score);
+        const d = [list[0]];
+        for (const h of list.slice(1)) if (!d.some(x => coloc(x, h))) d.push(h);
+        return d;
+    };
+    // Pass 1: letters with a single candidate calibrate the label font size.
+    const hs = [];
+    hits.forEach(list => { const d = distinctOf(list); if (d.length === 1) hs.push(d[0].y1 - d[0].y0 + 1); });
+    hs.sort((a, b) => a - b);
+    const estH = hs.length ? hs[hs.length >> 1] : 0;
+    const singles = [];
+    hits.forEach(list => { const d = distinctOf(list); if (d.length === 1) singles.push(d[0]); });
+    hits.forEach(list => {
+        let distinct = distinctOf(list);
+        // Pass 2: panel labels share ONE typeface and size. When candidates compete, a
+        // candidate matching the calibrated size beats an off-size one (a legend or title
+        // capital) even when their correlation scores are close.
+        if (distinct.length > 1 && estH) {
+            const sized = distinct.filter(h => {
+                const hh = h.y1 - h.y0 + 1;
+                return hh >= 0.75 * estH && hh <= 1.3 * estH;
+            });
+            if (sized.length === 1) distinct = sized;
+        }
+        // Pass 3: labels sit on a grid. A candidate that lines up (same x or same y, within
+        // half a glyph) with strictly more of the UNAMBIGUOUS anchors is the label; a
+        // legend/title glyph aligns with none.
+        if (distinct.length > 1 && singles.length >= 2) {
+            const tolA = Math.max(4, Math.round(0.6 * (estH || 12)));
+            const nAlign = h => singles.reduce((s, a) =>
+                s + (Math.abs(a.x0 - h.x0) <= tolA || Math.abs(a.y0 - h.y0) <= tolA ? 1 : 0), 0);
+            const scored = distinct.map(h => nAlign(h));
+            const mx = Math.max(...scored);
+            if (mx >= 1 && scored.filter(v => v === mx).length === 1)
+                distinct = [distinct[scored.indexOf(mx)]];
+        }
+        if (distinct.length === 1 || distinct[0].score - distinct[1].score >= GLYPH_MARGIN_MIN)
+            anchors.push(distinct[0]);
+    });
+    return anchors;
+}
+// Rescue for text-line welds: a label fused with the adjacent axis tick text ("A" + "80" ->
+// one component) joins at an anti-aliased bridge a pixel or two thick, so the column (or
+// row) profile has a deep valley at the junction. Split there, identify each segment.
+function _projectionSplitHits(A, cc, comp, g) {
+    const w0 = comp.x1 - comp.x0 + 1, h0 = comp.y1 - comp.y0 + 1;
+    if (h0 < g.minH || h0 > 3 * g.maxH || w0 > 4 * g.maxH) return [];
+    const cols = new Int32Array(w0), rows = new Int32Array(h0);
+    for (let y = 0; y < h0; y++) for (let x = 0; x < w0; x++)
+        if (cc.lab[(comp.y0 + y) * A.aw + comp.x0 + x] === comp.id) { cols[x]++; rows[y]++; }
+    const hits = [];
+    const trySegments = (prof, len, alongX, vT) => {
+        const segs = [];
+        let s = -1;
+        for (let k = 0; k <= len; k++) {
+            const solid = k < len && prof[k] > vT;
+            if (solid && s < 0) s = k;
+            else if (!solid && s >= 0) { segs.push([s, k - 1]); s = -1; }
+        }
+        // A single segment still counts when it sheds a meaningful margin (a trailing
+        // 1px-tail weld); an unchanged span means this threshold separated nothing.
+        if (segs.length < 2 && !(segs.length === 1 && segs[0][1] - segs[0][0] + 1 <= 0.92 * len)) return null;
+        const ids = [];
+        for (const [k0, k1] of segs) {
+            // tight bbox of the component's ink within the segment
+            let mx0 = A.aw, mx1 = -1, my0 = A.ah, my1 = -1, area = 0;
+            const sx0 = alongX ? comp.x0 + k0 : comp.x0, sx1 = alongX ? comp.x0 + k1 : comp.x1;
+            const sy0 = alongX ? comp.y0 : comp.y0 + k0, sy1 = alongX ? comp.y1 : comp.y0 + k1;
+            for (let y = sy0; y <= sy1; y++) for (let x = sx0; x <= sx1; x++)
+                if (cc.lab[y * A.aw + x] === comp.id) {
+                    area++;
+                    if (x < mx0) mx0 = x; if (x > mx1) mx1 = x;
+                    if (y < my0) my0 = y; if (y > my1) my1 = y;
+                }
+            if (mx1 < 0) continue;
+            // The attachment usually extends BELOW/BESIDE the glyph inside this segment too
+            // (tick digits sit on a lower baseline): strip sparse margins in 2-D.
+            const rsum = new Int32Array(my1 - my0 + 1), csum = new Int32Array(mx1 - mx0 + 1);
+            for (let y = my0; y <= my1; y++) for (let x = mx0; x <= mx1; x++)
+                if (cc.lab[y * A.aw + x] === comp.id) { rsum[y - my0]++; csum[x - mx0]++; }
+            let maxR = 0, maxC = 0;
+            for (const v of rsum) if (v > maxR) maxR = v;
+            for (const v of csum) if (v > maxC) maxC = v;
+            const rT2 = Math.max(2.5, 0.32 * maxR), cT2 = Math.max(2.5, 0.32 * maxC);
+            const oy0 = my0, ox0 = mx0;
+            while (my0 < my1 && rsum[my0 - oy0] < rT2) my0++;
+            while (my1 > my0 && rsum[my1 - oy0] < rT2) my1--;
+            while (mx0 < mx1 && csum[mx0 - ox0] < cT2) mx0++;
+            while (mx1 > mx0 && csum[mx1 - ox0] < cT2) mx1--;
+            let area2 = 0;
+            for (let y = my0; y <= my1; y++) for (let x = mx0; x <= mx1; x++)
+                if (cc.lab[y * A.aw + x] === comp.id) area2++;
+            const w = mx1 - mx0 + 1, h = my1 - my0 + 1;
+            if (!_passesLabelGates(w, h, area2, g)) continue;
+            const patch = _glyphPattern(_covGrid((x, y) =>
+                x >= mx0 && x <= mx1 && y >= my0 && y <= my1 && cc.lab[y * A.aw + x] === comp.id,
+                mx0, my0, w, h), w / h);
+            const id = identifyGlyph(patch);
+            if (id) ids.push({ letter: id.letter, x0: mx0, y0: my0, x1: mx1, y1: my1,
+                               compId: comp.id, score: id.score, margin: id.margin });
+        }
+        // A label welded to its axis TICK reads as one letter beside digits. A welded WORD
+        // ("Control") reads as several letters -- and a word's letters must never anchor a
+        // panel (measured: a legend's leading capital out-voted a smudged real label).
+        if (alongX && ids.filter(i => /[a-z]/.test(i.letter)).length >= 2) return null;
+        return ids;
+    };
+    // Escalating valley thresholds: try the gentlest split first (1px anti-alias bridges),
+    // deepen only while nothing identifies -- a deep threshold can fragment a thin glyph,
+    // so the first level that yields a letter wins.
+    for (const [prof, len, alongX] of [[cols, w0, true], [rows, h0, false]]) {
+        for (const vT of [1, 2, 3]) {
+            const ids = trySegments(prof, len, alongX, vT);
+            if (ids && ids.length) { hits.push(...ids); break; }
+        }
+    }
+    return hits;
+}
+
+// A letter painted as a light FILL inside a dark outline appears in the mask as two thin
+// complementary shapes: the outline ring (ink) and the fill (hole). Neither correlates
+// well alone; their UNION is the actual painted glyph. Reconstruct it from the hole side:
+// member pixels plus any INK pixel 8-adjacent to a member (the 1px outline).
+function _holeUnionPatch(A, ccInv, comp) {
+    const isMember = (x, y) => x >= 0 && y >= 0 && x < A.aw && y < A.ah && ccInv.lab[y * A.aw + x] === comp.id;
+    const isOn = (x, y) => {
+        if (x < 0 || y < 0 || x >= A.aw || y >= A.ah) return false;
+        if (isMember(x, y)) return true;
+        if (!A.ink[y * A.aw + x]) return false;
+        for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++)
+            if (isMember(x + dx, y + dy)) return true;
+        return false;
+    };
+    const w = comp.x1 - comp.x0 + 3, h = comp.y1 - comp.y0 + 3;
+    return _glyphPattern(_covGrid(isOn, comp.x0 - 1, comp.y0 - 1, w, h), w / h);
+}
+
+// Last-ditch rescue for a merged blob: the glyph welds to its attachment at one edge, so it
+// occupies (roughly) one corner of the merged bbox. Try a label-sized window at each corner,
+// take the component ink's bbox inside it, and identify that.
+function _cornerOfCompHit(A, cc, comp, g, estH) {
+    const w0 = comp.x1 - comp.x0 + 1, h0 = comp.y1 - comp.y0 + 1;
+    let best = null;
+    // The weld's attachment can sit one pixel past the glyph, so try a few window sizes:
+    // a snug window excludes the attachment entirely; a roomy one survives a loose bbox.
+    for (const f of [0.95, 1.05, 1.15, 1.25, 1.35]) {
+        const win = Math.round(estH * f);
+        if (w0 <= win && h0 <= win) continue;   // window would just re-test the whole comp
+        const corners = [
+            [comp.x0, comp.y0], [comp.x1 - win + 1, comp.y0],
+            [comp.x0, comp.y1 - win + 1], [comp.x1 - win + 1, comp.y1 - win + 1]];
+        for (const [cx0, cy0] of corners) {
+            const x0 = Math.max(comp.x0, cx0), y0 = Math.max(comp.y0, cy0);
+            const x1 = Math.min(comp.x1, x0 + win - 1), y1 = Math.min(comp.y1, y0 + win - 1);
+            let mx0 = x1 + 1, mx1 = -1, my0 = y1 + 1, my1 = -1, area = 0;
+            for (let y = y0; y <= y1; y++) for (let x = x0; x <= x1; x++)
+                if (cc.lab[y * A.aw + x] === comp.id) {
+                    area++;
+                    if (x < mx0) mx0 = x; if (x > mx1) mx1 = x;
+                    if (y < my0) my0 = y; if (y > my1) my1 = y;
+                }
+            if (mx1 < 0) continue;
+            const w = mx1 - mx0 + 1, h = my1 - my0 + 1;
+            if (!_passesLabelGates(w, h, area, g)) continue;
+            const patch = _glyphPattern(_covGrid((x, y) =>
+                x >= x0 && x <= x1 && y >= y0 && y <= y1 && cc.lab[y * A.aw + x] === comp.id,
+                mx0, my0, w, h), w / h);
+            const id = identifyGlyph(patch);
+            if (!id || id.score < 0.6 || id.margin < 0.14) continue;   // stricter: windowed search
+            if (!best || id.score > best.score)
+                best = { letter: id.letter, x0: mx0, y0: my0, x1: mx1, y1: my1,
+                         compId: comp.id, score: id.score, margin: id.margin };
+        }
+    }
+    return best;
+}
+// Is this glyph part of a LINE OF TEXT? A legend entry, an axis title or a scale bar puts
+// expected letters at label size all over the figure -- the single worst anchor poison
+// (measured: a legend's 'c' out-competed a smudged real label and mislabelled the whole
+// figure). A panel label is isolated: a word letter has same-height, full-width neighbours
+// chained left/right. Thin neighbours (parentheses of an "(A)" label) do not count.
+function _inTextChain(cc, hit) {
+    const h = hit.y1 - hit.y0 + 1;
+    const isNb = (a, b) => {
+        const bh = b.y1 - b.y0 + 1;
+        if (bh < 0.55 * h || bh > 1.7 * h) return false;
+        const ov = Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0) + 1;
+        if (ov < 0.5 * Math.min(h, bh)) return false;
+        const gap = b.x0 > a.x1 ? b.x0 - a.x1 - 1 : a.x0 - b.x1 - 1;
+        return gap >= -2 && gap <= 0.75 * h;
+    };
+    let nonThin = (hit.x1 - hit.x0 + 1) >= 0.5 * h ? 1 : 0;
+    for (const dir of [-1, 1]) {
+        let cur = hit;
+        for (let step = 0; step < 4; step++) {
+            let nxt = null;
+            for (const c of cc.comps) {
+                if (c === cur || (c.x0 === hit.x0 && c.y0 === hit.y0 && c.x1 === hit.x1)) continue;
+                if (!isNb(cur, c)) continue;
+                if (dir < 0 ? c.x1 >= cur.x0 : c.x0 <= cur.x1) continue;
+                if (!nxt || (dir < 0 ? c.x1 > nxt.x1 : c.x0 < nxt.x0)) nxt = c;
+            }
+            if (!nxt) break;
+            if ((nxt.x1 - nxt.x0 + 1) >= 0.5 * (nxt.y1 - nxt.y0 + 1)) nonThin++;
+            if (nonThin >= 3) return true;
+            cur = { x0: nxt.x0, x1: nxt.x1, y0: nxt.y0, y1: nxt.y1 };
+        }
+    }
+    return nonThin >= 3;
+}
+// Bar-shaped letters ('I', and lowercase 'l') are UNIDENTIFIABLE by shape: both render as
+// a plain vertical stem, so identifyGlyph's margin test correctly refuses to call a bar
+// either of them. _passesLabelGates rejects the stem before that even matters -- a
+// Helvetica-Bold 'I' measures 7x29px, aspect 0.24 with density 1.00, and the gate's
+// `dens <= 0.92` (there to reject solid blocks) throws it out; a narrower face is thrown
+// out by `asp >= 0.2` instead. The measured consequence was total: every figure whose
+// caption reaches 'I' -- i.e. every 9-panel and 12-panel figure -- lost one anchor and
+// abstained.
+// The rescue does not pretend to READ the bar. It completes the set by POSITION, and only
+// under conditions that make the completion forced rather than guessed:
+//   * exactly ONE bar-like expected letter is still unaccounted for (so there is nothing to
+//     confuse it with -- with both 'i' and 'l' missing the rescue declines);
+//   * the component is a SOLID narrow bar at the CALIBRATED label size (not a tick, not a
+//     spine, not a bar-chart bar) -- i.e. exactly the shape the standard gates reject;
+//   * it lines up on the label grid with at least two anchors that WERE read, and no other
+//     bar lines up as well (position is the disambiguator, exactly as a real 'I' label sits
+//     where the other labels sit);
+//   * it is not part of a line of text.
+// It is still only an anchor: the placement-plausibility gate and full-set verification
+// downstream can still throw it away.
+const BAR_LETTERS = new Set(['i', 'l']);
+function _rescueBarLetters(A, cc, letters, anchors, g) {
+    if (anchors.length < 2) return anchors;
+    const found = new Set(anchors.map(a => a.letter));
+    const missing = letters.filter(l => !found.has(l) && BAR_LETTERS.has(l));
+    if (missing.length !== 1) return anchors;
+    const used = new Set(anchors.map(a => a.compId));
+    const hs = anchors.map(a => a.y1 - a.y0 + 1).sort((x, y) => x - y);
+    const estH = hs[hs.length >> 1];
+    const tol = Math.max(4, Math.round(0.6 * estH));
+    const cands = [];
+    for (const c of cc.comps) {
+        if (used.has(c.id)) continue;
+        const w = c.x1 - c.x0 + 1, h = c.y1 - c.y0 + 1;
+        if (h < g.minH || h > g.maxH) continue;
+        if (h < 0.75 * estH || h > 1.3 * estH) continue;
+        const asp = w / h, dens = c.area / (w * h);
+        if (asp < 0.06 || asp > 0.45) continue;               // a stem, not a block
+        if (dens < 0.88) continue;                            // a stem is solid ink throughout
+        if (_passesLabelGates(w, h, c.area, g)) continue;     // ONLY what the gates rejected
+        const hit = { letter: missing[0], x0: c.x0, y0: c.y0, x1: c.x1, y1: c.y1,
+                      compId: c.id, score: 0.6, margin: 0.12 };
+        if (_inTextChain(cc, hit)) continue;
+        const aligned = anchors.reduce((s, a) =>
+            s + (Math.abs(a.x0 - c.x0) <= tol || Math.abs(a.y0 - c.y0) <= tol ? 1 : 0), 0);
+        if (aligned < 2) continue;
+        cands.push({ hit, aligned });
+    }
+    if (!cands.length) return anchors;
+    cands.sort((p, q) => q.aligned - p.aligned);
+    if (cands.length > 1 && cands[1].aligned === cands[0].aligned) return anchors;  // ambiguous
+    return anchors.concat([cands[0].hit]);
+}
+
+function findLabelAnchors(A, letters, cc) {
+    const long = Math.max(A.aw, A.ah);
+    const g = _labelSizeGates(long);
+    const want = new Set(letters);
+    const hits = new Map();
+    const record = (hit, ccRef) => {
+        if (!hit || !want.has(hit.letter)) return false;
+        if (ccRef && _inTextChain(ccRef, hit)) return false;
+        const list = hits.get(hit.letter);
+        if (list) list.push(hit); else hits.set(hit.letter, [hit]);
+        return true;
+    };
+    // (a) clean components first; their sizes calibrate the rescue passes
+    let cands = cc.comps.filter(c => (c.y1 - c.y0 + 1) >= g.minH && (c.y1 - c.y0 + 1) <= 3 * g.maxH
+                                     && (c.x1 - c.x0 + 1) <= 3 * g.maxH);
+    cands.sort((p, q) => (q.y1 - q.y0) - (p.y1 - p.y0));
+    cands = cands.slice(0, 300);
+    const failed = [];
+    for (const c of cands) {
+        const w = c.x1 - c.x0 + 1, h = c.y1 - c.y0 + 1;
+        if (_passesLabelGates(w, h, c.area, g)) {
+            const id = identifyGlyphOfComp(A, cc, c);
+            if (id && record({ letter: id.letter, x0: c.x0, y0: c.y0, x1: c.x1, y1: c.y1,
+                               compId: c.id, score: id.score, margin: id.margin }, cc)) continue;
+        }
+        failed.push(c);
+    }
+    // (b) hole glyphs: light letters on dark rasters. The union with the 1px ink outline
+    // around the hole is the actual painted glyph and is matched first. Runs BEFORE the
+    // weld rescue so hole hits calibrate the label size the rescue passes need.
+    const inv = new Uint8Array(A.aw * A.ah);
+    for (let p = 0; p < inv.length; p++) inv[p] = A.ink[p] ? 0 : 1;
+    const Ai = { aw: A.aw, ah: A.ah, ink: inv };
+    const ccInv = computeComponents(Ai);
+    for (const c of ccInv.comps) {
+        if (c.x0 === 0 || c.y0 === 0 || c.x1 === A.aw - 1 || c.y1 === A.ah - 1) continue; // page background
+        const w = c.x1 - c.x0 + 1, h = c.y1 - c.y0 + 1;
+        if (!_passesLabelGates(w, h, c.area, g)) continue;
+        const id = identifyGlyph(_holeUnionPatch(A, ccInv, c)) || identifyGlyphOfComp(Ai, ccInv, c);
+        if (id) record({ letter: id.letter, x0: c.x0, y0: c.y0, x1: c.x1, y1: c.y1,
+                         compId: -c.id, score: id.score, margin: id.margin }, ccInv);
+    }
+    let sizes = [];
+    hits.forEach(list => list.forEach(h => sizes.push(h.y1 - h.y0 + 1)));
+    sizes.sort((a, b) => a - b);
+    const estH = sizes.length ? sizes[sizes.length >> 1] : Math.round(1.2 * g.minH);
+    // (c) rescue merged blobs: margin trim, projection split at weld valleys, then corner
+    // windows at the calibrated size
+    for (const c of failed) {
+        const rescued = _trimmedGlyphHit(A, cc, c, g);
+        if (record(rescued, cc)) continue;
+        let split = false;
+        for (const h of _projectionSplitHits(A, cc, c, g)) split = record(h, cc) || split;
+        if (split) continue;
+        record(_cornerOfCompHit(A, cc, c, g, estH), cc);
+    }
+    let anchors = _dedupAnchorHits(hits);
+    // (d) bar letters ('I'/'l'), which no shape test can name -- completed by position.
+    anchors = _rescueBarLetters(A, cc, letters, anchors, g);
+    // Two anchors closer together than a panel's minimum separation cannot head different
+    // panels (they are text in one line); drop both rather than seed a bogus split.
+    const minSep = Math.max(20, Math.round(long * 0.06));
+    const near = (a, b) => Math.max(Math.abs((a.x0 + a.x1) - (b.x0 + b.x1)), Math.abs((a.y0 + a.y1) - (b.y0 + b.y1))) / 2 < minSep;
+    anchors = anchors.filter(a => !anchors.some(b => b !== a && near(a, b)));
+    // Reading order, so the geometric consumers (seed split, carve) see a sane sequence --
+    // the LETTERS carried by those anchors are whatever the glyphs actually say.
+    return _sortAnchorsReadingOrder(anchors);
+}
+
+function _centerIn(b, a) {
+    const cx = (a.x0 + a.x1) / 2, cy = (a.y0 + a.y1) / 2;
+    return cx >= b.x && cx < b.x + b.width && cy >= b.y && cy < b.y + b.height;
+}
+
+// Which box does each anchor belong to? Placement-agnostic: a label INSIDE a box (any
+// corner) belongs to it, and a label sitting just OUTSIDE its panel (above-left, top-centre
+// -- journals put labels outside the axes region routinely) belongs to the uniquely nearest
+// box within a few glyph-heights. Ambiguous anchors get -1: they are evidence of nothing.
+function assignAnchorsToBoxes(boxes, anchors) {
+    return anchors.map(a => {
+        const inside = [];
+        for (let i = 0; i < boxes.length; i++) if (_centerIn(boxes[i], a)) inside.push(i);
+        if (inside.length === 1) return inside[0];
+        if (inside.length > 1) {
+            // overlapping boxes (an anchor carve): the anchor belongs to the box it sits
+            // DEEPEST inside, not to whichever box happens to be listed first
+            const cx = (a.x0 + a.x1) / 2, cy = (a.y0 + a.y1) / 2;
+            let bi = inside[0], bd = -1;
+            for (const i of inside) {
+                const b = boxes[i];
+                const depth = Math.min(cx - b.x, b.x + b.width - cx, cy - b.y, b.y + b.height - cy);
+                if (depth > bd) { bd = depth; bi = i; }
+            }
+            return bi;
+        }
+        const cx = (a.x0 + a.x1) / 2, cy = (a.y0 + a.y1) / 2;
+        const tol = 3 * (a.y1 - a.y0 + 1);
+        const d = boxes.map(b => Math.hypot(
+            Math.max(b.x - cx, 0, cx - (b.x + b.width)),
+            Math.max(b.y - cy, 0, cy - (b.y + b.height))));
+        let bi = 0;
+        for (let i = 1; i < boxes.length; i++) if (d[i] < d[bi]) bi = i;
+        let d2 = Infinity;
+        for (let i = 0; i < boxes.length; i++) if (i !== bi && d[i] < d2) d2 = d[i];
+        if (d[bi] <= tol && (boxes.length === 1 || d[bi] < 0.6 * d2)) return bi;
+        return -1;
+    });
+}
+
+// A verified outside-placed label belongs to its panel's crop (a human cropping "panel B"
+// includes the letter B): grow each box to cover its own anchor.
+function expandBoxesToAnchors(boxes, anchors) {
+    assignAnchorsToBoxes(boxes, anchors).forEach((bi, ai) => {
+        if (bi < 0) return;
+        const b = boxes[bi], a = anchors[ai];
+        const x0 = Math.min(b.x, a.x0), y0 = Math.min(b.y, a.y0);
+        const x1 = Math.max(b.x + b.width, a.x1 + 1), y1 = Math.max(b.y + b.height, a.y1 + 1);
+        b.x = x0; b.y = y0; b.width = x1 - x0; b.height = y1 - y0;
+    });
+}
+
+// Is this anchor set PLACED like a set of panel labels?
+//
+// Letter verification (below) proves that each box owns exactly one distinct expected
+// letter. That is NOT evidence that those glyphs are panel LABELS. Any stray letter-shaped
+// glyph of the right identity is indistinguishable from a label by identity alone: a
+// compact-letter-display group letter over a bar, a genotype symbol, a crossed axis unit
+// "(A)"/"(B)", a legend key, an inset's own letter. Measured: two isolated annotation
+// letters, 'b' inside panel A and 'a' inside panel B, produced a fully "verified" SWAPPED
+// naming at confidence 0.8 with the caption text routed to the wrong panels.
+//
+// What actually separates a label from a stray letter is PLACEMENT, and placement is a
+// property of the SET, not of one glyph:
+//   * a label sits in its panel's top or bottom BAND (inside the panel or just outside it),
+//     never deep in the middle of the data area;
+//   * horizontally it sits at the left edge, the right edge, or the centre of that band;
+//   * and the whole figure uses ONE convention -- the same corner, at the same size, on
+//     every panel. A lone letter in the middle of a plot is not a label; N letters that
+//     agree on a corner are.
+// Failing this test does not make the letters wrong, it makes them UNPROVEN: the caller
+// falls back to the reading-order prior and abstains, which is the honest answer.
+const LABEL_BAND_FRAC = 0.25;    // top/bottom band, as a share of the panel's own extent
+const LABEL_BAND_GLYPHS = 2.2;   // ... but never narrower than this many glyph heights
+const LABEL_SIZE_RATIO = 2.2;    // tallest anchor / shortest anchor
+function anchorPlacementPlausible(boxes, anchors) {
+    if (!boxes || boxes.length < 2 || !anchors || anchors.length < 2) return false;
+    const owner = assignAnchorsToBoxes(boxes, anchors);
+    let vMode = null, hMode = null, minH = Infinity, maxH = 0;
+    for (let ai = 0; ai < anchors.length; ai++) {
+        if (owner[ai] < 0) return false;      // a glyph belonging to no panel labels nothing
+        const a = anchors[ai], b = boxes[owner[ai]];
+        const h = a.y1 - a.y0 + 1;
+        const cx = (a.x0 + a.x1) / 2, cy = (a.y0 + a.y1) / 2;
+        const bandY = Math.max(LABEL_BAND_GLYPHS * h, LABEL_BAND_FRAC * b.height);
+        const bandX = Math.max(LABEL_BAND_GLYPHS * h, LABEL_BAND_FRAC * b.width);
+        const v = cy <= b.y + bandY ? 't' : cy >= b.y + b.height - bandY ? 'b' : null;
+        if (!v) return false;                 // vertically mid-panel: an annotation, not a label
+        const hz = cx <= b.x + bandX ? 'l' : cx >= b.x + b.width - bandX ? 'r'
+                 : Math.abs(cx - (b.x + b.width / 2)) <= 0.5 * bandX ? 'c' : null;
+        if (!hz) return false;                // neither a corner nor an edge centre
+        if (vMode === null) { vMode = v; hMode = hz; }
+        else if (v !== vMode || hz !== hMode) return false;   // no single convention
+        if (h < minH) minH = h;
+        if (h > maxH) maxH = h;
+    }
+    return maxH <= LABEL_SIZE_RATIO * minH;
+}
+
+// Reading order is only a PRIOR for panel letters; the anchors are the evidence. A mapping is
+// accepted only when every box owns exactly one anchor and the anchored letters are exactly
+// the expected set -- then it either CONFIRMS the prior or CORRECTS it (and the correction
+// wins, flagged). Anything less is 'unverified': the prior is emitted but never as ok=true.
+function verifyPanelLetters(boxes, anchors, priorLetters) {
+    const out = { letters: priorLetters.slice(), status: 'unverified' };
+    if (boxes.length < 2 || anchors.length !== boxes.length || priorLetters.length !== boxes.length) return out;
+    const owner = assignAnchorsToBoxes(boxes, anchors);
+    const per = new Array(boxes.length).fill(null);
+    for (let ai = 0; ai < anchors.length; ai++) {
+        if (owner[ai] < 0 || per[owner[ai]]) return out;
+        per[owner[ai]] = anchors[ai];
+    }
+    if (per.some(p => !p)) return out;
+    const got = per.map(p => p.letter);
+    if (new Set(got).size !== got.length) return out;
+    if (got.slice().sort().join('') !== priorLetters.slice().sort().join('')) return out;
+    return { letters: got, status: got.join('') === priorLetters.join('') ? 'confirmed' : 'corrected' };
+}
+
+// True when the label anchors contradict the box partition: a box owns 2+ labels, or a
+// label belongs to no box at all.
+function _anchorsViolate(boxes, anchors) {
+    const owner = assignAnchorsToBoxes(boxes, anchors);
+    if (owner.some(o => o < 0)) return true;
+    const n = new Array(boxes.length).fill(0);
+    for (const o of owner) n[o]++;
+    return n.some(v => v >= 2);
+}
+
+// Split boxes that contain 2+ label anchors: cut on the axis separating consecutive labels,
+// at the least-inky line anywhere BETWEEN them -- no assumption about where in its panel a
+// label sits, so top-left, top-centre and bottom-right conventions all work. When no
+// low-ink line exists, a solid full-span border line (flush panels sharing a drawn border)
+// is accepted as the boundary. Marks weak cuts.
+function seedSplitWithAnchors(A, boxesIn, anchors, N) {
+    let boxes = boxesIn.map(b => ({ ...b }));
+    let changed = false, weak = false, guard = 0;
+    while (boxes.length < N && guard++ < 12) {
+        let idx = -1, inA = null;
+        for (let i = 0; i < boxes.length; i++) {
+            const a = anchors.filter(an => _centerIn(boxes[i], an));
+            if (a.length >= 2) { idx = i; inA = a; break; }
+        }
+        if (idx < 0) break;
+        const b = boxes[idx], a1 = inA[0], a2 = inA[1];
+        let axis, lo, hi, span, b0;
+        if (a2.y0 > a1.y1) { axis = 'y'; lo = a1.y1 + 1; hi = a2.y0; b0 = b.y; span = b.height; }
+        else if (a2.x0 > a1.x1) { axis = 'x'; lo = a1.x1 + 1; hi = a2.x0; b0 = b.x; span = b.width; }
+        else break;
+        lo = Math.max(lo, b0 + 2);
+        hi = Math.min(hi, b0 + span - 2);
+        if (hi - lo < 2) break;
+        const ps = profileStats(A, b.x, b.x + b.width, b.y, b.y + b.height, axis);
+        let cut = lo;
+        for (let k = lo; k < hi; k++) if (ps.tot[k - b0] < ps.tot[cut - b0]) cut = k;
+        // No low-ink line between the labels: look for a solid border line instead (two
+        // flush panels sharing a drawn border produce one full-span ink run).
+        if (ps.tot[cut - b0] > 0.08 * ps.cross) {
+            let solid = -1;
+            for (let k = lo; k < hi; k++)
+                if (ps.run[k - b0] >= 0.92 * ps.cross && (solid < 0 || ps.tot[k - b0] < ps.tot[solid - b0])) solid = k;
+            if (solid >= 0) cut = solid;
+        }
+        // A legitimate boundary crosses at most the flanking panels' shared borders
+        // (<=3 ink runs) or is one solid line. More runs means the line slices through
+        // OTHER panels' content -- the non-guillotine signature -- so refuse and let the
+        // anchor carve handle it.
+        if (ps.runs[cut - b0] > 3 && ps.run[cut - b0] < 0.92 * ps.cross) break;
+        if (ps.tot[cut - b0] > 0.08 * ps.cross) weak = true;
+        let b1, b2;
+        if (axis === 'x') {
+            b1 = _inkBBox(A, b.x, b.y, cut, b.y + b.height);
+            b2 = _inkBBox(A, cut, b.y, b.x + b.width, b.y + b.height);
+        } else {
+            b1 = _inkBBox(A, b.x, b.y, b.x + b.width, cut);
+            b2 = _inkBBox(A, b.x, cut, b.x + b.width, b.y + b.height);
+        }
+        if (!b1 || !b2) break;
+        boxes.splice(idx, 1, b1, b2);
+        changed = true;
+    }
+    return { boxes, changed, weak };
+}
+
+// Anchor assignment for every non-label component, under a PLACEMENT MODE: 'tl' means the
+// label heads its panel at the top-left so content lies down-right of the anchor (and so on
+// for 'tr'/'bl'/'br'); 'nearest' is the placement-free fallback. Candidates in the mode's
+// quadrant compete on L1 distance; anchors in the wrong quadrant only win if no in-quadrant
+// anchor exists.
+function assignCompsToAnchors(A, anchors, cc, mode = 'tl') {
+    const tol = Math.max(10, Math.round(0.04 * Math.max(A.aw, A.ah)));
+    const sx = mode === 'tl' || mode === 'bl' ? 1 : -1;
+    const sy = mode === 'tl' || mode === 'tr' ? 1 : -1;
+    const labelIds = new Set(anchors.map(a => a.compId));
+    const assign = new Map();
+    for (const comp of cc.comps) {
+        if (labelIds.has(comp.id) || comp.area < 4) continue;
+        const cx = (comp.x0 + comp.x1) / 2, cy = (comp.y0 + comp.y1) / 2;
+        let bi = 0, bc = Infinity;
+        for (let i = 0; i < anchors.length; i++) {
+            const a = anchors[i];
+            const dx = cx - (a.x0 + a.x1) / 2, dy = cy - (a.y0 + a.y1) / 2;
+            let cost;
+            if (mode === 'nearest') cost = Math.abs(dx) + Math.abs(dy);
+            else {
+                const fx = dx * sx, fy = dy * sy;
+                cost = (fx < -tol || fy < -tol) ? 1e9 + dx * dx + dy * dy
+                                                : Math.max(fx, 0) + Math.max(fy, 0);
+            }
+            if (cost < bc) { bc = cost; bi = i; }
+        }
+        assign.set(comp, bi);
+    }
+    return assign;
+}
+
+// Infer the placement mode from where the anchors sit inside their boxes (used to make the
+// consistency check below match reality rather than assume the top-left convention).
+function _inferAnchorMode(boxes, anchors) {
+    const owner = assignAnchorsToBoxes(boxes, anchors);
+    let fx = 0, fy = 0, n = 0;
+    owner.forEach((bi, ai) => {
+        if (bi < 0) return;
+        const b = boxes[bi], a = anchors[ai];
+        fx += ((a.x0 + a.x1) / 2 - b.x) / Math.max(1, b.width) - 0.5;
+        fy += ((a.y0 + a.y1) / 2 - b.y) / Math.max(1, b.height) - 0.5;
+        n++;
+    });
+    if (!n) return 'tl';
+    fx /= n; fy /= n;
+    if (Math.abs(fx) < 0.18 && Math.abs(fy) < 0.18) return 'nearest';
+    return (fy <= 0 ? 't' : 'b') + (fx <= 0 ? 'l' : 'r');
+}
+
+// Validate a seeded partition against the anchor assignment: if a box holds a lot of ink
+// whose nearest anchor lives in ANOTHER box, the seed cut sliced through a panel (the
+// non-guillotine failure mode) and must be discarded.
+function seedPartitionConsistent(A, boxes, anchors, cc) {
+    const assign = assignCompsToAnchors(A, anchors, cc, _inferAnchorMode(boxes, anchors));
+    const own = new Array(boxes.length).fill(0), foreign = new Array(boxes.length).fill(0);
+    const anchorBox = assignAnchorsToBoxes(boxes, anchors);
+    assign.forEach((ai, comp) => {
+        const cx = (comp.x0 + comp.x1) / 2, cy = (comp.y0 + comp.y1) / 2;
+        const bi = boxes.findIndex(b => cx >= b.x && cx < b.x + b.width && cy >= b.y && cy < b.y + b.height);
+        if (bi < 0) return;
+        if (anchorBox[ai] === bi) own[bi] += comp.area; else foreign[bi] += comp.area;
+    });
+    return boxes.every((b, i) => foreign[i] <= 0.25 * Math.max(1, own[i] + foreign[i]));
+}
+
+// Non-guillotine fallback: with all N labels anchored, assign every ink component to an
+// anchor and take per-anchor bounding boxes. The placement convention is NOT assumed: all
+// four corner modes plus 'nearest' are tried, grown greedily (largest component first, a
+// component is skipped rather than allowed to make two panels overlap), and the mode that
+// explains the most ink wins. Returns null when even the best mode had to orphan a large
+// share of the ink -- the anchors then do not explain the figure.
+function carveByAnchors(A, anchors, cc) {
+    let best = null;
+    for (const mode of ['tl', 'tr', 'bl', 'br', 'nearest']) {
+        const assign = assignCompsToAnchors(A, anchors, cc, mode);
+        const items = [];
+        assign.forEach((bi, comp) => items.push({ comp, bi }));
+        items.sort((p, q) => q.comp.area - p.comp.area);
+        const boxes = anchors.map(a => ({ x: a.x0, y: a.y0, width: a.x1 - a.x0 + 1, height: a.y1 - a.y0 + 1 }));
+        let claimed = 0, skipped = 0;
+        for (const { comp, bi } of items) {
+            const b = boxes[bi];
+            const gx0 = Math.min(b.x, comp.x0), gy0 = Math.min(b.y, comp.y0);
+            const grown = { x: gx0, y: gy0,
+                width: Math.max(b.x + b.width, comp.x1 + 1) - gx0,
+                height: Math.max(b.y + b.height, comp.y1 + 1) - gy0 };
+            let clash = false;
+            for (let j = 0; j < boxes.length && !clash; j++) {
+                if (j === bi) continue;
+                const inter = _boxIntersectArea(grown, boxes[j]);
+                if (inter > 0.04 * Math.min(grown.width * grown.height, boxes[j].width * boxes[j].height)) clash = true;
+            }
+            if (clash) { skipped += comp.area; continue; }
+            boxes[bi] = grown;
+            claimed += comp.area;
+        }
+        // sanity: a "panel" a small fraction of the median panel size is no panel (it is a
+        // legend or annotation whose glyph poisoned an anchor) -- reject the mode
+        const areas = boxes.map(b => b.width * b.height).sort((p, q) => p - q);
+        if (areas[0] < 0.15 * areas[areas.length >> 1]) continue;
+        if (!best || claimed > best.claimed) best = { boxes, claimed, skipped };
+    }
+    if (!best || best.claimed < 4 * best.skipped) return null;
+    return best.boxes;
+}
+
+// Guillotine leaves include sub-panel FRAGMENTS the cut sliced off their parent: an x-axis
+// tick strip under a panel, a rotated y-axis title to its left. A fragment is recognisable
+// by being far smaller than the largest leaf AND lying mostly within a big leaf's span on
+// one axis with only a small gap on the other. Absorbing it back is a structural repair --
+// done BEFORE sliver rejection and count reconciliation, both of which it used to poison
+// (with as many fragments as panels, the median "panel" size became fragment-sized, and
+// gap-based merging then fused real panels while keeping the junk).
+function reattachFragments(boxes, A) {
+    boxes = boxes.map(b => ({ ...b }));
+    let moved = true;
+    while (moved && boxes.length >= 2) {
+        moved = false;
+        const maxA = Math.max(...boxes.map(b => b.width * b.height));
+        boxes.sort((p, q) => p.width * p.height - q.width * q.height);
+        for (let i = 0; i < boxes.length && !moved; i++) {
+            const f = boxes[i];
+            if (f.width * f.height > 0.12 * maxA) break;
+            let best = -1, bestGap = Infinity;
+            for (let j = 0; j < boxes.length; j++) {
+                if (j === i) continue;
+                const h = boxes[j];
+                if (h.width * h.height < 3 * f.width * f.height) continue;
+                const ovX = _overlap1d(f.x, f.x + f.width, h.x, h.x + h.width);
+                const ovY = _overlap1d(f.y, f.y + f.height, h.y, h.y + h.height);
+                let gap = null, lim = 0;
+                if (ovX >= 0.7 * f.width) {
+                    gap = f.y >= h.y + h.height ? f.y - (h.y + h.height) : h.y - (f.y + f.height);
+                    lim = 0.05 * A.ah;
+                } else if (ovY >= 0.7 * f.height) {
+                    gap = f.x >= h.x + h.width ? f.x - (h.x + h.width) : h.x - (f.x + f.width);
+                    lim = 0.05 * A.aw;
+                }
+                if (gap === null || gap < 0 || gap > lim) continue;
+                if (gap < bestGap) { bestGap = gap; best = j; }
+            }
+            if (best >= 0) {
+                boxes[best] = _mergeBoxes(boxes[best], f);
+                boxes.splice(i, 1);
+                moved = true;
+            }
+        }
+    }
+    return boxes;
+}
+
+// Sliver rejection for the cascade. Unlike the legacy version (kept above for the A/B
+// detector), the size reference is the median of the LARGER half of the leaves: junk can be
+// the numerical majority, and a median over everything then calls the junk normal.
+function rejectSliversRobust(boxes) {
+    if (boxes.length < 2) return boxes;
+    const byArea = boxes.slice().sort((p, q) => q.width * q.height - p.width * p.height);
+    const big = byArea.slice(0, Math.ceil(boxes.length / 2));
+    const med = arr => { const a = arr.slice().sort((x, y) => x - y); return a[a.length >> 1]; };
+    const medA = med(big.map(b => b.width * b.height));
+    const medW = med(big.map(b => b.width)), medH = med(big.map(b => b.height));
+    const kept = boxes.filter(b => !(b.width * b.height < 0.18 * medA && (b.width < 0.35 * medW || b.height < 0.35 * medH)));
+    return kept.length ? kept : boxes;
+}
+
+// Per-position pixel DISCONTINUITY along one axis: the fraction of cross positions whose
+// luminance jumps between line k and k+1. Two flush rasters meet at a line where adjacent
+// columns are suddenly decorrelated; two flush charts share a drawn border line. Both read
+// as a discontinuity spike; the interior of a single raster or chart does not.
+function _discProfile(A, x0, x1, y0, y1, axis) {
+    const len = Math.max(0, (axis === 'x' ? x1 - x0 : y1 - y0) - 1);
+    const out = new Float32Array(len);
+    if (axis === 'x') {
+        for (let k = 0; k < len; k++) {
+            let n = 0;
+            for (let y = y0; y < y1; y++) {
+                const b = y * A.aw + x0 + k;
+                if (Math.abs(A.lum[b + 1] - A.lum[b]) > 26) n++;
+            }
+            out[k] = n / Math.max(1, y1 - y0);
+        }
+    } else {
+        for (let k = 0; k < len; k++) {
+            const b0 = (y0 + k) * A.aw, b1 = (y0 + k + 1) * A.aw;
+            let n = 0;
+            for (let x = x0; x < x1; x++)
+                if (Math.abs(A.lum[b1 + x] - A.lum[b0 + x]) > 26) n++;
+            out[k] = n / Math.max(1, x1 - x0);
+        }
+    }
+    return out;
+}
+
+// Flush-mosaic hypothesis for one box: journals lay zero-gutter panels on a UNIFORM grid,
+// so try r x c factorisations of up to kmax panels and demand a discontinuity seam near
+// EVERY expected grid line (within 12% of the box dimension, well above the local texture
+// baseline). Grid-constrained search is what keeps a bar edge or heat-cell boundary in the
+// middle of a real panel from becoming a cut: an arbitrary strong edge only wins if a
+// consistent full grid of strong edges exists. Returns the sub-boxes (ink-trimmed) or null.
+function bestSeamHypothesis(A, box, kmax) {
+    if (kmax < 2) return null;
+    const x0 = box.x, y0 = box.y, x1 = box.x + box.width, y1 = box.y + box.height;
+    const dX = _discProfile(A, x0, x1, y0, y1, 'x');
+    const dY = _discProfile(A, x0, x1, y0, y1, 'y');
+    const medOf = arr => { const a = Array.from(arr).sort((p, q) => p - q); return a.length ? a[a.length >> 1] : 0; };
+    const thrX = Math.max(0.14, 4 * medOf(dX)), thrY = Math.max(0.14, 4 * medOf(dY));
+    const minPX = Math.max(12, Math.round(A.aw * 0.045)), minPY = Math.max(12, Math.round(A.ah * 0.045));
+    const findCut = (prof, pos, span, thr) => {
+        const win = Math.round(0.12 * span);
+        let bs = -1, bi = -1;
+        for (let k = Math.max(1, pos - win); k <= Math.min(prof.length - 2, pos + win); k++)
+            if (prof[k] > bs) { bs = prof[k]; bi = k; }
+        return bs >= thr ? { at: bi, s: bs } : null;
+    };
+    let best = null;
+    for (let k = kmax; k >= 2 && !best; k--) {
+        let bestForK = null;
+        for (let r = 1; r <= k; r++) {
+            if (k % r) continue;
+            const c = k / r;
+            if ((c > 1 && box.width / c < minPX) || (r > 1 && box.height / r < minPY)) continue;
+            const cutsX = [], cutsY = [];
+            let ok = true, sSum = 0, n = 0;
+            for (let i = 1; i < c && ok; i++) {
+                const cut = findCut(dX, Math.round(i * box.width / c), box.width, thrX);
+                if (!cut) ok = false; else { cutsX.push(cut.at); sSum += cut.s; n++; }
+            }
+            for (let i = 1; i < r && ok; i++) {
+                const cut = findCut(dY, Math.round(i * box.height / r), box.height, thrY);
+                if (!cut) ok = false; else { cutsY.push(cut.at); sSum += cut.s; n++; }
+            }
+            if (!ok || !n) continue;
+            const score = sSum / n;
+            if (!bestForK || score > bestForK.score) bestForK = { cutsX, cutsY, score };
+        }
+        best = bestForK;   // the largest k with full seam support wins
+    }
+    if (!best) return null;
+    const xs = [0, ...best.cutsX.sort((a, b) => a - b).map(v => v + 1), box.width];
+    const ys = [0, ...best.cutsY.sort((a, b) => a - b).map(v => v + 1), box.height];
+    const out = [];
+    for (let ri = 0; ri + 1 < ys.length; ri++) for (let ci = 0; ci + 1 < xs.length; ci++) {
+        const rx0 = x0 + xs[ci], rx1 = x0 + xs[ci + 1], ry0 = y0 + ys[ri], ry1 = y0 + ys[ri + 1];
+        const t = _inkBBox(A, rx0, ry0, rx1, ry1);
+        out.push(t || { x: rx0, y: ry0, width: rx1 - rx0, height: ry1 - ry0 });
+    }
+    return out;
+}
+
+// Flush rescue: while under the caption count, split the largest box on its best seam grid.
+function seamSplitToCount(A, boxesIn, N) {
+    let boxes = boxesIn.map(b => ({ ...b }));
+    let changed = false, guard = 0;
+    while (boxes.length < N && guard++ < 8) {
+        let bi = 0;
+        for (let i = 1; i < boxes.length; i++)
+            if (boxes[i].width * boxes[i].height > boxes[bi].width * boxes[bi].height) bi = i;
+        const hyp = bestSeamHypothesis(A, boxes[bi], N - boxes.length + 1);
+        if (!hyp) break;
+        boxes.splice(bi, 1, ...hyp);
+        changed = true;
+    }
+    return changed ? boxes : null;
+}
+
+// Box-guided anchor rescue. A label that touches an axis or border line merges into a
+// PANEL-sized component that no amount of trimming will save. But once candidate boxes
+// exist, the label's location is tightly constrained: some corner or edge band of its
+// panel, inside or just outside. Scan those windows, erase long straight strokes (the
+// axis/border lines a label welds itself to), and identify what remains at label size.
+// Thresholds are stricter than the global pass because windowed search multiplies the
+// opportunities for a lookalike.
+function _glyphHitsInWindow(A, wx0, wy0, wx1, wy1, g, want, estH) {
+    wx0 = Math.max(0, wx0); wy0 = Math.max(0, wy0);
+    wx1 = Math.min(A.aw, wx1); wy1 = Math.min(A.ah, wy1);
+    const W = wx1 - wx0, H = wy1 - wy0;
+    if (W < g.minH || H < g.minH) return [];
+    const m = new Uint8Array(W * H);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++)
+        m[y * W + x] = A.ink[(wy0 + y) * A.aw + wx0 + x];
+    // Erase axis/grid/border LINES: pixels on runs longer than a glyph could be. A line may
+    // pass straight THROUGH a glyph (a gridline through a label is what welded them), so a
+    // long-run pixel is only erased where its perpendicular ink thickness is line-like
+    // (<=3px) -- the glyph's body pixels on the same run are thick and survive.
+    // Longer than ~2.4 glyph-heights = a line, not a stroke. Tied to the CALIBRATED label
+    // size: a window-relative bound misses lines that only partially cross the window.
+    const L = Math.min(Math.round(2.4 * (estH || 2 * g.minH)), Math.round(0.8 * Math.min(W, H)));
+    const thickV = (x, y) => {
+        let t = 1;
+        for (let q = y - 1; q >= 0 && m[q * W + x]; q--) t++;
+        for (let q = y + 1; q < H && m[q * W + x]; q++) t++;
+        return t;
+    };
+    const thickH = (x, y) => {
+        let t = 1;
+        for (let q = x - 1; q >= 0 && m[y * W + q]; q--) t++;
+        for (let q = x + 1; q < W && m[y * W + q]; q++) t++;
+        return t;
+    };
+    // Erase a long-run pixel when it is line-like: thin across the run, or TANGENT to a
+    // glyph (ink continues on one side only -- an axis rule touching a label's top erases;
+    // a gridline passing straight THROUGH a glyph body does not).
+    const upDown = (x, y) => {
+        let u = 0, d = 0;
+        for (let q = y - 1; q >= 0 && m[q * W + x]; q--) u++;
+        for (let q = y + 1; q < H && m[q * W + x]; q++) d++;
+        return Math.min(u, d);
+    };
+    const leftRight = (x, y) => {
+        let l = 0, r = 0;
+        for (let q = x - 1; q >= 0 && m[y * W + q]; q--) l++;
+        for (let q = x + 1; q < W && m[y * W + q]; q++) r++;
+        return Math.min(l, r);
+    };
+    const kill = [];
+    for (let y = 0; y < H; y++) {
+        let x = 0;
+        while (x < W) {
+            if (!m[y * W + x]) { x++; continue; }
+            let e = x;
+            while (e < W && m[y * W + e]) e++;
+            if (e - x > L) for (let q = x; q < e; q++)
+                if (thickV(q, y) <= 3 || upDown(q, y) <= 1) kill.push(y * W + q);
+            x = e;
+        }
+    }
+    for (let x = 0; x < W; x++) {
+        let y = 0;
+        while (y < H) {
+            if (!m[y * W + x]) { y++; continue; }
+            let e = y;
+            while (e < H && m[e * W + x]) e++;
+            if (e - y > L) for (let q = y; q < e; q++)
+                if (thickH(x, q) <= 3 || leftRight(x, q) <= 1) kill.push(q * W + x);
+            y = e;
+        }
+    }
+    for (const p of kill) m[p] = 0;
+    const Aw = { aw: W, ah: H };
+    const hits = [];
+    // Both polarities: dark glyphs on light ground, and light glyphs on dark ground.
+    for (const mask of [m, m.map(v => v ? 0 : 1)]) {
+        const cc = computeComponents({ aw: W, ah: H, ink: mask });
+        for (const c of cc.comps) {
+            if (c.x0 === 0 || c.y0 === 0 || c.x1 === W - 1 || c.y1 === H - 1) continue; // clipped by window
+            const w = c.x1 - c.x0 + 1, h = c.y1 - c.y0 + 1;
+            if (!_passesLabelGates(w, h, c.area, g)) continue;
+            const id = identifyGlyphOfComp(Aw, cc, c);
+            if (!id || !want.has(id.letter)) continue;
+            if (id.score < 0.6 || id.margin < 0.14) continue;
+            hits.push({ letter: id.letter, x0: wx0 + c.x0, y0: wy0 + c.y0,
+                        x1: wx0 + c.x1, y1: wy0 + c.y1, compId: 0,
+                        score: id.score, margin: id.margin });
+        }
+    }
+    return hits;
+}
+function rescueAnchorsNearBoxes(A, cc, letters, anchors, boxes) {
+    const g = _labelSizeGates(Math.max(A.aw, A.ah));
+    const found = new Set(anchors.map(a => a.letter));
+    const missing = letters.filter(l => !found.has(l));
+    if (!missing.length) return anchors;
+    const hs = anchors.map(a => a.y1 - a.y0 + 1).sort((x, y) => x - y);
+    const estH = hs.length ? hs[hs.length >> 1] : Math.round(1.8 * g.minH);
+    const win = Math.max(4 * g.minH, Math.round(3.2 * estH));
+    const want = new Set(missing);
+    const hits = new Map();
+    const out = Math.round(0.4 * win);   // labels straddle box edges; reach past them
+    for (const b of boxes) {
+        const x0 = b.x, y0 = b.y, x1 = b.x + b.width, y1 = b.y + b.height, cx = b.x + b.width / 2;
+        const wins = [
+            [x0 - out, y0 - out, x0 + win, y0 + win],                // inside corners...
+            [x1 - win, y0 - out, x1 + out, y0 + win],
+            [x0 - out, y1 - win, x0 + win, y1 + out],
+            [x1 - win, y1 - win, x1 + out, y1 + out],
+            [cx - win, y0 - out, cx + win, y0 + win],                // top-centre
+            [cx - win, y1 - win, cx + win, y1 + out],                // bottom-centre
+            [x0 - win, y0 - win, cx, y0 + Math.round(win / 2)],      // outside above-left/centre
+        ];
+        for (const [a0, b0, a1, b1] of wins)
+            for (const h of _glyphHitsInWindow(A, Math.round(a0), Math.round(b0), Math.round(a1), Math.round(b1), g, want, estH)) {
+                if (_inTextChain(cc, h)) continue;
+                const list = hits.get(h.letter);
+                if (list) list.push(h); else hits.set(h.letter, [h]);
+            }
+    }
+    const extra = _dedupAnchorHits(hits);
+    if (!extra.length) return anchors;
+    return _sortAnchorsReadingOrder(anchors.concat(extra));
+}
+
+// A near-boundary label caught on the wrong side of a cut: one box owns two anchors, an
+// adjacent box owns none, and the surplus anchor sits hard against their shared boundary
+// (a tight-gutter cut can land a few pixels past the neighbour's label). The label is
+// evidence of where the boundary belongs -- move it: shrink the crowded box to exclude the
+// anchor and grow the empty box to cover it.
+//
+// This is only sound when the surplus glyph really is a LABEL. Measured failure: panel A
+// carried its true 'A' plus a stray legend key 'b' near its right edge, and this routine
+// dragged the A/B boundary onto the stray glyph -- box A shrank, box B swallowed a strip of
+// A's content, and the result shipped at confidence 0.92 with NO flag at all, because
+// verification then saw one letter per box and called it confirmed. So: the caller must
+// gate the call on anchorPlacementPlausible, and a move is never silent -- this returns
+// true when it moved a boundary, and the caller raises `boundary-repaired`.
+function repairAnchorBoxAssignment(boxes, anchors) {
+    let moved = false;
+    for (let guard = 0; guard < 4; guard++) {
+        const owner = assignAnchorsToBoxes(boxes, anchors);
+        const per = boxes.map(() => []);
+        owner.forEach((bi, ai) => { if (bi >= 0) per[bi].push(ai); });
+        let fixed = false;
+        for (let bi = 0; bi < boxes.length && !fixed; bi++) {
+            if (per[bi].length < 2) continue;
+            for (const ai of per[bi]) {
+                if (fixed) break;
+                const a = anchors[ai], b = boxes[bi];
+                const aH = a.y1 - a.y0 + 1, near = 3 * aH;
+                const cxA = (a.x0 + a.x1) / 2, cyA = (a.y0 + a.y1) / 2;
+                for (let bj = 0; bj < boxes.length && !fixed; bj++) {
+                    if (bj === bi || per[bj].length) continue;
+                    const c = boxes[bj];
+                    const ovY = _overlap1d(b.y, b.y + b.height, c.y, c.y + c.height);
+                    const ovX = _overlap1d(b.x, b.x + b.width, c.x, c.x + c.width);
+                    if (ovY >= 0.5 * Math.min(b.height, c.height)) {
+                        if (c.x >= b.x + b.width / 2 && Math.abs(cxA - (b.x + b.width)) <= near) {
+                            b.width = Math.max(4, a.x0 - 1 - b.x);
+                            const nx = Math.min(c.x, a.x0);
+                            c.width = c.x + c.width - nx; c.x = nx;
+                            fixed = true;
+                        } else if (c.x + c.width <= b.x + b.width / 2 && Math.abs(cxA - b.x) <= near) {
+                            const ox1 = b.x + b.width;
+                            b.x = a.x1 + 2; b.width = Math.max(4, ox1 - b.x);
+                            c.width = Math.max(c.width, a.x1 + 1 - c.x);
+                            fixed = true;
+                        }
+                    } else if (ovX >= 0.5 * Math.min(b.width, c.width)) {
+                        if (c.y >= b.y + b.height / 2 && Math.abs(cyA - (b.y + b.height)) <= near) {
+                            b.height = Math.max(4, a.y0 - 1 - b.y);
+                            const ny = Math.min(c.y, a.y0);
+                            c.height = c.y + c.height - ny; c.y = ny;
+                            fixed = true;
+                        } else if (c.y + c.height <= b.y + b.height / 2 && Math.abs(cyA - b.y) <= near) {
+                            const oy1 = b.y + b.height;
+                            b.y = a.y1 + 2; b.height = Math.max(4, oy1 - b.y);
+                            c.height = Math.max(c.height, a.y1 + 1 - c.y);
+                            fixed = true;
+                        }
+                    }
+                }
+            }
+        }
+        if (!fixed) break;
+        moved = true;
+    }
+    return moved;
+}
+
+// Pixel-level carve for FLUSH non-guillotine layouts, where all ink is one connected
+// component and the component carve has nothing to assign. Every ink pixel votes for an
+// anchor instead; the per-anchor bounding boxes approximate the panels when they stay
+// essentially disjoint.
+function carveByAnchorsPixel(A, anchors) {
+    const n = anchors.length;
+    const acx = anchors.map(a => (a.x0 + a.x1) / 2), acy = anchors.map(a => (a.y0 + a.y1) / 2);
+    const tol = Math.max(10, Math.round(0.04 * Math.max(A.aw, A.ah)));
+    let best = null;
+    for (const mode of ['tl', 'tr', 'bl', 'br', 'nearest']) {
+        const sx = mode === 'tl' || mode === 'bl' ? 1 : -1;
+        const sy = mode === 'tl' || mode === 'tr' ? 1 : -1;
+        const ex0 = new Float64Array(n).fill(Infinity), ey0 = new Float64Array(n).fill(Infinity);
+        const ex1 = new Float64Array(n).fill(-1), ey1 = new Float64Array(n).fill(-1);
+        for (let p = 0; p < A.aw * A.ah; p++) {
+            if (!A.ink[p]) continue;
+            const x = p % A.aw, y = (p / A.aw) | 0;
+            let bi = 0, bc = Infinity;
+            for (let i = 0; i < n; i++) {
+                const dx = x - acx[i], dy = y - acy[i];
+                let cost;
+                if (mode === 'nearest') cost = Math.abs(dx) + Math.abs(dy);
+                else {
+                    const fx = dx * sx, fy = dy * sy;
+                    cost = (fx < -tol || fy < -tol) ? 1e9 + dx * dx + dy * dy
+                                                    : Math.max(fx, 0) + Math.max(fy, 0);
+                }
+                if (cost < bc) { bc = cost; bi = i; }
+            }
+            if (x < ex0[bi]) ex0[bi] = x; if (x > ex1[bi]) ex1[bi] = x;
+            if (y < ey0[bi]) ey0[bi] = y; if (y > ey1[bi]) ey1[bi] = y;
+        }
+        if (ex1.some(v => v < 0)) continue;
+        const boxes = anchors.map((a, i) => ({ x: ex0[i], y: ey0[i],
+            width: ex1[i] - ex0[i] + 1, height: ey1[i] - ey0[i] + 1 }));
+        let inter = 0;
+        for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++)
+            inter += _boxIntersectArea(boxes[i], boxes[j]);
+        const areas = boxes.map(b => b.width * b.height).sort((p, q) => p - q);
+        if (areas[0] < 0.15 * areas[areas.length >> 1]) continue;
+        if (!best || inter < best.inter) best = { boxes, inter };
+    }
+    if (!best) return null;
+    const minA = Math.min(...best.boxes.map(b => b.width * b.height));
+    if (best.inter > 0.08 * minA) return null;
+    return best.boxes;
+}
+
+// Stage 5: structural verification. Appends flags; boxes are in ANALYSIS px.
+function verifyPanelBoxes(A, boxesA, N, flags) {
+    for (let i = 0; i < boxesA.length; i++) for (let j = i + 1; j < boxesA.length; j++) {
+        const inter = _boxIntersectArea(boxesA[i], boxesA[j]);
+        if (inter > 0.05 * Math.min(boxesA[i].width * boxesA[i].height, boxesA[j].width * boxesA[j].height)) {
+            if (!flags.includes('overlapping-panels')) flags.push('overlapping-panels');
+        }
+    }
+    const areaFig = A.aw * A.ah;
+    if (boxesA.some(b => b.width * b.height < 0.01 * areaFig || b.width < 0.035 * A.aw || b.height < 0.035 * A.ah
+        || b.width / b.height > 20 || b.height / b.width > 20)) flags.push('sliver-panel');
+    if (A.total > 0 && boxesA.length) {
+        const mask = new Uint8Array(A.aw * A.ah);
+        for (const b of boxesA) {
+            const x0 = Math.max(0, b.x), x1 = Math.min(A.aw, b.x + b.width);
+            const y1 = Math.min(A.ah, b.y + b.height);
+            for (let y = Math.max(0, b.y); y < y1; y++) mask.fill(1, y * A.aw + x0, y * A.aw + x1);
+        }
+        let covered = 0;
+        for (let p = 0; p < mask.length; p++) if (mask[p] && A.ink[p]) covered++;
+        if (covered / A.total < 0.85) flags.push('ink-orphaned');
+    }
+    if (N >= 2 && boxesA.length !== N) flags.push('panel-count-mismatch');
+}
+
+// The cascade driver. See the header comment above for the decision flow and result schema.
+function detectPanelsCore(fig, opts = {}) {
+    const res = { panels: [], count: 0, lettersVerified: false, letterSource: 'reading-order',
+        expected: { count: null, letters: [] },
+        method: 'none', confidence: 0, flags: [], ok: false };
+    const page = state.pages.find(p => p.pageNum === fig.pageNum);
+    if (!page) { res.flags.push('no-page'); return res; }
+
+    // ---- Stage 1: caption constraint (or an explicit caller override)
+    const exp = (opts.expected && opts.expected.count >= 2)
+        ? { count: opts.expected.count,
+            letters: (opts.expected.letters && opts.expected.letters.length === opts.expected.count)
+                ? opts.expected.letters.map(l => String(l).toLowerCase()) : defaultPanelLetters(opts.expected.count),
+            panels: {} }
+        : expectedPanelsFromCaption(fig.caption);
+    const N = exp ? exp.count : 0;
+    if (exp) res.expected = { count: exp.count, letters: exp.letters.slice() };
+    else res.flags.push('no-caption-letters');
+
+    const A = panelInkAnalysis(page.img, fig.bounds);
+    const toNat = b => ({
+        x: Math.max(0, Math.round(b.x / A.s)), y: Math.max(0, Math.round(b.y / A.s)),
+        width: Math.min(fig.bounds.width, Math.round(b.width / A.s)),
+        height: Math.min(fig.bounds.height, Math.round(b.height / A.s))
+    });
+
+    // Label anchors are needed by EVERY path that names panels, including the XObject fast
+    // path, so they are found once here rather than inside the structural branch.
+    let anchors = [], cc = null;
+    if (N >= 2) {
+        cc = computeComponents(A);
+        anchors = findLabelAnchors(A, exp.letters, cc);
+        if (anchors.length < 2) res.flags.push('labels-not-found');
+    }
+
+    // ---- Stage 2: XObject fast path. Exact geometry, but it says NOTHING about which panel
+    // is which: it still has to pass the same letter verification as everything else.
+    let boxesA = null;
+    let method = 'gutter';
+    if (N >= 2) {
+        const xo = xobjectPanels(fig, N);
+        if (xo) {
+            // carry the exact natural-px placement so the analysis-raster round trip cannot blur it
+            const xoA = xo.map(b => ({ x: Math.round(b.x * A.s), y: Math.round(b.y * A.s),
+                width: Math.round(b.width * A.s), height: Math.round(b.height * A.s), nat: b }));
+            const vf = [];
+            verifyPanelBoxes(A, xoA, N, vf);
+            if (!vf.length) { boxesA = xoA; method = 'xobject'; }
+            else res.flags.push('xobject-tiling-rejected');
+        }
+    }
+
+    // ---- Stage 3: structural gutter pass (permissive when the caption pins the count),
+    // with fragment reattachment (tick strips, axis titles back onto their panels) before
+    // sliver rejection so junk leaves cannot poison the size statistics.
+    let merged = false;
+    if (!boxesA) {
+        boxesA = rejectSliversRobust(reattachFragments(guillotineLeaves(A, N >= 2), A));
+
+        // ---- Stage 4: label anchors and seams split/carve the partition
+        if (N >= 2) {
+            const shrink = n => { const before = boxesA.length; boxesA = reconcileToCount(boxesA, n, anchors); merged = merged || boxesA.length !== before; };
+            if (boxesA.length > N) shrink(N);
+            // Flush rescue: zero-gutter mosaics have no gutter signal at all; cut on
+            // grid-consistent pixel-discontinuity seams (raster boundaries, shared borders).
+            if (boxesA.length < N || (anchors.length >= 2 && _anchorsViolate(boxesA, anchors))) {
+                let sr = seamSplitToCount(A, boxesA, N);
+                // A seam grid that puts two labels in one tile sliced through panels (the
+                // aligned-pinwheel trap): the labels out-vote the seams, so revert.
+                if (sr && anchors.length >= 2 && _anchorsViolate(rejectSliversRobust(sr), anchors)) sr = null;
+                if (sr) {
+                    boxesA = rejectSliversRobust(sr);
+                    res.flags.push('flush-seam-cut');
+                    if (boxesA.length === N) method = 'seam';
+                    if (boxesA.length > N) shrink(N);
+                }
+            }
+            if (boxesA.length < N && anchors.length >= 2) {
+                const seeded = seedSplitWithAnchors(A, boxesA, anchors, N);
+                if (seeded.changed && seedPartitionConsistent(A, seeded.boxes, anchors, cc)) {
+                    method = 'gutter+labels'; res.flags.push('label-seeded-cut');
+                    if (seeded.weak) res.flags.push('weak-gutter');
+                    boxesA = rejectSliversRobust(seeded.boxes);
+                    if (boxesA.length > N) shrink(N);
+                }
+            }
+            // Labels merged into panel-sized components are recoverable once boxes exist:
+            // scan each box's corner/edge bands for the missing letters.
+            if (anchors.length < N && boxesA.length >= 2) {
+                anchors = rescueAnchorsNearBoxes(A, cc, exp.letters, anchors, boxesA);
+                if (anchors.length >= 2) res.flags = res.flags.filter(f => f !== 'labels-not-found');
+            }
+            // A tight-gutter cut can land past a neighbour's label; the anchors say so and
+            // say where the boundary belongs -- but ONLY if they are placed like labels, and
+            // never silently (a moved boundary is a flagged, confidence-lowering event).
+            if (boxesA.length === N && anchors.length >= 2 && _anchorsViolate(boxesA, anchors)
+                && anchorPlacementPlausible(boxesA, anchors)
+                && repairAnchorBoxAssignment(boxesA, anchors))
+                res.flags.push('boundary-repaired');
+            const violated = anchors.length >= 2 && _anchorsViolate(boxesA, anchors);
+            if ((boxesA.length !== N || violated) && anchors.length === N) {
+                const carved = carveByAnchors(A, anchors, cc) || carveByAnchorsPixel(A, anchors);
+                // The carve BUILDS the partition out of the anchors, so a stray glyph
+                // rewrites the geometry outright. Its output has to look like a labelled
+                // figure or the carve is not an explanation of anything: keep the structural
+                // boxes instead and let verification abstain.
+                if (carved && anchorPlacementPlausible(carved, anchors)) {
+                    if (boxesA.length < N) res.flags.push('non-guillotine-layout');
+                    boxesA = carved; method = 'labels';
+                }
+            }
+            if (boxesA.length < N && !res.flags.includes('non-guillotine-layout'))
+                res.flags.push('non-guillotine-layout');
+        }
+    }
+    boxesA = sortReadingOrder(boxesA);
+    // An outside-placed label (above-left, top-centre, below) belongs to its panel's crop.
+    if (anchors.length && boxesA.length >= 2 && method !== 'xobject')
+        expandBoxesToAnchors(boxesA, anchors);
+
+    // ---- Stage 5: structural verification, then LETTER verification
+    verifyPanelBoxes(A, boxesA, N, res.flags);
+    const prior = (N >= 2 && boxesA.length === N) ? exp.letters : defaultPanelLetters(boxesA.length);
+    let named = verifyPanelLetters(boxesA, anchors, prior);
+    // Owning one distinct expected letter per box is not proof that those glyphs are LABELS.
+    // Unless the anchor set is placed like a label set, the "verification" is a coincidence
+    // between stray glyphs and the expected alphabet, and it must not be allowed to overrule
+    // the reading-order prior -- nor to buy the confidence bonus that verification earns.
+    if (named.status !== 'unverified' && !anchorPlacementPlausible(boxesA, anchors)) {
+        res.flags.push('label-placement-implausible');
+        named = { letters: prior.slice(), status: 'unverified' };
+    }
+    if (named.status === 'corrected') res.flags.push('label-order-mismatch');
+    else if (named.status === 'unverified' && boxesA.length >= 2) res.flags.push('panel-labels-unverified');
+    // A forced merge that the anchors do not vouch for is a count disagreement, not a fix.
+    if (merged && named.status === 'unverified' && !res.flags.includes('panel-count-mismatch'))
+        res.flags.push('panel-count-mismatch');
+    res.lettersVerified = named.status !== 'unverified';
+    res.letterSource = res.lettersVerified ? 'anchors' : 'reading-order';
+    res.panels = boxesA.map((b, i) => ({ bounds: b.nat || toNat(b), letter: named.letters[i], source: method }));
+    res.count = res.panels.length;
+    res.method = res.count ? method : 'none';
+
+    let conf;
+    if (N >= 2) {
+        if (res.count === N) {
+            conf = method === 'xobject' ? 0.95 : method === 'labels' ? 0.6
+                 : method === 'gutter+labels' ? 0.72 : method === 'seam' ? 0.7 : 0.85;
+            // Full letter verification (every box owns exactly the expected letter set) is
+            // independent evidence for the PARTITION too, not just the naming.
+            if (res.lettersVerified && method !== 'xobject' && method !== 'gutter') conf += 0.12;
+            if (method === 'gutter' && named.status === 'confirmed') conf += 0.07;
+        } else conf = 0.3;
+    } else if (res.count >= 2) conf = 0.55;
+    else { conf = 0.2; res.flags.push('single-panel'); }
+    for (const [flag, pen] of [['overlapping-panels', 0.25], ['ink-orphaned', 0.15], ['sliver-panel', 0.1],
+                               ['label-order-mismatch', 0.05], ['panel-labels-unverified', 0.15], ['weak-gutter', 0.1],
+                               ['boundary-repaired', 0.12], ['label-placement-implausible', 0.15]])
+        if (res.flags.includes(flag)) conf -= pen;
+    res.confidence = Math.max(0.05, Math.min(0.98, +conf.toFixed(2)));
+    if (res.confidence < 0.5) res.flags.push('low-confidence');
+    // 'no-caption-letters' is critical: without the caption constraint the count is unverifiable.
+    // 'panel-labels-unverified' is critical because a panel carrying the wrong letter reads as
+    // perfect structurally while poisoning everything downstream of it. When the letters were
+    // verified against glyphs that are PLACED LIKE LABELS, that same evidence vouches for a
+    // corrected reading order and for a non-guillotine carve -- the anchors are then proof,
+    // not a defect. Placement is load-bearing here: res.lettersVerified can only be true when
+    // anchorPlacementPlausible held, so a stray-glyph "correction" can never buy this pass.
+    // 'label-placement-implausible' says exactly that happened, and is critical in its own
+    // right so the exploit is visible rather than folded into a generic unverified flag.
+    // 'boundary-repaired' is critical too. A repaired boundary is a panel edge INFERRED
+    // from a label rather than measured from the pixels, and the one measured instance of
+    // it firing moved a correct boundary onto a stray legend key. It fires on 0 of the 41
+    // benchmark figures, so refusing to ship one costs no measured coverage; the repair
+    // still earns its place by fixing the anchor-to-box assignment (and so the letters and
+    // the reported boxes) on a result that is then handed to a human rather than trusted.
+    const CRITICAL = ['panel-count-mismatch', 'overlapping-panels',
+                      'low-confidence', 'no-caption-letters', 'no-page',
+                      'panel-labels-unverified', 'label-placement-implausible',
+                      'boundary-repaired'];
+    if (!res.lettersVerified) CRITICAL.push('non-guillotine-layout', 'label-order-mismatch');
+    res.ok = !res.flags.some(f => CRITICAL.includes(f));
+    return res;
+}
+
+// Apply a detection result: create subfigures (named by panel letter), assign per-panel
+// caption segments when the caption's letters line up, and record the detection provenance.
+// Caption text is routed BY LETTER, so it is attached only when the letters were verified
+// against the labels in the image -- attaching "(B) ..." to the panel we merely assume is B
+// is the exact silent error this cascade exists to prevent.
+function applyPanelResult(fig, res) {
+    const capMap = expectedPanelsFromCaption(fig.caption);
+    const assignCaps = capMap && res.lettersVerified && fig.subfigures.length === 0 && res.count === capMap.count;
+    commit(() => {
+        res.panels.forEach(p => {
+            const n = fig.subfigures.length;
+            const cap = (assignCaps && capMap.panels[p.letter]) ? capMap.panels[p.letter] : '';
+            fig.subfigures.push({
+                id: fig.id + '_s' + (n + 1),
+                label: fig.label + (p.letter || String.fromCharCode(97 + n)),
+                bounds: p.bounds, caption: cap, captionSource: cap ? 'panel-split' : '', createdAt: nowISO()
+            });
+        });
+        fig.panelDetection = { method: res.method, confidence: res.confidence,
+            flags: res.flags.slice(), detectedAt: nowISO() };
+    });
 }
 
 // ========== Chart digitizer (extract numeric data from a chart image) ==========
@@ -4230,6 +6100,7 @@ function figuresToJSON(figures, dimFor = pageNatural) {
             digitization: f.digitization || null,
             characterization: f.characterization || null,
             extraction: f.extraction || null,
+            panelDetection: f.panelDetection || null,
             subfigures: f.subfigures.map(s => ({
                 id: s.id, label: s.label,
                 bounds: s.bounds,
@@ -4261,6 +6132,7 @@ function figuresFromJSON(data) {
         digitization: f.digitization || null,
         characterization: f.characterization || null,
         extraction: f.extraction || null,
+        panelDetection: f.panelDetection || null,
         subfigures: (f.subfigures || []).map(s => ({
             id: s.id, label: s.label, bounds: s.bounds,
             caption: s.caption || '', captionSource: s.captionSource || '',
@@ -4792,6 +6664,34 @@ window.figureExtractor = {
         if (idx === -1) throw new Error(`Figure not found: ${figureId}`);
         commit(() => { state.figures.splice(idx, 1); });
         return { success: true };
+    },
+
+    // ----- Panel detection (cascade) -----
+    // Detect subfigure panels for a figure. Returns a RESULT OBJECT, never a bare array:
+    //   { panels: [{bounds, letter, source}], count, expected: {count, letters},
+    //     method: 'xobject'|'gutter'|'gutter+labels'|'labels'|'none',
+    //     confidence: 0..1, flags: [...], ok: bool }
+    // `ok:false` means the split needs human review (see flags) -- do not trust it blindly.
+    // opts.expected = {count, letters?} overrides the caption-derived constraint.
+    // opts.apply = true creates the subfigures, and ONLY when the result verified (ok:true
+    // with 2+ panels). A result that is not ok has either an unproven partition or unproven
+    // letters, and writing it into the annotations is exactly the silent wrong answer this
+    // API refuses to produce; `applied` reports truthfully what happened.
+    detectPanels: (figureId, opts = {}) => {
+        const fig = state.figures.find(f => f.id === figureId);
+        if (!fig) throw new Error(`Figure not found: ${figureId}`);
+        const res = detectPanelsCore(fig, opts);
+        if (opts.apply) {
+            if (res.ok && res.panels.length >= 2) { applyPanelResult(fig, res); res.applied = true; }
+            else res.applied = false;
+        }
+        return res;
+    },
+    // Legacy XY-cut detector, kept for A/B comparison only. Returns bare boxes (no flags).
+    suggestSubfiguresLegacy: (figureId, expectedCount = 0) => {
+        const fig = state.figures.find(f => f.id === figureId);
+        if (!fig) throw new Error(`Figure not found: ${figureId}`);
+        return suggestSubfiguresLegacy(fig, expectedCount);
     },
 
     // Get a page as base64 PNG (for vision model analysis)

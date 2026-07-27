@@ -1,0 +1,154 @@
+{
+ "id": "L2_grid3x1_med_botlabel_09",
+ "image": "L2_grid3x1_med_botlabel_09.png",
+ "level": "L2_medium",
+ "figure": {
+  "width": 480,
+  "height": 840,
+  "dpi": 110,
+  "seed": 1209
+ },
+ "layoutName": "grid3x1",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 13,
+  "bucketNominal": "medium",
+  "measuredPx": 18.0,
+  "measuredFrac": 0.0214,
+  "measuredAxis": "y",
+  "bucket": "medium",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "bottom-right",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 9. Treatment normalises cellular morphology in the rodent model. (A) Quantification of hippocampal CA1 across groups. (B) Synaptophysin across the three cohorts. (C) Time course of mitochondrial area. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C"
+ ],
+ "notes": [],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 20,
+    "y": 19,
+    "width": 441,
+    "height": 255
+   },
+   "bboxCore": {
+    "x": 20,
+    "y": 19,
+    "width": 441,
+    "height": 255
+   },
+   "labelBbox": {
+    "x": 445,
+    "y": 259,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 16.5,
+    "y": 16.5,
+    "width": 447,
+    "height": 260.33
+   },
+   "plotRect": {
+    "x": 56.07,
+    "y": 19.54,
+    "width": 404.39,
+    "height": 238.77
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 20,
+    "y": 292,
+    "width": 441,
+    "height": 253
+   },
+   "bboxCore": {
+    "x": 20,
+    "y": 292,
+    "width": 441,
+    "height": 253
+   },
+   "labelBbox": {
+    "x": 446,
+    "y": 532,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 16.5,
+    "y": 289.83,
+    "width": 447,
+    "height": 260.33
+   },
+   "plotRect": {
+    "x": 50.07,
+    "y": 292.88,
+    "width": 410.39,
+    "height": 238.77
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 20,
+    "y": 566,
+    "width": 441,
+    "height": 254
+   },
+   "bboxCore": {
+    "x": 20,
+    "y": 566,
+    "width": 441,
+    "height": 254
+   },
+   "labelBbox": {
+    "x": 445,
+    "y": 805,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 16.5,
+    "y": 563.17,
+    "width": 447,
+    "height": 260.33
+   },
+   "plotRect": {
+    "x": 50.07,
+    "y": 566.21,
+    "width": 410.39,
+    "height": 225.72
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

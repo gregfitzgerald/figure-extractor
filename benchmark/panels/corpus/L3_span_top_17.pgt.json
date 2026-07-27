@@ -1,0 +1,156 @@
+{
+ "id": "L3_span_top_17",
+ "image": "L3_span_top_17.png",
+ "level": "L3_tight",
+ "figure": {
+  "width": 900,
+  "height": 660,
+  "dpi": 110,
+  "seed": 1317
+ },
+ "layoutName": "span-top-full",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 11,
+  "bucketNominal": "tight",
+  "measuredPx": 10.0,
+  "measuredFrac": 0.0152,
+  "measuredAxis": "y",
+  "bucket": "medium",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 17. Dose-dependent recovery of function in the murine model. (A) Time course of BDNF. (B) Hippocampal CA1 levels by treatment group. (C) Distribution of hippocampal CA1 by condition. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C"
+ ],
+ "notes": [
+  "unequal row spans: A spans both columns"
+ ],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 15,
+    "width": 869,
+    "height": 310
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 15,
+    "width": 869,
+    "height": 310
+   },
+   "labelBbox": {
+    "x": 22,
+    "y": 22,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 15.5,
+    "y": 15.5,
+    "width": 869,
+    "height": 309
+   },
+   "plotRect": {
+    "x": 46.02,
+    "y": 15.5,
+    "width": 838.48,
+    "height": 280.48
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 335,
+    "width": 429,
+    "height": 308
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 335,
+    "width": 429,
+    "height": 308
+   },
+   "labelBbox": {
+    "x": 23,
+    "y": 342,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 15.5,
+    "y": 335.5,
+    "width": 429,
+    "height": 309
+   },
+   "plotRect": {
+    "x": 46.02,
+    "y": 335.5,
+    "width": 398.48,
+    "height": 293.52
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 456,
+    "y": 335,
+    "width": 429,
+    "height": 308
+   },
+   "bboxCore": {
+    "x": 456,
+    "y": 335,
+    "width": 429,
+    "height": 308
+   },
+   "labelBbox": {
+    "x": 462,
+    "y": 342,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 455.5,
+    "y": 335.5,
+    "width": 429,
+    "height": 309
+   },
+   "plotRect": {
+    "x": 486.02,
+    "y": 335.5,
+    "width": 398.48,
+    "height": 293.52
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

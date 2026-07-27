@@ -1,0 +1,154 @@
+{
+ "id": "L1_grid1x3_wide_03",
+ "image": "L1_grid1x3_wide_03.png",
+ "level": "L1_easy",
+ "figure": {
+  "width": 1050,
+  "height": 380,
+  "dpi": 110,
+  "seed": 1103
+ },
+ "layoutName": "grid1x3",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 52,
+  "bucketNominal": "wide",
+  "measuredPx": 56.0,
+  "measuredFrac": 0.0533,
+  "measuredAxis": "x",
+  "bucket": "wide",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "outside-al",
+ "labelFormat": "(A)",
+ "sharedAxes": false,
+ "caption": "Figure 3. Exercise increases plasticity markers in the rat model. (A) Quantification of mitochondrial area across groups. (B) Dose-response curves for c-Fos. (C) Distribution of mitochondrial area by condition. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C"
+ ],
+ "notes": [],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 38,
+    "y": 39,
+    "width": 287,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 39,
+    "y": 65,
+    "width": 286,
+    "height": 274
+   },
+   "labelBbox": {
+    "x": 38,
+    "y": 39,
+    "width": 23,
+    "height": 15
+   },
+   "inkEscapePx": -2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 36,
+    "y": 36,
+    "width": 291.33,
+    "height": 308
+   },
+   "plotRect": {
+    "x": 69.57,
+    "y": 65.04,
+    "width": 254.72,
+    "height": 260.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 381,
+    "y": 39,
+    "width": 287,
+    "height": 302
+   },
+   "bboxCore": {
+    "x": 382,
+    "y": 65,
+    "width": 286,
+    "height": 276
+   },
+   "labelBbox": {
+    "x": 381,
+    "y": 39,
+    "width": 23,
+    "height": 15
+   },
+   "inkEscapePx": -1.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 379.33,
+    "y": 36,
+    "width": 291.33,
+    "height": 308
+   },
+   "plotRect": {
+    "x": 412.9,
+    "y": 65.04,
+    "width": 254.72,
+    "height": 247.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 724,
+    "y": 39,
+    "width": 287,
+    "height": 300
+   },
+   "bboxCore": {
+    "x": 726,
+    "y": 65,
+    "width": 285,
+    "height": 274
+   },
+   "labelBbox": {
+    "x": 724,
+    "y": 39,
+    "width": 23,
+    "height": 15
+   },
+   "inkEscapePx": -1.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 722.67,
+    "y": 36,
+    "width": 291.33,
+    "height": 308
+   },
+   "plotRect": {
+    "x": 756.23,
+    "y": 65.04,
+    "width": 254.72,
+    "height": 260.43
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

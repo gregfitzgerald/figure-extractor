@@ -1,0 +1,193 @@
+{
+ "id": "L1_grid2x2_wide_02",
+ "image": "L1_grid2x2_wide_02.png",
+ "level": "L1_easy",
+ "figure": {
+  "width": 900,
+  "height": 700,
+  "dpi": 110,
+  "seed": 1102
+ },
+ "layoutName": "grid2x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 45,
+  "bucketNominal": "wide",
+  "measuredPx": 51.0,
+  "measuredFrac": 0.0567,
+  "measuredAxis": "x",
+  "bucket": "wide",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 2. Treatment normalises cellular morphology in the rodent model. (A) GFAP immunoreactivity levels by treatment group. (B) Correlation between dendritic spines and cell density. (C) Dose-response curves for synaptophysin. (D) Mitochondrial area across the three cohorts. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 36,
+    "y": 35,
+    "width": 389,
+    "height": 289
+   },
+   "bboxCore": {
+    "x": 36,
+    "y": 35,
+    "width": 389,
+    "height": 289
+   },
+   "labelBbox": {
+    "x": 39,
+    "y": 39,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 32.5,
+    "y": 32.5,
+    "width": 395,
+    "height": 295
+   },
+   "plotRect": {
+    "x": 66.07,
+    "y": 35.54,
+    "width": 358.39,
+    "height": 273.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 476,
+    "y": 35,
+    "width": 389,
+    "height": 289
+   },
+   "bboxCore": {
+    "x": 476,
+    "y": 35,
+    "width": 389,
+    "height": 289
+   },
+   "labelBbox": {
+    "x": 480,
+    "y": 39,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 472.5,
+    "y": 32.5,
+    "width": 395,
+    "height": 295
+   },
+   "plotRect": {
+    "x": 506.07,
+    "y": 35.54,
+    "width": 358.39,
+    "height": 260.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 36,
+    "y": 375,
+    "width": 389,
+    "height": 289
+   },
+   "bboxCore": {
+    "x": 36,
+    "y": 375,
+    "width": 389,
+    "height": 289
+   },
+   "labelBbox": {
+    "x": 39,
+    "y": 379,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 32.5,
+    "y": 372.5,
+    "width": 395,
+    "height": 295
+   },
+   "plotRect": {
+    "x": 66.07,
+    "y": 375.54,
+    "width": 358.39,
+    "height": 260.39
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 476,
+    "y": 375,
+    "width": 389,
+    "height": 287
+   },
+   "bboxCore": {
+    "x": 476,
+    "y": 375,
+    "width": 389,
+    "height": 287
+   },
+   "labelBbox": {
+    "x": 480,
+    "y": 379,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": -2.5,
+   "labelContrast": 255,
+   "tile": {
+    "x": 472.5,
+    "y": 372.5,
+    "width": 395,
+    "height": 295
+   },
+   "plotRect": {
+    "x": 506.07,
+    "y": 375.54,
+    "width": 358.39,
+    "height": 273.43
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

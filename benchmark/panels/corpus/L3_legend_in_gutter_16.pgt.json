@@ -1,0 +1,211 @@
+{
+ "id": "L3_legend_in_gutter_16",
+ "image": "L3_legend_in_gutter_16.png",
+ "level": "L3_tight",
+ "figure": {
+  "width": 960,
+  "height": 620,
+  "dpi": 110,
+  "seed": 1316
+ },
+ "layoutName": "grid2x2-open-centre",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 6,
+  "bucketNominal": "vtight",
+  "measuredPx": 6.0,
+  "measuredFrac": 0.0097,
+  "measuredAxis": "y",
+  "bucket": "tight",
+  "tightestPair": [
+   "B",
+   "D"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 16. Lesion alters regional signalling in the rat model. (A) Quantification of c-Fos across groups. (B) Time course of BDNF. (C) Hippocampal CA1 plotted against distance. (D) BDNF across the three cohorts. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "legend sits in the wide central gutter while the row gutter is tight"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 13,
+    "y": 13,
+    "width": 389,
+    "height": 292
+   },
+   "bboxCore": {
+    "x": 13,
+    "y": 13,
+    "width": 389,
+    "height": 292
+   },
+   "labelBbox": {
+    "x": 19,
+    "y": 19,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 13,
+    "y": 13,
+    "width": 388.8,
+    "height": 294
+   },
+   "plotRect": {
+    "x": 43.52,
+    "y": 13,
+    "width": 358.28,
+    "height": 278.52
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 558,
+    "y": 10,
+    "width": 389,
+    "height": 297
+   },
+   "bboxCore": {
+    "x": 558,
+    "y": 10,
+    "width": 389,
+    "height": 297
+   },
+   "labelBbox": {
+    "x": 565,
+    "y": 19,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 558.2,
+    "y": 13,
+    "width": 388.8,
+    "height": 294
+   },
+   "plotRect": {
+    "x": 588.72,
+    "y": 13,
+    "width": 358.28,
+    "height": 265.48
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "scatter",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 13,
+    "y": 313,
+    "width": 389,
+    "height": 294
+   },
+   "bboxCore": {
+    "x": 13,
+    "y": 313,
+    "width": 389,
+    "height": 294
+   },
+   "labelBbox": {
+    "x": 19,
+    "y": 319,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 13,
+    "y": 313,
+    "width": 388.8,
+    "height": 294
+   },
+   "plotRect": {
+    "x": 43.52,
+    "y": 313,
+    "width": 358.28,
+    "height": 265.48
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 558,
+    "y": 313,
+    "width": 389,
+    "height": 292
+   },
+   "bboxCore": {
+    "x": 558,
+    "y": 313,
+    "width": 389,
+    "height": 292
+   },
+   "labelBbox": {
+    "x": 565,
+    "y": 319,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.2,
+   "labelContrast": 255,
+   "tile": {
+    "x": 558.2,
+    "y": 313,
+    "width": 388.8,
+    "height": 294
+   },
+   "plotRect": {
+    "x": 588.72,
+    "y": 313,
+    "width": 358.28,
+    "height": 278.52
+   }
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "legend",
+   "bbox": {
+    "x": 417,
+    "y": 222,
+    "width": 126,
+    "height": 126
+   },
+   "rect": {
+    "x": 417.6,
+    "y": 223.2,
+    "width": 124.8,
+    "height": 124
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

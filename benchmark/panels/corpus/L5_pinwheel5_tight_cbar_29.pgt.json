@@ -1,0 +1,248 @@
+{
+ "id": "L5_pinwheel5_tight_cbar_29",
+ "image": "L5_pinwheel5_tight_cbar_29.png",
+ "level": "L5_nonguillotine",
+ "figure": {
+  "width": 980,
+  "height": 780,
+  "dpi": 110,
+  "seed": 1529
+ },
+ "layoutName": "pinwheel5",
+ "layoutClass": "non-guillotine",
+ "gutter": {
+  "nominalPx": 12,
+  "bucketNominal": "tight",
+  "measuredPx": 11.0,
+  "measuredFrac": 0.0141,
+  "measuredAxis": "y",
+  "bucket": "tight",
+  "tightestPair": [
+   "B",
+   "C"
+  ]
+ },
+ "labelPlacement": "inside-tl",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 29. Dose-dependent recovery of function in the rat model. (A) Heat map of hippocampal CA1 across samples. (B) GFAP immunoreactivity levels by treatment group. (C) Time course of mitochondrial area. (D) Distribution of synaptophysin by condition. (E) Heat map of microglial density across samples. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E"
+ ],
+ "notes": [],
+ "nPanels": 5,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 16,
+    "width": 587,
+    "height": 239
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 16,
+    "width": 587,
+    "height": 239
+   },
+   "labelBbox": {
+    "x": 21,
+    "y": 21,
+    "width": 14,
+    "height": 14
+   },
+   "inkEscapePx": 0.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 16,
+    "y": 16,
+    "width": 586.67,
+    "height": 241.33
+   },
+   "plotRect": {
+    "x": 40.52,
+    "y": 16,
+    "width": 562.14,
+    "height": 212.81
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "bar",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 615,
+    "y": 16,
+    "width": 287,
+    "height": 495
+   },
+   "bboxCore": {
+    "x": 615,
+    "y": 16,
+    "width": 287,
+    "height": 495
+   },
+   "labelBbox": {
+    "x": 622,
+    "y": 22,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 614.67,
+    "y": 16,
+    "width": 287.33,
+    "height": 494.67
+   },
+   "plotRect": {
+    "x": 645.19,
+    "y": 16,
+    "width": 256.81,
+    "height": 479.19
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "line",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 315,
+    "y": 522,
+    "width": 587,
+    "height": 242
+   },
+   "bboxCore": {
+    "x": 315,
+    "y": 522,
+    "width": 587,
+    "height": 242
+   },
+   "labelBbox": {
+    "x": 321,
+    "y": 529,
+    "width": 12,
+    "height": 12
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 315.33,
+    "y": 522.67,
+    "width": 586.67,
+    "height": 241.33
+   },
+   "plotRect": {
+    "x": 345.86,
+    "y": 522.67,
+    "width": 556.14,
+    "height": 212.81
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "box",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 16,
+    "y": 269,
+    "width": 288,
+    "height": 493
+   },
+   "bboxCore": {
+    "x": 16,
+    "y": 269,
+    "width": 288,
+    "height": 493
+   },
+   "labelBbox": {
+    "x": 23,
+    "y": 275,
+    "width": 11,
+    "height": 12
+   },
+   "inkEscapePx": 0.7,
+   "labelContrast": 255,
+   "tile": {
+    "x": 16,
+    "y": 269.33,
+    "width": 287.33,
+    "height": 494.67
+   },
+   "plotRect": {
+    "x": 46.52,
+    "y": 269.33,
+    "width": 256.81,
+    "height": 479.19
+   }
+  },
+  {
+   "index": 4,
+   "label": "E",
+   "contentType": "heat",
+   "labelDrawn": true,
+   "bbox": {
+    "x": 315,
+    "y": 269,
+    "width": 288,
+    "height": 240
+   },
+   "bboxCore": {
+    "x": 315,
+    "y": 269,
+    "width": 288,
+    "height": 240
+   },
+   "labelBbox": {
+    "x": 321,
+    "y": 274,
+    "width": 12,
+    "height": 14
+   },
+   "inkEscapePx": 0.3,
+   "labelContrast": 255,
+   "tile": {
+    "x": 315.33,
+    "y": 269.33,
+    "width": 287.33,
+    "height": 241.33
+   },
+   "plotRect": {
+    "x": 339.86,
+    "y": 269.33,
+    "width": 262.81,
+    "height": 212.81
+   }
+  }
+ ],
+ "distractors": [
+  {
+   "kind": "colourbar",
+   "bbox": {
+    "x": 924,
+    "y": 247,
+    "width": 41,
+    "height": 271
+   },
+   "rect": {
+    "x": 926.1,
+    "y": 218.4,
+    "width": 49,
+    "height": 343.2
+   }
+  }
+ ],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

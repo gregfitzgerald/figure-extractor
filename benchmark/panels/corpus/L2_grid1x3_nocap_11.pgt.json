@@ -1,0 +1,137 @@
+{
+ "id": "L2_grid1x3_nocap_11",
+ "image": "L2_grid1x3_nocap_11.png",
+ "level": "L2_medium",
+ "figure": {
+  "width": 1000,
+  "height": 360,
+  "dpi": 110,
+  "seed": 1211
+ },
+ "layoutName": "grid1x3",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 28,
+  "bucketNominal": "medium",
+  "measuredPx": 33.0,
+  "measuredFrac": 0.033,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "B",
+   "C"
+  ]
+ },
+ "labelPlacement": "none",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 11. Dose-dependent recovery of function in the transgenic model. Mitochondrial area levels by treatment group. Correlation between microglial density and cell density. Distribution of c-Fos by condition. Data are mean +/- s.e.m.",
+ "expectedLetters": [],
+ "notes": [
+  "neither drawn letters nor caption letters: the count constraint is unavailable"
+ ],
+ "nPanels": 3,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 27,
+    "y": 27,
+    "width": 293,
+    "height": 306
+   },
+   "bboxCore": {
+    "x": 27,
+    "y": 27,
+    "width": 293,
+    "height": 306
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2.7,
+   "labelContrast": null,
+   "tile": {
+    "x": 24,
+    "y": 24,
+    "width": 298.67,
+    "height": 312
+   },
+   "plotRect": {
+    "x": 63.57,
+    "y": 27.04,
+    "width": 256.05,
+    "height": 290.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "scatter",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 354,
+    "y": 25,
+    "width": 293,
+    "height": 308
+   },
+   "bboxCore": {
+    "x": 354,
+    "y": 25,
+    "width": 293,
+    "height": 308
+   },
+   "labelBbox": null,
+   "inkEscapePx": -1,
+   "labelContrast": null,
+   "tile": {
+    "x": 350.67,
+    "y": 24,
+    "width": 298.67,
+    "height": 312
+   },
+   "plotRect": {
+    "x": 384.23,
+    "y": 27.04,
+    "width": 262.05,
+    "height": 277.39
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "box",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 680,
+    "y": 26,
+    "width": 293,
+    "height": 305
+   },
+   "bboxCore": {
+    "x": 680,
+    "y": 26,
+    "width": 293,
+    "height": 305
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2,
+   "labelContrast": null,
+   "tile": {
+    "x": 677.33,
+    "y": 24,
+    "width": 298.67,
+    "height": 312
+   },
+   "plotRect": {
+    "x": 710.9,
+    "y": 27.04,
+    "width": 262.05,
+    "height": 290.43
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}

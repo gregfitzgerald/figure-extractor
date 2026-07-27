@@ -1,0 +1,175 @@
+{
+ "id": "L6_cld_nolabel_35",
+ "image": "L6_cld_nolabel_35.png",
+ "level": "L6_strayletters",
+ "figure": {
+  "width": 900,
+  "height": 700,
+  "dpi": 110,
+  "seed": 1635
+ },
+ "layoutName": "grid2x2",
+ "layoutClass": "guillotine",
+ "gutter": {
+  "nominalPx": 25,
+  "bucketNominal": "medium",
+  "measuredPx": 31.0,
+  "measuredFrac": 0.0344,
+  "measuredAxis": "x",
+  "bucket": "medium",
+  "tightestPair": [
+   "A",
+   "B"
+  ]
+ },
+ "labelPlacement": "none",
+ "labelFormat": "A",
+ "sharedAxes": false,
+ "caption": "Figure 35. Dose-dependent recovery of function in the rodent model. (A) Quantification of hippocampal CA1 across groups. (B) Quantification of synaptophysin across groups. (C) Quantification of microglial density across groups. (D) C-Fos levels by treatment group. Data are mean +/- s.e.m.",
+ "expectedLetters": [
+  "A",
+  "B",
+  "C",
+  "D"
+ ],
+ "notes": [
+  "NO panel labels are drawn, and the only expected-letter glyphs in the figure are a compact-letter display in REVERSE order, one per panel, in the middle of each plot. A detector that treats letter identity as label evidence names every panel wrongly with full 'verification'. The only correct behaviours are reading-order letters or abstention"
+ ],
+ "nPanels": 4,
+ "panels": [
+  {
+   "index": 0,
+   "label": "A",
+   "contentType": "bar",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 26,
+    "y": 25,
+    "width": 409,
+    "height": 307
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 25,
+    "width": 409,
+    "height": 307
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2.5,
+   "labelContrast": null,
+   "tile": {
+    "x": 22.5,
+    "y": 22.5,
+    "width": 415,
+    "height": 315
+   },
+   "plotRect": {
+    "x": 62.07,
+    "y": 25.54,
+    "width": 372.39,
+    "height": 293.43
+   }
+  },
+  {
+   "index": 1,
+   "label": "B",
+   "contentType": "bar",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 466,
+    "y": 23,
+    "width": 409,
+    "height": 309
+   },
+   "bboxCore": {
+    "x": 466,
+    "y": 23,
+    "width": 409,
+    "height": 309
+   },
+   "labelBbox": null,
+   "inkEscapePx": -0.5,
+   "labelContrast": null,
+   "tile": {
+    "x": 462.5,
+    "y": 22.5,
+    "width": 415,
+    "height": 315
+   },
+   "plotRect": {
+    "x": 502.07,
+    "y": 25.54,
+    "width": 372.39,
+    "height": 293.43
+   }
+  },
+  {
+   "index": 2,
+   "label": "C",
+   "contentType": "bar",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 26,
+    "y": 365,
+    "width": 409,
+    "height": 309
+   },
+   "bboxCore": {
+    "x": 26,
+    "y": 365,
+    "width": 409,
+    "height": 309
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2.5,
+   "labelContrast": null,
+   "tile": {
+    "x": 22.5,
+    "y": 362.5,
+    "width": 415,
+    "height": 315
+   },
+   "plotRect": {
+    "x": 56.07,
+    "y": 365.54,
+    "width": 378.39,
+    "height": 293.43
+   }
+  },
+  {
+   "index": 3,
+   "label": "D",
+   "contentType": "bar",
+   "labelDrawn": false,
+   "bbox": {
+    "x": 466,
+    "y": 365,
+    "width": 409,
+    "height": 307
+   },
+   "bboxCore": {
+    "x": 466,
+    "y": 365,
+    "width": 409,
+    "height": 307
+   },
+   "labelBbox": null,
+   "inkEscapePx": -2.5,
+   "labelContrast": null,
+   "tile": {
+    "x": 462.5,
+    "y": 362.5,
+    "width": 415,
+    "height": 315
+   },
+   "plotRect": {
+    "x": 496.07,
+    "y": 365.54,
+    "width": 378.39,
+    "height": 293.43
+   }
+  }
+ ],
+ "distractors": [],
+ "gtMethod": "bbox = ink bounding box of a solo render of that element with geometry identical to the composite; tile = allocated rectangle; plotRect = grid::deviceLoc of the inner axes"
+}
