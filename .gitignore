@@ -70,8 +70,10 @@ benchmark/series/corpus_stress/*.png
 benchmark/series/tasks/img/
 benchmark/series/tasks_stress/img/
 benchmark/series/__pycache__/
-# human real-figure validation: keep the protocol, harness, plan, sealed key, the rater's
-# exports (coordinates only) and the normalized GT store. Drop the session working tree --
+# human real-figure validation: keep the protocol, harness, the rater-facing plan, the
+# rater's exports (coordinates only) and the normalized GT store. The SEALED KEY is NOT kept
+# -- see benchmark/real-validation/.gitignore; it holds repeatIds and would publish the
+# answer key to the rater's own blinding. Drop the session working tree --
 # rendered journal pages and their extracted text layer are copyrighted third-party
 # content, and every render is regenerable from the PDFs via prepare_session.py.
 benchmark/real-validation/sessions/*/projectA/

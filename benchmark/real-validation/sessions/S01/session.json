@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "session": "S01",
+  "stage": "A",
+  "builtAt": "2026-07-27T23:54:05.374Z",
+  "dpi": 200,
+  "nItems": 6,
+  "items": [
+    {
+      "anon_id": "it01_420d",
+      "position": 1,
+      "figure": "Figure 7",
+      "pageW": 1701,
+      "pageH": 2197,
+      "dpi": 200
+    },
+    {
+      "anon_id": "it02_5c87",
+      "position": 2,
+      "figure": "Figure 2",
+      "pageW": 1701,
+      "pageH": 2197,
+      "dpi": 200
+    },
+    {
+      "anon_id": "it03_90f8",
+      "position": 3,
+      "figure": "Figure 1",
+      "pageW": 1654,
+      "pageH": 2205,
+      "dpi": 200
+    },
+    {
+      "anon_id": "it04_2adb",
+      "position": 4,
+      "figure": "Figure 1",
+      "pageW": 1654,
+      "pageH": 2205,
+      "dpi": 200
+    },
+    {
+      "anon_id": "it05_83b9",
+      "position": 5,
+      "figure": "Figure 3",
+      "pageW": 1700,
+      "pageH": 2200,
+      "dpi": 200
+    },
+    {
+      "anon_id": "it06_bb24",
+      "position": 6,
+      "figure": "Figure 3",
+      "pageW": 1654,
+      "pageH": 2166,
+      "dpi": 200
+    }
+  ]
+}

@@ -1,0 +1,1491 @@
+{
+ "schemaVersion": 1,
+ "note": "Tier 1 subset of worklist.json (tier==1). Generated for the Option-B annotation run.",
+ "items": [
+  {
+   "item_id": "Zhang2017_F3",
+   "tier": 1,
+   "order": 1,
+   "article": "Zhang2017",
+   "doi": "10.1177/1721727X17730471",
+   "journal": "Eur J Inflammation (SAGE)",
+   "license": "CC-BY-NC-4.0",
+   "redistribution": "images_publishable_noncommercial",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/VHGX278Q/Zhang et al. - 2017 - Enriched environment improves behavioral performance and attenuates inflammatory response induced by.pdf",
+   "page": 4,
+   "page0": 3,
+   "figure": "Figure 3",
+   "figure_number": 3,
+   "caption": "Figure 3. Behavioral performance tests: (a) total distance traveled in EE-reared and SE-reared mice (*P < 0.05), (b) contextual fear conditioning (*P < 0.05), (c) EE enhanced delay tone-dependent fear conditioning (*P < 0.05), (d) escape latency in the removed platform trial (*P < 0.05), (e) escape distance in the removed platform trial (*P < 0.05), (f) time spent in the platform quadrant in the removed platform trial (*P < 0.05), and (g) times crossing the platform in the removed platform trial (*P < 0.05). EE: enriched environment; SE: standard environment. indicates activated microglia/macrophages. As shown in Figure 7(a)\u2013(c), the number of CD68+ cells in the hippocampus in EE-reared mice was significantly lower than that in the SE-reared mice (SE vs EE: 67 \u00b1 7 vs 38 \u00b1 4, *P < 0.05).",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+   ],
+   "caption_letter_count": 7,
+   "visual_tile_count_survey": 7,
+   "letter_tile_mismatch": false,
+   "difficulty": "hard",
+   "stratum": "S0_textGT",
+   "strata": [
+    "S0_textGT",
+    "S1_anchor",
+    "S7_manypanels",
+    "S18_SD_rare"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "medium",
+    "gutter_measured_pct_of_dimension": 2.67,
+    "layout_class": "guillotine-ragged",
+    "label_placement": "outside-al",
+    "label_format": "(a)",
+    "panel_content": "bar"
+   },
+   "adversarial_features": [
+    "ragged final row: (g) centred alone under a 2-column grid",
+    "every panel carries its own inline legend"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 1,
+   "n_vector_ops": 1,
+   "error_bars": true,
+   "dispersion_type": "SD (Methods, not the caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 3b",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Zhang2017_1_1"
+     ],
+     "row_ids_population": [
+      "Zhang2017__r115"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SD"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    },
+    {
+     "data_source": "Figure 3c",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Zhang2017_2_1"
+     ],
+     "row_ids_population": [
+      "Zhang2017__r116"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SD"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    },
+    {
+     "data_source": "Figure 3d",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Zhang2017_3_1"
+     ],
+     "row_ids_population": [
+      "Zhang2017__r117"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SD"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": true
+    },
+    {
+     "data_source": "Figure 3e",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Zhang2017_3_1"
+     ],
+     "row_ids_population": [
+      "Zhang2017__r159"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SD"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": true,
+     "text_pair_found_strict": true
+    },
+    {
+     "data_source": "Figure 3f",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Zhang2017_3_1"
+     ],
+     "row_ids_population": [
+      "Zhang2017__r160"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SD"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": true,
+     "text_pair_found_strict": true
+    },
+    {
+     "data_source": "Figure 3g",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Zhang2017_4_1"
+     ],
+     "row_ids_population": [
+      "Zhang2017__r118"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SD"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": true
+    }
+   ],
+   "n_coded_panels": 6,
+   "n_coded_comparisons": 6,
+   "n_text_verified_panels": 2,
+   "row_ids": [
+    "Zhang2017__r115",
+    "Zhang2017__r116",
+    "Zhang2017__r117",
+    "Zhang2017__r159",
+    "Zhang2017__r160",
+    "Zhang2017__r118"
+   ],
+   "comparison_ids": [
+    "Zhang2017_1_1",
+    "Zhang2017_2_1",
+    "Zhang2017_3_1",
+    "Zhang2017_3_1",
+    "Zhang2017_3_1",
+    "Zhang2017_4_1"
+   ],
+   "est_minutes_panel_gt": 11,
+   "notes": "THE highest-value item in the corpus. 6 coded panels (3b-3g) in one CC-BY-NC figure; 3e and 3f reproduce a mean+/-SD pair printed in the body text to within 6%, so those two are ACCURACY references, not agreement references. Dispersion is SD -- rare (SD is 70 of 916 arm-level variance mentions in the frame) -- and it is stated only in Methods, never in the caption."
+  },
+  {
+   "item_id": "Lee2024_F2",
+   "tier": 1,
+   "order": 2,
+   "article": "Lee2024",
+   "doi": "10.7586/jkbns.24.033",
+   "journal": "J Korean Biol Nurs Sci",
+   "license": "CC-BY-NC-4.0",
+   "redistribution": "images_publishable_noncommercial",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/67M75LYA/Lee and Kim - 2024 - Effects of environmental enrichment and caloric restriction on hippocampal changes in early adult ra.pdf",
+   "page": 6,
+   "page0": 5,
+   "figure": "Figure 2",
+   "figure_number": 2,
+   "caption": "Figure 2. Result of anxiety-like and memory behavior test. (A-a) Total duration (%) of central zone entries of the open-field test (A-b) Number of rearing (B) Latency time (sec) to the dark box in passive avoidance test (C-a) Total time spent in eight-arm radial maze test for the session (C-b) Result of spatial working memory function in eight-arm radial maze test. Data are expressed as mean \u00b1 S.E.M. S.E.M: Standard error of the mean *significantly different from Ad-CON. Ad-CON = Adult control; Ad-EE = Adult environmental enrichment; Ad-CR = Adult calorie restriction.",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "caption_letter_count": 3,
+   "visual_tile_count_survey": 5,
+   "letter_tile_mismatch": true,
+   "difficulty": "medium",
+   "stratum": "S0_textGT",
+   "strata": [
+    "S0_textGT",
+    "S8_label_system",
+    "S9_letter_tile_mismatch",
+    "S11_vector_text"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "wide",
+    "gutter_measured_pct_of_dimension": 6.8,
+    "layout_class": "guillotine",
+    "label_placement": "outside-al",
+    "label_format": "hierarchical A-(a)",
+    "panel_content": "bar"
+   },
+   "adversarial_features": [
+    "two-level labels: circled bold A/B/C plus (a)/(b) sub-labels",
+    "VECTOR figure -- labels are PDF text spans (Roboto-Bold 9.2pt for A/B/C, RotisSansSerif 9.0pt for (a)/(b))"
+   ],
+   "figure_source": "vector",
+   "n_image_xobjects": 0,
+   "n_vector_ops": 61,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 2-B",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Lee2024_2_1"
+     ],
+     "row_ids_population": [
+      "Lee2024__r76"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": true,
+     "text_pair_found_strict": true
+    },
+    {
+     "data_source": "Figure 2-C",
+     "n_comparisons": 2,
+     "comparison_ids": [
+      "Lee2024_1_1",
+      "Lee2024_1_2"
+     ],
+     "row_ids_population": [
+      "Lee2024__r74",
+      "Lee2024__r75"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": true
+    }
+   ],
+   "n_coded_panels": 2,
+   "n_coded_comparisons": 3,
+   "n_text_verified_panels": 1,
+   "row_ids": [
+    "Lee2024__r76",
+    "Lee2024__r74",
+    "Lee2024__r75"
+   ],
+   "comparison_ids": [
+    "Lee2024_2_1",
+    "Lee2024_1_1",
+    "Lee2024_1_2"
+   ],
+   "est_minutes_panel_gt": 8,
+   "notes": "Figure 2-B's coded pair (298.30+/-1.70 / 284.30+/-10.96) is printed verbatim in the text -- an exact accuracy reference. Record the PDF text spans alongside the pixel boxes so the vector fast path can be scored separately from the CV path."
+  },
+  {
+   "item_id": "Smith2018_F3",
+   "tier": 1,
+   "order": 3,
+   "article": "Smith2018",
+   "doi": "10.3389/fnagi.2018.00142",
+   "journal": "Front Aging Neurosci",
+   "license": "CC-BY-4.0",
+   "redistribution": "images_publishable",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/GBXJLTJS/Smith et al. - 2018 - A Larger Social Network Enhances Novel Object Location Memory and Reduces Hippocampal Microgliosis i.pdf",
+   "page": 7,
+   "page0": 6,
+   "figure": "Figure 3",
+   "figure_number": 3,
+   "caption": "FIGURE 3 | (A) Group-housed mice spent signi\ufb01cantly more time investigating the moved object in the novel object location task than pair-housed mice. Two-way RM-ANOVA, main effect of trial (p = 0.517), main effect of housing (p = 0.134), trial by housing interaction (p = 0.093), effect of subjects (p = 0.172). \u2217p = 0.032 Welch\u2019s test Bonferroni corrected. (B) Group-housed and pair-housed mice spent similar percentages of time investigating a novel object. Unpaired Welch\u2019s test, p = 0.326. (C) Total object investigation time (s) did not differ by trial or housing condition. Two-way RM-ANOVA, main effect of trial (p = 0.080), main effect of housing (p = 0.625), trial by housing interaction (p = 0.862), effect of subjects (p < 0.0001). (D) Speed decreased over trials but did not differ by housing condition. Two-way RM-ANOVA, main effect of trial (p < 0.0001), main effect of housing (p = 0.619), trial by housing interaction (p = 0.836), effect of subjects (p = 0.0004). Each point represents one mouse. Average \u00b1 SEM is shown.",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "caption_letter_count": 4,
+   "visual_tile_count_survey": 4,
+   "letter_tile_mismatch": false,
+   "difficulty": "medium",
+   "stratum": "S0_textGT",
+   "strata": [
+    "S0_textGT",
+    "S16_nonbar_channel",
+    "S1_anchor"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "medium",
+    "gutter_measured_pct_of_dimension": 2.5,
+    "layout_class": "guillotine",
+    "label_placement": "inside-tl",
+    "label_format": "A",
+    "panel_content": "dotplot+mean/SEM whisker"
+   },
+   "adversarial_features": [
+    "the central-tendency landmark is a horizontal mean line over a point cloud, not a bar top"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 1,
+   "n_vector_ops": 0,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 3A",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Smith2018_1_1"
+     ],
+     "row_ids_population": [],
+     "in_final_meta_analysis": false,
+     "extraction_method": [
+      "Reported in text and figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": null,
+     "usable_for_dispersion": true,
+     "control_n": [
+      6
+     ],
+     "text_value_verified": true,
+     "text_pair_found_strict": true
+    }
+   ],
+   "n_coded_panels": 1,
+   "n_coded_comparisons": 1,
+   "n_text_verified_panels": 1,
+   "row_ids": [],
+   "comparison_ids": [
+    "Smith2018_1_1"
+   ],
+   "est_minutes_panel_gt": 7,
+   "notes": "CC-BY (Frontiers). 3A's coded pair matches text. The point-cloud+mean-line channel is common in modern papers and absent from the synthetic corpus."
+  },
+  {
+   "item_id": "Gattas2022_F4",
+   "tier": 1,
+   "order": 4,
+   "article": "Gattas2022",
+   "doi": "10.1038/s41539-022-00134-x",
+   "journal": "npj Science of Learning",
+   "license": "CC-BY-4.0",
+   "redistribution": "images_publishable",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/CX69G27Y/Gattas et al. - 2022 - A rodent obstacle course procedure controls delive.pdf",
+   "page": 6,
+   "page0": 5,
+   "figure": "Figure 4",
+   "figure_number": 4,
+   "caption": "Fig. 4 PD task\u2014enhanced cognitive \ufb02exibility with OC and CC training exceeds EH effects. a Schematic representation of the pairwise visual discrimination (PD) experiment. ai-ii Stimulus-reward association learning. ai Original association: animal receives reward upon contact with the S+ stimulus. aii Reversal of association: previously learned S\u2212stimuli become S+ stimuli and are associated with reward. b Mean session number to reach criterion (performance of 80% accuracy on two successive sessions) in the reversal phase per group (group effect p < 0.001), with the OC (p < 0.001) and CC (p < 0.001) groups requiring signi\ufb01cantly fewer sessions compared to the SH group. ci Group percent accuracy on the \ufb01rst \ufb01ve reversal sessions, with a main effect of session (p = 0.003) and an effect of group on the \ufb01fth session (p < 0.001), with the OC group performing signi\ufb01cantly higher than the SH group on session \ufb01ve. cii Mean accuracy across the \ufb01rst \ufb01ve reversal sessions for each group, with a group main effect (p = 0.034). Post hoc independent samples t-test did not reveal group pairwise differences. \u2666\u2666p < 0.01, \u2666\u2666\u2666p < 0.001 indicate a signi\ufb01cant difference between groups (two-tailed independ",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "caption_letter_count": 3,
+   "visual_tile_count_survey": 5,
+   "letter_tile_mismatch": true,
+   "difficulty": "medium",
+   "stratum": "S0_textGT",
+   "strata": [
+    "S0_textGT",
+    "S8_label_system",
+    "S9_letter_tile_mismatch"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "medium",
+    "gutter_measured_pct_of_dimension": null,
+    "layout_class": "guillotine",
+    "label_placement": "outside-al",
+    "label_format": "a.i / a.ii / b / c.i / c.ii",
+    "panel_content": "mixed(schematic+bar+line)"
+   },
+   "adversarial_features": [
+    "labels nest a letter with a ROMAN NUMERAL (a.i, a.ii, c.i, c.ii) -- no synthetic analogue",
+    "caption letter extraction returns nothing"
+   ],
+   "figure_source": "mixed",
+   "n_image_xobjects": 1,
+   "n_vector_ops": 26,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 4b",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Gattas2022_3_1"
+     ],
+     "row_ids_population": [],
+     "in_final_meta_analysis": false,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": null,
+     "usable_for_dispersion": true,
+     "control_n": [
+      10
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    }
+   ],
+   "n_coded_panels": 1,
+   "n_coded_comparisons": 1,
+   "n_text_verified_panels": 0,
+   "row_ids": [],
+   "comparison_ids": [
+    "Gattas2022_3_1"
+   ],
+   "est_minutes_panel_gt": 9,
+   "notes": "CC-BY (npj Science of Learning). 4b has a text-printed reference. The roman-numeral sub-label system breaks any [A-Z] expected-letter model outright."
+  },
+  {
+   "item_id": "Gobeske2009_F2",
+   "tier": 1,
+   "order": 5,
+   "article": "Gobeske2009",
+   "doi": "10.1371/journal.pone.0007506",
+   "journal": "PLoS ONE",
+   "license": "CC-BY-4.0",
+   "redistribution": "images_publishable",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/57ILPMRW/Gobeske et al. - 2009 - BMP Signaling Mediates Effects of Exercise on Hippocampal Neurogenesis and Cognition in Mice.pdf",
+   "page": 4,
+   "page0": 3,
+   "figure": "Figure 2",
+   "figure_number": 2,
+   "caption": "Figure 2. Transgenic regulation of BMP signaling mirrors the effects of exercise on SGZ niche cell lineage properties. (A) Schematic of the experimental design. All 4 groups of animals (N = 8 per group) received CldU for 2 days. One group of wild type animals was exposed to elective exercise for 8 days while the other groups were maintained in standard housing. On the last 2 days all 4 groups of animals received IdU. Coronal sections through the dentate gyrus were then immunostained for DCX (green), CldU (pink), IdU (blue), and Sox2 (red: panels B\u2013E) or GFAP (red: panels F\u2013I). Panels B\u2013E and F\u2013I show representative merged images for all sets of four labels. Individual channels comprising merged images are shown in Figure S2. (B,F) Wild type, standard housing; (C,G) Wild type, running; (D,H) NSE-noggin. (E,I) NSE-BMP4. (J\u2013M) Unbiased stereological sampling and quantification per 40X field of cells labeled for (J) CldU; (K) (IdU); (L) Sox2; (M) DCX. Analyses of double labeling are shown in Figure 3. Analysis of coronal sections labeled for nestin is presented in Figure S3. * Differs from wild type na\u0131\u00a8ve group at p,0.001 or from other groups as indicated at p,0.01 by Bonferroni/Dunn ",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M"
+   ],
+   "caption_letter_count": 13,
+   "visual_tile_count_survey": 13,
+   "letter_tile_mismatch": false,
+   "difficulty": "hard",
+   "stratum": "S3_flush",
+   "strata": [
+    "S3_flush",
+    "S7_manypanels"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "flush",
+    "gutter_measured_pct_of_dimension": 0.48,
+    "layout_class": "guillotine-by-rows",
+    "label_placement": "inside-tl",
+    "label_format": "A",
+    "panel_content": "mixed(schematic+micrograph+bar)"
+   },
+   "adversarial_features": [
+    "A spans the full width; B-E and F-I are 4-up micrograph rows separated by ~3px hairlines (0.22%)",
+    "panel letters over rasters are drawn WHITE with a dark outline",
+    "one 1035x792 XObject covers the whole figure -- no XObject fast path"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 1,
+   "n_vector_ops": 0,
+   "error_bars": false,
+   "dispersion_type": "SEM",
+   "coded_panels": [],
+   "n_coded_panels": 0,
+   "n_coded_comparisons": 0,
+   "n_text_verified_panels": 0,
+   "row_ids": [],
+   "comparison_ids": [],
+   "est_minutes_panel_gt": 18,
+   "notes": "Flagship panel-decomposition item: 13 panels, three content types, a spanning header panel, and the corpus's cleanest near-flush micrograph mosaic, all under CC-BY."
+  },
+  {
+   "item_id": "Bonaccorsi2013_F2",
+   "tier": 1,
+   "order": 6,
+   "article": "Bonaccorsi2013",
+   "doi": "10.1155/2013/956312",
+   "journal": "Neural Plasticity (Hindawi)",
+   "license": "CC-BY-3.0",
+   "redistribution": "images_publishable",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/WNGHSFXQ/Bonaccorsi et al. - 2013 - System Consolidation of Spatial Memories in Mice Effects of Enriched Environment.pdf",
+   "page": 5,
+   "page0": 4,
+   "figure": "Figure 2",
+   "figure_number": 2,
+   "caption": "Figure 2: (a) c-Fos expression in subregions of dHPC for EE (open columns) and SC (filled columns) mice subjected to recall probe tests at 1, 10, 20, 30, and 50 days. DG: two-way ANOVA post hoc analysis Holm-Sidak method, SC versus EE, \ud835\udc43= 0.968; HC-SC versus HC-EE, \ud835\udc43= 0.503; SC versus HC-SC and EE versus HC-EE \ud835\udc43< 0.05 for all retention intervals. Statistical differences for factor day were found between 1 and 20 days, 1 and 30 days, and 50 days versus 20 and 30 days, all \ud835\udc43< 0.05. dCA1: two-way ANOVA post hoc analysis Holm-Sidak method, SC versus EE, \ud835\udc43= 0.242; HC-SC versus HC-EE \ud835\udc43= 0.979. Statistical difference factor day were found between 1 and 10, 20 and 30 days, all \ud835\udc43< 0.05. \u25fcStatistical significance between EE and HC-EE; \u25fbstatistical significance between SC and HC-SC; \u2218statistical significance for factor day; error bars = s.e.m. (b) Representative panel of c-Fos protein expression in DG for EE and SC animals, for all recall probe tests; scale bar 100 \ud835\udf07m.",
+   "caption_expected_letters": [
+    "A",
+    "B"
+   ],
+   "caption_letter_count": 2,
+   "visual_tile_count_survey": 14,
+   "letter_tile_mismatch": true,
+   "difficulty": "hard",
+   "stratum": "S3_flush",
+   "strata": [
+    "S3_flush",
+    "S9_letter_tile_mismatch",
+    "S12_xobject"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "flush",
+    "gutter_measured_pct_of_dimension": 1.83,
+    "layout_class": "guillotine",
+    "label_placement": "outside-below-centre",
+    "label_format": "(a)",
+    "panel_content": "mixed(bar+micrograph mosaic)"
+   },
+   "adversarial_features": [
+    "caption names 2 letters; 14 tiles are drawn",
+    "6x2 micrograph mosaic at EXACTLY 0px gutter",
+    "in-mosaic text ('SC 1 d', 'EE 20 d') is not panel lettering, and the 'd' glyphs are the same 8pt size as the real '(a)' label",
+    "the 12-tile mosaic is 2 XObjects -- the XObject fast path under-splits it"
+   ],
+   "figure_source": "mixed",
+   "n_image_xobjects": 2,
+   "n_vector_ops": 50,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [],
+   "n_coded_panels": 0,
+   "n_coded_comparisons": 0,
+   "n_text_verified_panels": 0,
+   "row_ids": [],
+   "comparison_ids": [],
+   "est_minutes_panel_gt": 16,
+   "notes": "The most direct real falsification of 'caption letter count == panel count'. CC-BY."
+  },
+  {
+   "item_id": "Clemenson2015_F3",
+   "tier": 1,
+   "order": 7,
+   "article": "Clemenson2015",
+   "doi": "10.1002/hipo.22380",
+   "journal": "Wiley",
+   "license": "all-rights-reserved",
+   "redistribution": "metadata_only",
+   "openAccess": false,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/ZTR3ZBHV/Clemenson et al. - 2015 - Enrichment rescues contextual discrimination defic.pdf",
+   "page": 13,
+   "page0": 12,
+   "figure": "Figure 3",
+   "figure_number": 3,
+   "caption": "FIGURE 3. (A) Freezing data of CON (n = 16) and EE (n = 16) animals during a 24-h discrimination trial, with a post-exposure to CtxtA. (B) Freezing data of CON (n = 12) and EE (n = 12) groups during a 24-h discrimination trial between CtxA and CtxC. (C) Operant chamber pictures of different context setups: CtxA, CtxA\u2032, CtxB, and CtxC. (D) EDD procedure. The \u201cx\u201d represents the box that is substituted for the subsequent post-exposures. (E) Box \u201cB\u201d (CON n = 12, EE n = 12); Box \u201cNo Post-exp\u201d (CON n = 12, EE n = 12); Box \u201cC\u201d (CON n = 12, EE n = 12); Boxes \u2018A and B\u2019 (CON n = 12, EE n = 12). All data are presented as mean \u00b1 SEM, *P < 0.05.",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "caption_letter_count": 5,
+   "visual_tile_count_survey": 12,
+   "letter_tile_mismatch": true,
+   "difficulty": "hard",
+   "stratum": "S4_nonguillotine",
+   "strata": [
+    "S4_nonguillotine",
+    "S3_flush",
+    "S9_letter_tile_mismatch",
+    "S2_tight"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "tight",
+    "gutter_measured_pct_of_dimension": 1.66,
+    "layout_class": "NON-GUILLOTINE",
+    "label_placement": "outside-al",
+    "label_format": "A",
+    "panel_content": "mixed(schematic+bar+photograph)"
+   },
+   "adversarial_features": [
+    "panel C (a flush 4x1 photo strip) spans the vertical extent of A/B and part of D; E spans the full width beneath -- no sequence of full-width/full-height cuts isolates C",
+    "A, B, D, E are each a schematic strip + chart compound under one letter"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 1,
+   "n_vector_ops": 0,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 3A",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Clemenson2015_1_2"
+     ],
+     "row_ids_population": [
+      "Clemenson2015__r35"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text/figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      16
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    },
+    {
+     "data_source": "Figure 3B",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Clemenson2015_1_2"
+     ],
+     "row_ids_population": [
+      "Clemenson2015__r36"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text/figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      12
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    }
+   ],
+   "n_coded_panels": 2,
+   "n_coded_comparisons": 2,
+   "n_text_verified_panels": 0,
+   "row_ids": [
+    "Clemenson2015__r35",
+    "Clemenson2015__r36"
+   ],
+   "comparison_ids": [
+    "Clemenson2015_1_2",
+    "Clemenson2015_1_2"
+   ],
+   "est_minutes_panel_gt": 12,
+   "notes": "VERIFIED non-guillotine and the only clean one found in 222 surveyed figures. This single item carries the entire real-corpus evidence for the stratum where the cascade scores 0.107 medIoU. Paywalled (Wiley): GT metadata only, no image redistribution."
+  },
+  {
+   "item_id": "Lyst2012_F7",
+   "tier": 1,
+   "order": 8,
+   "article": "Lyst2012",
+   "doi": "10.1371/journal.pone.0047640",
+   "journal": "PLoS ONE",
+   "license": "CC-BY-4.0",
+   "redistribution": "images_publishable",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/TG84X6ZT/Lyst et al. - 2012 - Effects of Increased Spatial Complexity on Behavioural Development and Task Performance in Lister Ho.pdf",
+   "page": 6,
+   "page0": 5,
+   "figure": "Figure 7",
+   "figure_number": 7,
+   "caption": "Figure 7. T-maze performance on days 1\u20137 of training and day 8 (probe). Chance performance of 0.5 is depicted by the dotted line. doi:10.1371/journal.pone.0047640.g007 PLOS ONE | www.plosone.org 6 October 2012 | Volume 7 | Issue 10 | e47640",
+   "caption_expected_letters": [],
+   "caption_letter_count": 0,
+   "visual_tile_count_survey": 4,
+   "letter_tile_mismatch": false,
+   "difficulty": "medium",
+   "stratum": "S5_labels_absent",
+   "strata": [
+    "S5_labels_absent",
+    "S1_anchor"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "wide",
+    "gutter_measured_pct_of_dimension": 4.64,
+    "layout_class": "guillotine",
+    "label_placement": "none",
+    "label_format": "none",
+    "panel_content": "bar"
+   },
+   "adversarial_features": [
+    "the caption names NO letters -- there is no count prior at all"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 2,
+   "n_vector_ops": 0,
+   "error_bars": true,
+   "dispersion_type": "UNSTATED in the paper -- human gate",
+   "coded_panels": [
+    {
+     "data_source": "Figure 7",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Lyst2012_1_1"
+     ],
+     "row_ids_population": [
+      "Lyst2012__r87"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Extracted from figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      12
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    }
+   ],
+   "n_coded_panels": 1,
+   "n_coded_comparisons": 1,
+   "n_text_verified_panels": 0,
+   "row_ids": [
+    "Lyst2012__r87"
+   ],
+   "comparison_ids": [
+    "Lyst2012_1_1"
+   ],
+   "est_minutes_panel_gt": 7,
+   "notes": "Real instance of L2_grid1x3_nocap. Dispersion type is not stated anywhere in the paper -> human gate. CC-BY."
+  },
+  {
+   "item_id": "Morgan2018_F7",
+   "tier": 1,
+   "order": 9,
+   "article": "Morgan2018",
+   "doi": "10.1016/j.bbr.2017.09.022",
+   "journal": "Elsevier",
+   "license": "all-rights-reserved",
+   "redistribution": "metadata_only",
+   "openAccess": false,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/YZYLHXPC/Morgan et al. - 2018 - The effects of aerobic exercise on depression-like, anxiety-like, and cognition-like behaviours over.pdf",
+   "page": 14,
+   "page0": 13,
+   "figure": "Figure 7",
+   "figure_number": 7,
+   "caption": "Figure 7. Preference index of recognition memory over the lifespan in A), Y mice B), M mice, and C) O mice (*p < 0.05, **p < 0.01, N = 11-17mice/group).   3.6.2 Barnes maze The Barnes maze investigated spatial learning, memory, and cognitive flexibility over the lifespan. Mice were assessed on their capacity to learn the location of an escape box over four days of training and the latency to locate the box was taken as a measure of spatial learning. Curiously, Y exercise mice showed longer latencies to the escape box compared to control mice on training days 1, 3 and 4 (p = 0.017, p = 0.011 and p < 0.001) (Figure 8A) however this was largely explained by increased latencies for female mice to locate the escape box on days 2, 3, and 4 (p = 0.026, p = 0.006, and p = 0.0003). There were no differences in training day latencies evident in M mice, but exercise mice displayed increased latencies on day 2 in O mice (p < 0.001)(Figure 8B-C). ",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "caption_letter_count": 3,
+   "visual_tile_count_survey": 3,
+   "letter_tile_mismatch": false,
+   "difficulty": "medium",
+   "stratum": "S5_labels_absent",
+   "strata": [
+    "S5_labels_absent"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "wide",
+    "gutter_measured_pct_of_dimension": 6.0,
+    "layout_class": "guillotine",
+    "label_placement": "none",
+    "label_format": "A)",
+    "panel_content": "bar"
+   },
+   "adversarial_features": [
+    "caption names A/B/C; the figure draws NO letters",
+    "caption format is 'in A), Y mice B), M mice, and C) O mice' -- letter+close-paren mid-sentence"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 2,
+   "n_vector_ops": 0,
+   "error_bars": true,
+   "dispersion_type": "SEM (table legend, not the caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 7A",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Morgan2018_1_1"
+     ],
+     "row_ids_population": [
+      "Morgan2018__r101"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Direct from figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      11
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    },
+    {
+     "data_source": "Figure 7B",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Morgan2018_1_1"
+     ],
+     "row_ids_population": [
+      "Morgan2018__r146"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Direct from figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      13
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    },
+    {
+     "data_source": "Figure 7C",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Morgan2018_1_1"
+     ],
+     "row_ids_population": [
+      "Morgan2018__r147"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Direct from figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      13
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    }
+   ],
+   "n_coded_panels": 3,
+   "n_coded_comparisons": 3,
+   "n_text_verified_panels": 0,
+   "row_ids": [
+    "Morgan2018__r101",
+    "Morgan2018__r146",
+    "Morgan2018__r147"
+   ],
+   "comparison_ids": [
+    "Morgan2018_1_1",
+    "Morgan2018_1_1",
+    "Morgan2018_1_1"
+   ],
+   "est_minutes_panel_gt": 7,
+   "notes": "Matched pair with Fig 8 (same paper, same 3-panel layout, letters DRAWN). Annotating both isolates the effect of drawn labels with everything else held constant. 3 coded panels."
+  },
+  {
+   "item_id": "Chrusch2023_F2",
+   "tier": 1,
+   "order": 10,
+   "article": "Chrusch2023",
+   "doi": "10.3390/cells12060883",
+   "journal": "Cells (MDPI)",
+   "license": "CC-BY-4.0",
+   "redistribution": "images_publishable",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/HRBT7RIG/Chrusch et al. - 2023 - Environmental Enrichment Engages Vesicular Zinc Signaling to Enhance Hippocampal Neurogenesis.pdf",
+   "page": 7,
+   "page0": 6,
+   "figure": "Figure 2",
+   "figure_number": 2,
+   "caption": "Figure 2. Cell survival in the hippocampus of WT and ZnT3 KO mice exposed to SH or EE (n = 23). Representative photomicrographs of BrdU-immunopositive cells (red) in the granule cell layer of a (A) WT and (A\u2019) ZnT3 KO mouse housed in EE. (B) EE exposure signi\ufb01cantly increased the survival of proliferating cells in WT mice but had no effect on ZnT3 KO mice. (C) Confocal microscopic images showing cells expressing the mature neuronal marker NeuN (green), with a BrdU-positive cell in the same plane ((C\u2019), red). (C\u201d) The channels are merged to show co-localisation. (D) Exposure to EE increased the percentage of BrdU-positive cells co-expressing NeuN in both WT and ZnT3 KO mice. Error bars represent \u00b1 standard error of the mean. * indicates p < 0.001. Given the signi\ufb01cant decrease in cell survival in the ZnT3 KO-EE group, we next examined the neuronal phenotype of the surviving cells (Figure 2C\u2013C\u201d)). There was no signi\ufb01cant interaction between genotype and housing condition [F(1, 19) = 0.29, p = 0.596]. While there was no signi\ufb01cant effect of genotype for neuronal phenotype [F(1, 19) = 0.01, p = 0.910], there was a signi\ufb01cant effect of housing condition [F(1, 19) = 92.45, p < 0.001] (Su",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "caption_letter_count": 4,
+   "visual_tile_count_survey": 7,
+   "letter_tile_mismatch": true,
+   "difficulty": "hard",
+   "stratum": "S3_flush",
+   "strata": [
+    "S3_flush",
+    "S8_label_system",
+    "S9_letter_tile_mismatch",
+    "S2_tight"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "tight",
+    "gutter_measured_pct_of_dimension": 1.77,
+    "layout_class": "guillotine",
+    "label_placement": "inside-tl",
+    "label_format": "A / A-prime",
+    "panel_content": "mixed(micrograph+bar)"
+   },
+   "adversarial_features": [
+    "prime labels A/A', C/C'/C\" -- the label alphabet is not [A-Z]",
+    "C/C'/C\" are three flush micrographs sharing borders"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 1,
+   "n_vector_ops": 1,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [],
+   "n_coded_panels": 0,
+   "n_coded_comparisons": 0,
+   "n_text_verified_panels": 0,
+   "row_ids": [],
+   "comparison_ids": [],
+   "est_minutes_panel_gt": 11,
+   "notes": "A caption-derived letter set {A,B,C,D} under-counts the drawn labels by three. CC-BY."
+  },
+  {
+   "item_id": "Baraldi2013_F1",
+   "tier": 1,
+   "order": 11,
+   "article": "Baraldi2013",
+   "doi": "10.1016/j.exger.2013.05.055",
+   "journal": "Elsevier",
+   "license": "all-rights-reserved",
+   "redistribution": "metadata_only",
+   "openAccess": false,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/SYFEQQLZ/Baraldi et al. - 2013 - Cognitive stimulation during lifetime and in the aged phase improved spatial memory, and altered neu.pdf",
+   "page": 3,
+   "page0": 2,
+   "figure": "Figure 1",
+   "figure_number": 1,
+   "caption": "Fig. 1. Evaluation of spatial memory of enriched environment rearing (black symbols) and standard environment rearing (blank symbols) C57Bl/6 mice at 2 months of age (A), 5 months of age (B), 11 months of age (C) and 17 months of age (D). In each test, animals were submitted once a day to the equipment for 5 consecutive days. The latency (s) each one took to \ufb01nd the escape box was registered. A measure of learning and consolidat- ing spatial memory is observed when there is difference among the 1st and other days of observation. Symbols and vertical bars are means \u00b1 standard-errors.*: P b 0.05; a: P b 0.01; b: P b 0.01 against 1st day observation of both groups; c: P b 0.01 against 1st day of observation in the C-2 group. 300 A 200 100 0 1 2 3 4 5 0",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "caption_letter_count": 4,
+   "visual_tile_count_survey": 4,
+   "letter_tile_mismatch": false,
+   "difficulty": "hard",
+   "stratum": "S6_stray_letters",
+   "strata": [
+    "S6_stray_letters",
+    "S11_vector_text"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "wide",
+    "gutter_measured_pct_of_dimension": 6.63,
+    "layout_class": "guillotine",
+    "label_placement": "outside-al",
+    "label_format": "A",
+    "panel_content": "line"
+   },
+   "adversarial_features": [
+    "bold-ITALIC 'a','b','c' significance markers drawn INSIDE the panels at 7.7pt while panel letters are 12pt upright bold -- the synthetic L6 exploit occurring naturally",
+    "VECTOR figure: both classes are text spans, separable by font (Helvetica-Bold vs -BoldOblique)"
+   ],
+   "figure_source": "vector",
+   "n_image_xobjects": 0,
+   "n_vector_ops": 74,
+   "error_bars": true,
+   "dispersion_type": "standard error (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 1D",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Baraldi2013_1_1"
+     ],
+     "row_ids_population": [
+      "Baraldi2013__r125"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "re-extracted from F-test results"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      9
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    }
+   ],
+   "n_coded_panels": 1,
+   "n_coded_comparisons": 1,
+   "n_text_verified_panels": 0,
+   "row_ids": [
+    "Baraldi2013__r125"
+   ],
+   "comparison_ids": [
+    "Baraldi2013_1_1"
+   ],
+   "est_minutes_panel_gt": 9,
+   "notes": "Widen the crop by hand: the leftmost panels fall outside the vector bbox my survey computed."
+  },
+  {
+   "item_id": "Harburger2007b_F3",
+   "tier": 1,
+   "order": 12,
+   "article": "Harburger2007b",
+   "doi": "10.1037/0735-7044.121.4.679",
+   "journal": "APA",
+   "license": "all-rights-reserved",
+   "redistribution": "metadata_only",
+   "openAccess": false,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/F6MJ73TS/Harburger et al. - 2007 - Single enrichment variables differentially reduce age-related memory decline in female mice..pdf",
+   "page": 6,
+   "page0": 5,
+   "figure": "Figure 3",
+   "figure_number": 3,
+   "caption": "Figure 3. Performance in the spatial probe trials as illustrated for young (A and E), middle-aged (B and F), and aged (C and G) mice. Each point represents the mean \u0003 SEM for each group during one test session. The bars in D and H are means (\u0003 SEM) of all five sessions and illustrate differences among enrichment treatment groups of the same age in quadrant time and platform crossings, respectively. * \u0001 significantly different from same-age controls, \u0005 \u0001 significantly different from same-age toy group, \u0003 \u0001 significantly different from same-age wheel group (p \u0004 .05).",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"
+   ],
+   "caption_letter_count": 8,
+   "visual_tile_count_survey": 8,
+   "letter_tile_mismatch": false,
+   "difficulty": "hard",
+   "stratum": "S2_tight",
+   "strata": [
+    "S2_tight",
+    "S7_manypanels"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "tight",
+    "gutter_measured_pct_of_dimension": 0.92,
+    "layout_class": "guillotine",
+    "label_placement": "inside-tl",
+    "label_format": "A",
+    "panel_content": "mixed(line+bar)"
+   },
+   "adversarial_features": [
+    "caption names letters only inside prose: 'young (A and E) ... the bars in D and H'",
+    "shared legend sits OUTSIDE below the grid, on a grey background band"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 1,
+   "n_vector_ops": 0,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 3D",
+     "n_comparisons": 6,
+     "comparison_ids": [
+      "Harburger2007b_1_1",
+      "Harburger2007b_1_2",
+      "Harburger2007b_2_1",
+      "Harburger2007b_1_1",
+      "Harburger2007b_1_2",
+      "Harburger2007b_2_1"
+     ],
+     "row_ids_population": [
+      "Harburger2007b__r49",
+      "Harburger2007b__r50",
+      "Harburger2007b__r51",
+      "Harburger2007b__r55",
+      "Harburger2007b__r56",
+      "Harburger2007b__r57"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Estimated from figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      12,
+      14
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    },
+    {
+     "data_source": "Figure 3H",
+     "n_comparisons": 6,
+     "comparison_ids": [
+      "Harburger2007b_2_2",
+      "Harburger2007b_3_1",
+      "Harburger2007b_3_2",
+      "Harburger2007b_2_2",
+      "Harburger2007b_3_1",
+      "Harburger2007b_3_2"
+     ],
+     "row_ids_population": [
+      "Harburger2007b__r52",
+      "Harburger2007b__r53",
+      "Harburger2007b__r54",
+      "Harburger2007b__r58",
+      "Harburger2007b__r59",
+      "Harburger2007b__r60"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Estimated from figure"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      12,
+      14
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    }
+   ],
+   "n_coded_panels": 2,
+   "n_coded_comparisons": 12,
+   "n_text_verified_panels": 0,
+   "row_ids": [
+    "Harburger2007b__r49",
+    "Harburger2007b__r50",
+    "Harburger2007b__r51",
+    "Harburger2007b__r55",
+    "Harburger2007b__r56",
+    "Harburger2007b__r57",
+    "Harburger2007b__r52",
+    "Harburger2007b__r53",
+    "Harburger2007b__r54",
+    "Harburger2007b__r58",
+    "Harburger2007b__r59",
+    "Harburger2007b__r60"
+   ],
+   "comparison_ids": [
+    "Harburger2007b_1_1",
+    "Harburger2007b_1_2",
+    "Harburger2007b_2_1",
+    "Harburger2007b_1_1",
+    "Harburger2007b_1_2",
+    "Harburger2007b_2_1",
+    "Harburger2007b_2_2",
+    "Harburger2007b_3_1",
+    "Harburger2007b_3_2",
+    "Harburger2007b_2_2",
+    "Harburger2007b_3_1",
+    "Harburger2007b_3_2"
+   ],
+   "est_minutes_panel_gt": 11,
+   "notes": "2x4 grid at a ~0.9% gutter with small inside-TL letters. Coded 3D, 3H."
+  },
+  {
+   "item_id": "Nawaz2018_F1",
+   "tier": 1,
+   "order": 13,
+   "article": "Nawaz2018",
+   "doi": "10.1016/j.lfs.2018.05.049",
+   "journal": "Elsevier",
+   "license": "all-rights-reserved",
+   "redistribution": "metadata_only",
+   "openAccess": false,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/9PQSSB9Z/Nawaz et al. - 2018 - Physical enrichment enhances memory function by regulating stress hormone and brain acetylcholineste.pdf",
+   "page": 3,
+   "page0": 2,
+   "figure": "Figure 1",
+   "figure_number": 1,
+   "caption": "Fig. 1. E\ufb00ects of environmental enrichment before and after subjecting to re- straint stress on short term memory retention. Values are means \u00b1 SD (n = 6). Data was analyzed by three-way ANOVA using repeated measure design. Signi\ufb01cant di\ufb00erences by Bonferroni post hoc test: **p < 0.01 and *p < 0.05 from respective control animals; +p < 0.05 from stressed animals.",
+   "caption_expected_letters": [],
+   "caption_letter_count": 0,
+   "visual_tile_count_survey": 1,
+   "letter_tile_mismatch": false,
+   "difficulty": "easy",
+   "stratum": "S10_single_panel_control",
+   "strata": [
+    "S10_single_panel_control",
+    "S11_vector_text"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "n/a",
+    "gutter_measured_pct_of_dimension": null,
+    "layout_class": "single",
+    "label_placement": "none",
+    "label_format": "none",
+    "panel_content": "grouped bar"
+   },
+   "adversarial_features": [
+    "ONE panel with a 4-key legend and grouped bars: any split is a false positive"
+   ],
+   "figure_source": "vector",
+   "n_image_xobjects": 0,
+   "n_vector_ops": 72,
+   "error_bars": true,
+   "dispersion_type": "SD (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 1",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Nawaz2018_1_1"
+     ],
+     "row_ids_population": [
+      "Nawaz2018__r102"
+     ],
+     "in_final_meta_analysis": true,
+     "extraction_method": [
+      "Reported in text and figure"
+     ],
+     "variance_type": [
+      "SD"
+     ],
+     "variance_source_population": [
+      "Reported"
+     ],
+     "usable_for_dispersion": true,
+     "control_n": [
+      6
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": false
+    }
+   ],
+   "n_coded_panels": 1,
+   "n_coded_comparisons": 1,
+   "n_text_verified_panels": 0,
+   "row_ids": [
+    "Nawaz2018__r102"
+   ],
+   "comparison_ids": [
+    "Nawaz2018_1_1"
+   ],
+   "est_minutes_panel_gt": 5,
+   "notes": "Single-panel control WITH a coded reference (mean +/- SD, n=6). The legacy detector split the synthetic single-panel control into 7 boxes; this is the real version of that test."
+  },
+  {
+   "item_id": "Ederer2022_F2",
+   "tier": 1,
+   "order": 14,
+   "article": "Ederer2022",
+   "doi": "https://doi.org/10.3390/cells11030566",
+   "journal": "Cells (MDPI)",
+   "license": "CC-BY-4.0",
+   "redistribution": "images_publishable",
+   "openAccess": true,
+   "pdf": "/mnt/c/Users/gregs/Zotero/storage/CG3FYZRZ/Ederer et al. - 2022 - Voluntary Wheel Running in Old C57BL6 Mice Reduces Age-Related Inflammation in the Colon but Not in.pdf",
+   "page": 9,
+   "page0": 8,
+   "figure": "Figure 2",
+   "figure_number": 2,
+   "caption": "Figure 2. Effect of running and isolation on cognitive functions in male mice in the Barnes maze test. Isolated runners and group-housed mice were each compared to the same group of isolated controls. Running decreased (A) primary latency and increased (B) the cognitive score during the training period. (C) Isolation increased primary latency and decreased (D) the cognitive score. (E) Search strategies differed between isolated runners, isolated controls, and group-housed mice. (F) The probe trial, (G) the retention test, and (H) the reversal test were signi\ufb01cantly different with respect to the primary latency after VWR. Cognitive score and primary latency are shown as mean per day \u00b1 SEM, mixed ANOVA. All other parameters are shown as mean \u00b1 SEM, t-test. The success rate in \ufb01nding the target hole is presented as % and was tested with Fisher\u2019s exact test. * p \u22640.05, ** p \u22640.01, *** p \u22640.001.",
+   "caption_expected_letters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"
+   ],
+   "caption_letter_count": 8,
+   "visual_tile_count_survey": 8,
+   "letter_tile_mismatch": false,
+   "difficulty": "hard",
+   "stratum": "S0_textGT",
+   "strata": [
+    "S0_textGT",
+    "S7_manypanels"
+   ],
+   "difficulty_axes": {
+    "gutter_bucket": "medium",
+    "gutter_measured_pct_of_dimension": null,
+    "layout_class": "guillotine",
+    "label_placement": "outside-al",
+    "label_format": "(A)",
+    "panel_content": "bar"
+   },
+   "adversarial_features": [
+    "my automatic crop found neither an image nor a vector union on this page -- LOCATE BY HAND"
+   ],
+   "figure_source": "raster_xobject",
+   "n_image_xobjects": 0,
+   "n_vector_ops": 0,
+   "error_bars": true,
+   "dispersion_type": "SEM (caption)",
+   "coded_panels": [
+    {
+     "data_source": "Figure 2A",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Ederer2022_1_1"
+     ],
+     "row_ids_population": [],
+     "in_final_meta_analysis": false,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": null,
+     "usable_for_dispersion": true,
+     "control_n": [
+      20
+     ],
+     "text_value_verified": true,
+     "text_pair_found_strict": true
+    },
+    {
+     "data_source": "Figure 2B",
+     "n_comparisons": 1,
+     "comparison_ids": [
+      "Ederer2022_1_2"
+     ],
+     "row_ids_population": [],
+     "in_final_meta_analysis": false,
+     "extraction_method": [
+      "Reported in text"
+     ],
+     "variance_type": [
+      "SEM"
+     ],
+     "variance_source_population": null,
+     "usable_for_dispersion": true,
+     "control_n": [
+      20
+     ],
+     "text_value_verified": false,
+     "text_pair_found_strict": true
+    }
+   ],
+   "n_coded_panels": 2,
+   "n_coded_comparisons": 2,
+   "n_text_verified_panels": 1,
+   "row_ids": [],
+   "comparison_ids": [
+    "Ederer2022_1_1",
+    "Ederer2022_1_2"
+   ],
+   "est_minutes_panel_gt": 10,
+   "notes": "TIER-1 STRETCH: cut this first if the session overruns. CC-BY (MDPI Cells); 2A's coded pair (105.4+/-21.5 / 38.0+/-12.9) is printed in the text."
+  }
+ ]
+}

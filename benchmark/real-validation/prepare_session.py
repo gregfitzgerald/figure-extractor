@@ -272,11 +272,17 @@ def cmd_plan(args):
         while len(slots.setdefault(n, [])) >= per:
             n += 1
         slots[n].append(it)
+    # Held-back fresh items go to the EMPTIEST trailing session with room, not to the first
+    # one with room. Filling greedily leaves a ragged tail -- on the Tier-1 set it produced
+    # sessions of 6/5/5/1, and a one-item session is both a silly thing to ask someone to sit
+    # down for and a hint in itself, since the calendar-gap rule pushes late-origin re-reads
+    # into exactly those short trailing slots. Balancing spends the same items over fuller,
+    # more uniform sessions.
     for it in held:
-        n = n_first + 1
-        while len(slots.setdefault(n, [])) >= per:
-            n += 1
-        slots[n].append(it)
+        room = [n for n in slots if len(slots[n]) < per]
+        n = min(room, key=lambda x: (len(slots[x]), x)) if room \
+            else (max(slots) + 1 if slots else n_first + 1)
+        slots.setdefault(n, []).append(it)
     # Shuffle within each trailing session: serial position must not encode repeat status
     # either, since repeats were slotted before the fresh filler.
     for n in slots:
@@ -484,15 +490,27 @@ def _worksheet_a(sdir, session, manifest):
          f"Built {rv.now_iso()}. {len(manifest)} items, page renders at {DPI_A} dpi.", "",
          "Full instructions: `benchmark/real-validation/PROTOCOL.md`. Short version:",
          "",
+         "**0. FIRST, BEFORE ANYTHING ELSE.** Open **Settings** and tick",
+         "   **Annotation mode**. It is OFF by default and it persists per browser, so",
+         "   check it every session. The ingest hard-requires the `annotationMode: true`",
+         "   stamp (amendment A1) and **rejects the whole session without it** -- you would",
+         "   lose the entire sitting, not one item. With it on, the `Auto-panels` button is",
+         "   hidden and every detector entry point refuses, so blinding stops being",
+         "   something you have to remember and becomes something the tool enforces.",
+         "",
          "1. Start the stopwatch:  `python3 prepare_session.py timer " + session + " A`",
          "2. In figure-extractor.html (opened as a **file://** page), press",
          "   **Select Project Folder** and choose `projectA`.",
          "3. Work the items **in the order below**. For each one: draw the figure box,",
          "   then draw one subfigure box per panel and rename each to its caption letter.",
-         "4. **Never press the `Auto-panels` button.** The ingest will reject the session.",
-         "5. Break for 15 minutes after item 10; stop after item 20 whatever happens.",
-         "6. Press **Export All Articles**, unzip into `exports/passA/`, then run",
-         f"   `python3 prepare_session.py build-b {session}`.",
+         "4. Draw a panel for **every visual tile you can see**, not only the ones you think",
+         "   carry data -- undercounting panels is the failure mode this pass exists to catch.",
+         (f"5. Break for 15 minutes after item {len(manifest) // 2}; stop after item "
+          f"{len(manifest)} whatever happens." if len(manifest) >= 8 else
+          f"5. Stop after item {len(manifest)} whatever happens -- do not run on into the next "
+          f"session, the rest between sittings is part of the measurement."),
+         "6. Press **Export All Articles** (not Export This Article), unzip into",
+         f"   `exports/passA/`, then run `python3 prepare_session.py build-b {session}`.",
          "", "| # | item | annotate | page px |", "|---|---|---|---|"]
     for m in manifest:
         L.append(f"| {m['position']} | `{m['anon_id']}` | {m['figure']} | "

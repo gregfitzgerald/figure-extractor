@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-07-27T23:52:00.151Z",
+  "worklistSource": "worklist.tier1.json",
+  "seedCommitment": "ad2ff44c2738f3147ad0a959a88887ff4504dfcbecd5d8a841c14595ad9d6e90",
+  "perSession": 6,
+  "nItems": 14,
+  "dpiA": 200,
+  "panelLongEdgePx": 2200,
+  "sessions": [
+    {
+      "session": "S01",
+      "nItems": 6,
+      "items": [
+        {
+          "anon_id": "it01_420d",
+          "position": 1,
+          "figure": "Figure 7",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it02_5c87",
+          "position": 2,
+          "figure": "Figure 2",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it03_90f8",
+          "position": 3,
+          "figure": "Figure 1",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it04_2adb",
+          "position": 4,
+          "figure": "Figure 1",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it05_83b9",
+          "position": 5,
+          "figure": "Figure 3",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it06_bb24",
+          "position": 6,
+          "figure": "Figure 3",
+          "expectPanels": null
+        }
+      ]
+    },
+    {
+      "session": "S02",
+      "nItems": 5,
+      "items": [
+        {
+          "anon_id": "it01_f734",
+          "position": 1,
+          "figure": "Figure 3",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it02_2383",
+          "position": 2,
+          "figure": "Figure 7",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it03_b88e",
+          "position": 3,
+          "figure": "Figure 2",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it04_5c62",
+          "position": 4,
+          "figure": "Figure 3",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it05_5110",
+          "position": 5,
+          "figure": "Figure 2",
+          "expectPanels": null
+        }
+      ]
+    },
+    {
+      "session": "S03",
+      "nItems": 3,
+      "items": [
+        {
+          "anon_id": "it01_b6c3",
+          "position": 1,
+          "figure": "Figure 3",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it02_fc4f",
+          "position": 2,
+          "figure": "Figure 4",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it03_23f3",
+          "position": 3,
+          "figure": "Figure 1",
+          "expectPanels": null
+        }
+      ]
+    },
+    {
+      "session": "S04",
+      "nItems": 3,
+      "items": [
+        {
+          "anon_id": "it01_3805",
+          "position": 1,
+          "figure": "Figure 2",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it02_d112",
+          "position": 2,
+          "figure": "Figure 2",
+          "expectPanels": null
+        },
+        {
+          "anon_id": "it03_bde3",
+          "position": 3,
+          "figure": "Figure 3",
+          "expectPanels": null
+        }
+      ]
+    }
+  ]
+}
