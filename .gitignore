@@ -52,12 +52,27 @@ benchmark/real/panels/
 # classification corpus: keep GT labels + code, drop regenerable synthetic renders
 benchmark/classify/corpus/*.png
 benchmark/classify/tasks/img/
+# panel-detection corpus: keep the GT answer key + code, drop regenerable renders and the
+# solo per-element renders the GT boxes were measured from
+benchmark/panels/corpus/*.png
+benchmark/panels/corpus/*.part.json
+benchmark/panels/corpus/_iso/
+benchmark/panels/tasks/img/
+benchmark/panels/__pycache__/
 # series/group parsing corpus: keep the GT answer key + code, drop regenerable renders
 benchmark/series/corpus/*.png
 benchmark/series/corpus_stress/*.png
 benchmark/series/tasks/img/
 benchmark/series/tasks_stress/img/
 benchmark/series/__pycache__/
+# human real-figure validation: keep the protocol, harness, plan, sealed key, the rater's
+# exports (coordinates only) and the normalized GT store. Drop the session working tree --
+# rendered journal pages and their extracted text layer are copyrighted third-party
+# content, and every render is regenerable from the PDFs via prepare_session.py.
+benchmark/real-validation/sessions/*/projectA/
+benchmark/real-validation/sessions/*/projectB/
+benchmark/real-validation/worklist.derived.json
+benchmark/real-validation/__pycache__/
 # generated: maps DOIs to a LOCAL Zotero library (personal paths); regenerate with resolve_pdfs.py
 benchmark/real/pdf_map.json
 # editor / OS / office cruft

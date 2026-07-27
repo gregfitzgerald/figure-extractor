@@ -3453,6 +3453,15 @@ function setupSubfigureDrawing(overlay, fig) {
 // comparison against the cascade detector (detectPanelsCore below), which replaces it.
 // Returns bare suggested boxes in figure-natural px with no confidence or flags.
 function suggestSubfiguresLegacy(fig, expectedCount = 0) {
+    // BLINDING: guard at the source, not only at the API wrapper. This is a bare global, so
+    // it stays reachable from the devtools console after every wrapper refuses. It returns
+    // bare boxes and never writes `panelDetection`, so geometry taken from here leaves NO
+    // fingerprint -- it is the one detector a downstream blinding audit cannot see. Guarding
+    // the wrapper alone is therefore not enough: it must refuse before it computes anything.
+    if (settings.annotationMode) {
+        console.warn('suggestSubfiguresLegacy: refused -- annotationMode is on (blinded run).');
+        return [];
+    }
     const page = state.pages.find(p => p.pageNum === fig.pageNum);
     if (!page) return [];
     const crop = cropImage(page.img, fig.bounds);

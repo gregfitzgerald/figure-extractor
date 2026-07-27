@@ -9,6 +9,14 @@ out/
 split.json
 __pycache__/
 
+# THE SEALED KEY. `keys/plan.key.json` holds `repeatIds` and the RNG seed -- i.e. exactly
+# which items are intra-rater repeats. Committing it would publish the answer key to the
+# rater's own blinding. The directory does not exist until `prepare_session.py plan` runs,
+# which is precisely why it must be ignored BEFORE that: otherwise the next `git add -A`
+# sweeps a freshly-created key into the repo. Never commit; never open while reading.
+keys/
+.rv_seed
+
 # The second rater's tree: page renders of paywalled PDFs, his session materials, his GT
 # store and his sealed key. Same rule as `gt/` -- derived from private data, never committed.
 dan/

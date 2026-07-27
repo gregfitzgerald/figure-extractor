@@ -1800,6 +1800,72 @@ still scales with `1/capLen`, so a pooled LoA is a mixture of a wide short-cap d
 (`[-41.9%, +59.1%]` on the pilot) and a narrow long-cap one (`[-5.0%, +4.4%]`) and describes
 neither.
 
+### A14 -- the legacy detector is guarded at the SOURCE, not at the wrapper. 2026-07-27.
+
+**What changed.** The guard A11 describes was added to the `window.figureExtractor`
+wrapper only. The bare global `function suggestSubfiguresLegacy` (`figure-extractor.html`
+:3455) was still unguarded and still reachable. It now refuses before it computes anything,
+and `scripts/test_panels.py` exercises **the bare global directly**.
+
+**Why.** A11 was verified by calling the wrapper, which returned `flags:['annotation-mode']`
+-- so the fix looked complete and was recorded as complete. The function the wrapper calls
+was untouched, and a devtools console reaches it directly. This is the one detector whose
+output the after-the-fact audit *structurally cannot see*: it returns bare boxes, writes no
+`panelDetection`, stamps no `captionSource:'panel-split'`. Verified empirically both ways --
+with `annotationMode` off the bare global returns 2 boxes, with it on, 0 plus a warning.
+The lesson generalises: testing the entry point you happen to know about is not the same as
+testing the entry point an actor would use.
+
+### A15 -- the RNG seed is sealed; the rater-facing plan states nothing that identifies a re-read. 2026-07-27.
+
+**What changed.** `prepare_session.SEED = 20260727` is gone. The seed resolves from
+`--seed` / `$RV_SEED` / a gitignored `.rv_seed`, else 64 bits from `os.urandom` persisted
+there, with a sha256 commitment written to the tracked `seed.commit.json`. `plan.json` now
+carries `seedCommitment` and drops `seed`, `nRepeats` and `repeatFraction`; `status` prints
+the commitment rather than the seed; `keys/` (which holds `repeatIds`) is gitignored.
+
+**Why.** The seed was a committed constant, so this file plus the tracked `worklist.json`
+were together sufficient to recompute every intra-rater repeat pair -- and the rater is also
+the operator who runs the script. `RC_intra` is the denominator of `R_floor`. Being
+date-shaped, it was guessable even without the repo. `keys/` was neither tracked nor
+ignored, so the first `plan` run would have created the answer key in the working tree for
+the next `git add -A` to sweep in -- the same way `.obsidian/` was swept in previously.
+The commitment preserves what the constant was actually good for: proving post hoc that the
+seed was fixed before the reads rather than chosen after them to flatter the result.
+
+### A16 -- re-reads are mixed with held-back fresh items. 2026-07-27.
+
+**What changed.** `cmd_plan` holds back one fresh item per repeat from the first pass and
+spends them in the trailing sessions, so a trailing session is a mix. Repeats are drawn from
+first-pass items only; within-session order is shuffled so serial position does not encode
+repeat status; `isRepeat` is now a property of the item rather than of its session. Where
+the worklist is smaller than `2 x nRepeats` the mix is arithmetically impossible and `plan`
+now says so on stderr instead of shipping silently.
+
+**Why.** This module's own docstring promised repeats were "interleaved with fresh items, so
+it cannot be recognised as a repeat". They were not. Repeats were scheduled only after every
+fresh item was spent, so **every trailing session was 100% re-reads, and short**: on a
+24-item probe, S05 (2 items) and S06 (1 item) were both pure repeats while S01-S04 held 6
+each. The rater did not need the seed -- the schedule announced the answer. Sealing the seed
+(A15) does nothing about this; the structure had to change. After the fix the same probe
+gives one trailing session of 6 = 3 repeats + 3 fresh, with no all-repeat session.
+
+**Consequence for the schedule.** Total reads are unchanged (n + nRepeats); the first pass is
+shorter by `nRepeats` items and the trailing sessions correspondingly fuller.
+
+### A17 -- a blinding failure is not bypassable, and the sealed GT keeps its evidence. 2026-07-27.
+
+**What changed.** `ingest_annotations.py` raises on any `BLINDING` problem regardless of
+`--allow-problems`, and the sealed per-figure record carries the rater's actual
+`panelDetection` and the export's `annotationMode` instead of a hardcoded `None`.
+
+**Why.** `--allow-problems` exists so one unreadable export does not block the other 19, but
+it also downgraded a blinding failure to a stderr line. A blinding failure is a statement
+about the *rater's setup*, which implicates every item read that session, not just the one
+that left a fingerprint. Separately, hardcoding `panelDetection: None` made re-running
+`rv.blinding_violations` on the sealed GT vacuous -- it passed by construction rather than on
+evidence, so the gate was trust-on-first-run and not independently reproducible afterwards.
+
 ---
 
 ### Second-rater amendments (owned by `SECOND-RATER-PROTOCOL.md`, logged here)

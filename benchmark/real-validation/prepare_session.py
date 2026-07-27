@@ -20,7 +20,12 @@ Blinding is structural, not a promise:
   * session materials contain no machine output of any kind, and the anon->real key
     lives in `keys/` which the human never opens;
   * a repeat item is reissued under a NEW anon id in a LATER session, interleaved with
-    fresh items, so it cannot be recognised as a repeat;
+    HELD-BACK FRESH ITEMS so the session is a mix and the re-read cannot be recognised as
+    one (amendment A16). Until A16 this line was aspirational: repeats were scheduled only
+    after every fresh item was spent, so each trailing session was 100% re-reads and short,
+    and the rater could identify every one on sight. Mixing needs one held-back fresh item
+    per repeat, i.e. >= 2*nRepeats items; below that `plan` warns that the re-reads cannot
+    be blinded at this worklist size;
   * `build` refuses to prepare a session until every prerequisite session has been
     ingested and sealed, and refuses a repeat until the required calendar gap elapsed;
   * `ingest_annotations.py` hard-rejects any export bearing the detector's fingerprints.
@@ -28,8 +33,10 @@ Blinding is structural, not a promise:
 Run `python3 prepare_session.py --selftest` to exercise everything with synthetic data.
 """
 import argparse
+import hashlib
 import json
 import math
+import os
 import pathlib
 import random
 import shutil
@@ -54,7 +61,53 @@ REPEAT_MIN = 3
 REPEAT_MIN_SESSION_GAP = 1   # a repeat never lands in the session after its original
 REPEAT_MIN_DAYS = 3          # ... nor within 3 days of it
 SESSION_MIN_HOURS = 12       # minimum rest between any two sessions
-SEED = 20260727              # project convention: the date as an int
+
+# ---- the RNG seed (kept out of tracked code -- see resolve_seed) ----
+SEED_FILE = rv.DATA / ".rv_seed"          # gitignored
+# Under DATA (not the module dir) so a test run with $RV_DATA pointed at a tmpdir cannot
+# write a commitment into the repo. In normal use DATA *is* the repo dir, so it lands in
+# the working tree to be committed.
+SEED_COMMIT = rv.DATA / "seed.commit.json"
+
+
+def resolve_seed(explicit=None):
+    """The seed decides WHICH ITEMS ARE INTRA-RATER REPEATS, so a seed living in tracked
+    code is the answer key to the rater's own blinding: this file plus the tracked
+    `worklist.json` are together sufficient to recompute every repeat pair, and the rater
+    is also the operator who runs this script. The previous `SEED = 20260727` (the date as
+    an int) was additionally guessable even without the repo. `RC_intra` is the denominator
+    of `R_floor`, so a rater who knows which reads are repeats can move the headline.
+
+    Sealed-envelope resolution, secret during the study and verifiable after it:
+      1. `--seed` / `$RV_SEED`  -- explicit, for selftests and for a THIRD PARTY to set one
+         the rater never sees (the strongest option: have the second rater generate it);
+      2. the gitignored `.rv_seed`, if a previous run already minted one;
+      3. otherwise mint 64 bits from os.urandom, persist to `.rv_seed`, and write a sha256
+         commitment to the tracked `seed.commit.json`.
+
+    The commitment is what makes this checkable: it proves post hoc that the seed used was
+    fixed BEFORE the reads, not chosen afterwards to produce a flattering assignment --
+    without revealing the seed while the study is running. 64 bits puts brute-forcing the
+    commitment out of reach, which the old date-shaped int was not.
+    """
+    if explicit is not None:
+        return int(explicit)
+    env = os.environ.get("RV_SEED")
+    if env:
+        return int(env)
+    if SEED_FILE.exists():
+        return int(SEED_FILE.read_text().strip())
+    seed = int.from_bytes(os.urandom(8), "big")
+    SEED_FILE.parent.mkdir(parents=True, exist_ok=True)
+    SEED_FILE.write_text(str(seed))
+    commit = hashlib.sha256(str(seed).encode()).hexdigest()
+    rv.write_json(SEED_COMMIT, {"schemaVersion": rv.RV_SCHEMA_VERSION,
+                                "committedAt": rv.now_iso(), "algorithm": "sha256(str(seed))",
+                                "commitment": commit})
+    print(f"[seed] minted a fresh seed and sealed it in {SEED_FILE.name} (gitignored).\n"
+          f"[seed] commitment sha256={commit[:16]}... written to {SEED_COMMIT.name} -- COMMIT "
+          f"that file now, and do NOT open {SEED_FILE.name} until every read is ingested.")
+    return seed
 
 
 # =============================================================== worklist ingestion
@@ -144,40 +197,74 @@ def cmd_plan(args):
     items, src = load_worklist(args.worklist)
     if not items:
         raise SystemExit("worklist is empty")
-    rng = random.Random(args.seed)
+    seed = resolve_seed(args.seed)
+    rng = random.Random(seed)
 
-    # Repeat subset FIRST, stratified, so the re-read sample is representative of the
-    # difficulty mix rather than of whatever happened to be quick.
     k = max(REPEAT_MIN, int(round(REPEAT_FRACTION * len(items))))
     k = min(k, len(items))
+    per = args.per_session
+    ordered = rv.interleave_by_stratum(items, lambda i: i["stratum"], seed)
+
+    # HOLD-BACK (amendment A16). Repeats were previously drawn from the whole worklist and
+    # then placed in sessions that came AFTER every fresh item was spent -- so each trailing
+    # session was 100% repeats, and it was also short. The rater could therefore identify
+    # every re-read on sight, from the schedule alone, without computing anything. Sealing
+    # the seed does nothing about that: the structure gives it away. Since the repeat items
+    # are exactly the ones that determine RC_intra, and RC_intra is the denominator of
+    # R_floor, that is the whole intra-rater arm reading its own answer key.
+    #
+    # Fix: hold back `h` FRESH items from the first pass and spend them in the trailing
+    # sessions alongside the repeats, so a trailing session is a mix and a repeat is
+    # genuinely indistinguishable from a first read of an unfamiliar panel.
+    # Repeats are drawn from the FIRST-PASS items only -- an item cannot be re-read before
+    # it has been read. Stratified, so the re-read sample is representative of the
+    # difficulty mix rather than of whatever happened to be quick.
+    provisional = min(k, max(0, len(ordered) - k))
     by_stratum = {}
-    for it in items:
+    for it in ordered[:len(ordered) - provisional]:
         by_stratum.setdefault(it["stratum"], []).append(it)
     repeats = []
     for s in sorted(by_stratum):
         b = list(by_stratum[s])
         rng.shuffle(b)
-        take = max(1, int(round(k * len(b) / len(items))))
+        take = max(1, int(round(k * len(b) / max(1, len(ordered) - provisional))))
         repeats += b[:take]
     repeats = repeats[:k]
     repeat_ids = {it["item_id"] for it in repeats}
 
-    ordered = rv.interleave_by_stratum(items, lambda i: i["stratum"], args.seed)
-    per = args.per_session
-    n_first = math.ceil(len(ordered) / per)
+    # Size the hold-back from the number of repeats ACTUALLY drawn, not from the target `k`:
+    # stratified rounding routinely delivers fewer than `k`, and holding back `k` fresh items
+    # against `len(repeats)` re-reads leaves a ragged one-item session at the end -- which is
+    # itself a signal worth removing. Shrinking the hold-back only grows `first_pass`, so
+    # every already-chosen repeat is still a first-pass item.
+    h = min(len(repeats), max(0, len(ordered) - len(repeats)))
+    held = ordered[len(ordered) - h:] if h else []
+    first_pass = ordered[:len(ordered) - h]
 
+    # Mixing every trailing session needs at least as many held-back fresh items as repeats,
+    # i.e. a worklist of at least 2*len(repeats). Below that it is arithmetically impossible
+    # -- some trailing session must be pure re-read -- and the rater will be able to spot it.
+    # Say so loudly rather than quietly shipping a schedule that leaks; a study this small
+    # cannot blind its own intra-rater arm and the limitation belongs in the write-up.
+    if h < len(repeats):
+        print(f"\n  WARNING: worklist too small to blind the re-reads. {len(repeats)} repeats "
+              f"but only {h} fresh item(s) can be held back, so at least one session will be "
+              f"entirely re-reads and recognisable as such. Needs >= {2 * len(repeats)} items; "
+              f"this worklist has {len(ordered)}.\n", file=sys.stderr)
+
+    n_first = math.ceil(len(first_pass) / per) if first_pass else 0
     used_anon, sessions = set(), []
     for si in range(n_first):
-        chunk = ordered[si * per:(si + 1) * per]
+        chunk = first_pass[si * per:(si + 1) * per]
         sessions.append({"session": f"S{si + 1:02d}", "pass": "A+B", "entries": chunk})
 
-    # Repeats go into trailing sessions, at least REPEAT_MIN_SESSION_GAP sessions after
-    # their original, interleaved with each other so no session is "the repeat session".
+    # Trailing sessions: repeats placed first so the calendar-gap constraint is respected,
+    # then the held-back fresh items poured into the remaining capacity.
     origin_session = {}
     for s in sessions:
         for it in s["entries"]:
             origin_session[it["item_id"]] = int(s["session"][1:])
-    rep_order = rv.interleave_by_stratum(repeats, lambda i: i["stratum"], args.seed + 1)
+    rep_order = rv.interleave_by_stratum(repeats, lambda i: i["stratum"], seed + 1)
     slots = {}                                     # session index -> [items]
     for it in rep_order:
         earliest = origin_session[it["item_id"]] + REPEAT_MIN_SESSION_GAP + 1
@@ -185,17 +272,32 @@ def cmd_plan(args):
         while len(slots.setdefault(n, [])) >= per:
             n += 1
         slots[n].append(it)
+    for it in held:
+        n = n_first + 1
+        while len(slots.setdefault(n, [])) >= per:
+            n += 1
+        slots[n].append(it)
+    # Shuffle within each trailing session: serial position must not encode repeat status
+    # either, since repeats were slotted before the fresh filler.
+    for n in slots:
+        random.Random(seed + 100 + n).shuffle(slots[n])
     rep_sessions = [{"session": f"S{n:02d}", "pass": "A+B", "entries": slots[n]}
                     for n in sorted(slots)]
     sessions += rep_sessions
 
+    # A trailing session is now a MIX, so repeat status is a property of the ITEM, not of
+    # the session it landed in. Deriving it from session membership (as this did) would now
+    # mislabel every held-back fresh item as a repeat and corrupt the intra-rater pairing.
+    trailing = {x["session"] for x in rep_sessions}
+    first_seen = set()
     plan, key = [], []
     for s in sessions:
         sn = s["session"]
         pub, priv = [], []
         for pos, it in enumerate(s["entries"], 1):
             aid = rv.anon_id(rng, pos, used_anon)
-            is_rep = sn in {x["session"] for x in rep_sessions}
+            is_rep = it["item_id"] in first_seen
+            first_seen.add(it["item_id"])
             pub.append({"anon_id": aid, "position": pos,
                         "figure": it["figure"],
                         "expectPanels": None})          # deliberately unknown to the rater
@@ -206,19 +308,30 @@ def cmd_plan(args):
                          "stratum": it["stratum"], "difficulty": it["difficulty"],
                          "isRepeat": is_rep, "repeatOf": it["item_id"] if is_rep else None})
         plan.append({"session": sn, "nItems": len(pub), "items": pub})
-        key.append({"session": sn, "isRepeatSession": sn in {x["session"] for x in rep_sessions},
+        key.append({"session": sn, "isTrailingSession": sn in trailing,
+                    "isRepeatSession": any(i["isRepeat"] for i in priv),
+                    "nRepeats": sum(1 for i in priv if i["isRepeat"]),
                     "items": priv})
 
+    # plan.json is the RATER-FACING file: he reads it to know what to do next. It therefore
+    # carries no quantity from which repeat identity can be reconstructed. `seed` is replaced
+    # by its commitment (verifiable later, useless now), and `nRepeats`/`repeatFraction` are
+    # withheld -- with the repeat count known, the trailing short sessions are identifiable
+    # as the repeat sessions by arithmetic alone. Everything withheld here is in the sealed
+    # key, so nothing is lost to the analysis.
     rv.write_json(rv.DATA / "plan.json", {
         "schemaVersion": rv.RV_SCHEMA_VERSION, "generatedAt": rv.now_iso(),
-        "worklistSource": src, "seed": args.seed, "perSession": per,
-        "repeatFraction": REPEAT_FRACTION, "nItems": len(items), "nRepeats": len(repeats),
+        "worklistSource": src,
+        "seedCommitment": hashlib.sha256(str(seed).encode()).hexdigest(),
+        "perSession": per,
+        "nItems": len(items),
         "dpiA": DPI_A, "panelLongEdgePx": PANEL_LONG_EDGE_PX,
         "sessions": plan})
     rv.write_json(rv.KEYS / "plan.key.json", {
         "schemaVersion": rv.RV_SCHEMA_VERSION, "generatedAt": rv.now_iso(),
         "WARNING": "SEALED KEY -- the rater must never open this file.",
-        "seed": args.seed, "repeatIds": sorted(repeat_ids), "sessions": key})
+        "seed": seed, "repeatFraction": REPEAT_FRACTION, "nRepeats": len(repeats),
+        "repeatIds": sorted(repeat_ids), "sessions": key})
     print(f"\n{len(items)} items -> {len(sessions)} sessions "
           f"({n_first} first-pass + {len(rep_sessions)} carrying {len(repeats)} repeats)")
     print("Next: python3 prepare_session.py build S01")
@@ -269,7 +382,11 @@ def _gate_prerequisites(session, force=False):
             for it in s["items"]:
                 if not it["isRepeat"]:
                     origin[it["item_id"]] = s["session"]
-        for it in ks["items"]:
+        # ONLY the re-reads. Since A16 a trailing session also carries held-back FRESH items,
+        # and a fresh item's "origin" resolves to the very session being built -- which is of
+        # course not sealed yet, so checking it here would raise a bogus prerequisite failure
+        # and block the session from ever being built.
+        for it in [x for x in ks["items"] if x.get("isRepeat")]:
             o = origin.get(it["item_id"])
             sl = _sealed(o) if o else None
             if not sl:
@@ -543,7 +660,7 @@ def cmd_build_b(args):
         print("\n".join("  ! " + r for r in refused), file=sys.stderr)
         raise SystemExit("blinding violated -- re-annotate those items by hand")
 
-    order = rv.interleave_by_stratum(entries, lambda e: e["panelLetter"], SEED + 7)
+    order = rv.interleave_by_stratum(entries, lambda e: e["panelLetter"], resolve_seed() + 7)
     for i, e in enumerate(order, 1):
         e["position"] = i
     rv.write_json(sdir / "sessionB.json", {
@@ -627,8 +744,10 @@ def cmd_status(args):
     if not plan:
         print("no plan.json -- run `prepare_session.py plan`")
         return
-    print(f"{plan['nItems']} items, {plan['nRepeats']} repeats, "
-          f"{len(plan['sessions'])} sessions, seed {plan['seed']}\n")
+    # `status` is run BY THE RATER, mid-study. It prints no repeat count and no seed:
+    # printing either to the person being blinded defeats the point of sealing them.
+    print(f"{plan['nItems']} items, {len(plan['sessions'])} sessions, "
+          f"seed commitment {(plan.get('seedCommitment') or '?')[:16]}...\n")
     print(f"{'session':<9}{'items':>6}  {'A built':<8}{'A export':<9}"
           f"{'B built':<8}{'B export':<9}{'sealed':<8}")
     for s in plan["sessions"]:
@@ -645,6 +764,7 @@ def cmd_status(args):
 # ==================================================================== selftest
 
 def cmd_selftest(args):
+    import subprocess
     import tempfile
     ok = True
 
@@ -661,7 +781,9 @@ def cmd_selftest(args):
     items = [{"item_id": f"a{i}", "article": f"Art{i}", "figure": "Figure 1",
               "difficulty": ["easy", "medium", "hard"][i % 3]} for i in range(24)]
     items = _normalise_items(items)
-    o = rv.interleave_by_stratum(items, lambda i: i["stratum"], SEED)
+    # A fixed literal, deliberately NOT resolve_seed(): the selftest must be deterministic
+    # and must never mint or read the study's real seed.
+    o = rv.interleave_by_stratum(items, lambda i: i["stratum"], 12345)
     check("interleave preserves every item", sorted(x["item_id"] for x in o) ==
           sorted(x["item_id"] for x in items))
     pos = {"easy": [], "medium": [], "hard": []}
@@ -670,6 +792,38 @@ def cmd_selftest(args):
     spread = max(abs(sum(p) / len(p) - (len(o) - 1) / 2) for p in pos.values())
     check("difficulty is spread over serial position", spread < len(o) * 0.12,
           f"max mean-position offset {spread:.2f}")
+
+    # A16: at realistic worklist size, no session may consist entirely of re-reads, and the
+    # rater-facing plan must not carry the seed or the repeat count. This is the property the
+    # end-to-end fixture is too small (4 items, REPEAT_MIN=3) to assert.
+    with tempfile.TemporaryDirectory() as td:
+        td = pathlib.Path(td)
+        wl = td / "wl.json"
+        wl.write_text(json.dumps({"schemaVersion": 1, "items": [
+            {"item_id": f"w{i:02d}", "article": f"Art{i % 7}", "figure": "Figure 1",
+             "difficulty": ["easy", "medium", "hard"][i % 3]} for i in range(24)]}))
+        r = subprocess.run(
+            [sys.executable, str(pathlib.Path(__file__).resolve()), "plan",
+             "--worklist", str(wl), "--per-session", "6"],
+            cwd=str(pathlib.Path(__file__).resolve().parent), capture_output=True, text=True,
+            env=dict(os.environ, RV_DATA=str(td), RV_SEED="4242"))
+        check("A16 plan builds at realistic size", r.returncode == 0, r.stderr[-300:])
+        if r.returncode == 0:
+            kk = json.loads((td / "keys" / "plan.key.json").read_text())
+            pp = json.loads((td / "plan.json").read_text())
+            check("A16 no session is entirely re-reads",
+                  not any(s["items"] and all(i["isRepeat"] for i in s["items"])
+                          for s in kk["sessions"]))
+            check("A16 at least one trailing session is genuinely mixed",
+                  any(0 < s["nRepeats"] < len(s["items"]) for s in kk["sessions"]))
+            flat = [i for s in kk["sessions"] for i in s["items"]]
+            ids = [i["item_id"] for i in flat]
+            check("A16 every re-read follows its original",
+                  all(ids.index(i["item_id"]) < n for n, i in enumerate(flat) if i["isRepeat"]))
+            check("A16 every worklist item is still scheduled", len(set(ids)) == 24)
+            check("the rater-facing plan carries neither seed nor repeat count",
+                  "seed" not in pp and "nRepeats" not in pp and "repeatFraction" not in pp
+                  and "seedCommitment" in pp)
 
     clean = {"figures": [{"id": "f1", "subfigures": [{"id": "s1", "captionSource": ""}]}]}
     dirty = {"figures": [{"id": "f1", "panelDetection": {"method": "gutter", "confidence": 0.9},
@@ -710,7 +864,10 @@ def main():
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
     sub = ap.add_subparsers(dest="cmd")
     p = sub.add_parser("plan", help="assign items to sessions and pick the repeat subset")
-    p.add_argument("--worklist"); p.add_argument("--seed", type=int, default=SEED)
+    p.add_argument("--worklist")
+    p.add_argument("--seed", type=int, default=None,
+                   help="explicit RNG seed; omit to use $RV_SEED, the sealed .rv_seed, "
+                        "or a freshly minted one (see resolve_seed)")
     p.add_argument("--per-session", type=int, default=ITEMS_PER_SESSION)
     p.set_defaults(fn=cmd_plan)
     p = sub.add_parser("build", help="Stage A materials for one session")

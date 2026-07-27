@@ -144,13 +144,32 @@ def main():
         wlp.write_text(json.dumps(wl))
 
         # --- plan: 2 items/session so we get several sessions plus repeat sessions ---
-        run(["prepare_session.py", "plan", "--worklist", str(wlp), "--per-session", "2"], tmp)
+        plan_stderr = run(["prepare_session.py", "plan", "--worklist", str(wlp),
+                           "--per-session", "2"], tmp).stderr
         plan = json.loads((tmp / "plan.json").read_text())
         key = json.loads((tmp / "keys" / "plan.key.json").read_text())
-        check("plan covers every item",
-              sum(s["nItems"] for s in plan["sessions"] if not
-                  next(k for k in key["sessions"] if k["session"] == s["session"])["isRepeatSession"])
-              == len(pdfs))
+        # Coverage is about DISTINCT items scheduled, which is what this always meant. It
+        # used to be computed as "items in sessions that aren't repeat sessions", which
+        # worked only while every trailing session was 100% repeats. Since amendment A16
+        # holds back fresh items to mix into the trailing sessions, that proxy undercounts
+        # the held-back items -- so state the property directly instead.
+        scheduled = {it["item_id"] for s in key["sessions"] for it in s["items"]}
+        check("plan covers every item", len(scheduled) == len(pdfs),
+              f"{len(scheduled)} distinct of {len(pdfs)}")
+        # The blinding property A16 exists to create -- but only assertable when the worklist
+        # is big enough to hold back one fresh item per repeat. This fixture is 4 items with
+        # REPEAT_MIN=3, which is arithmetically below that floor, so here we assert the
+        # honest fallback instead: the shortfall must be announced, not shipped silently.
+        # The property itself is exercised at realistic size in prepare_session --selftest.
+        n_rep = len(key["repeatIds"])
+        if len(pdfs) >= 2 * n_rep:
+            check("no session is entirely re-reads",
+                  not any(s["items"] and all(i["isRepeat"] for i in s["items"])
+                          for s in key["sessions"]))
+        else:
+            check("an unblindable worklist size is announced, not shipped silently",
+                  "too small to blind the re-reads" in plan_stderr,
+                  f"{len(pdfs)} items vs {n_rep} repeats")
         check("repeat subset is non-empty", len(key["repeatIds"]) >= 1,
               f"{len(key['repeatIds'])} repeats")
         anon_by_item = {}
@@ -340,6 +359,16 @@ def main():
         r = run(["prepare_session.py", "build", rs], tmp, expect_fail=True)
         check("a repeat is blocked until the calendar gap has passed",
               "wait" in r.stderr or "not sealed" in r.stderr or "rest" in r.stderr)
+        # A16: a trailing session also carries held-back FRESH items. Their "original" is the
+        # session being built, so a prerequisite check that walked every item (rather than
+        # only the re-reads) would report them as unsealed and block the session forever.
+        # This assertion distinguishes that bug from a legitimate calendar-gap block, which
+        # the check above alone cannot -- it accepts "not sealed" as a valid reason.
+        rs_key = next(s for s in key["sessions"] if s["session"] == rs)
+        fresh_ids = [i["anon_id"] for i in rs_key["items"] if not i["isRepeat"]]
+        check("no held-back fresh item is reported as an unsealed repeat",
+              not [a for a in fresh_ids if a in r.stderr],
+              f"{len(fresh_ids)} fresh item(s) in {rs}")
         run(["prepare_session.py", "build", rs, "--force"], tmp)
         rsd = tmp / "sessions" / rs
         rsess = json.loads((rsd / "session.json").read_text())

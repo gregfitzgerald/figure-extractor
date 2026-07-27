@@ -360,6 +360,27 @@ async def run(pdf_path):
         assert j["schemaVersion"] == 2, "schemaVersion changed"
         assert any(f.get("panelDetection") for f in j["figures"]), "panelDetection not serialized"
 
+        # BLINDING: annotationMode must stop the detectors at the SOURCE, not just at the
+        # API wrapper. The bare global `suggestSubfiguresLegacy` stays reachable from a
+        # devtools console after every wrapper refuses, and because it returns bare boxes
+        # it writes no `panelDetection` and no `captionSource:'panel-split'` -- so boxes
+        # taken from it are INVISIBLE to rvcommon.blinding_violations after the fact.
+        # An after-the-fact audit structurally cannot catch this one; only the guard can.
+        # Regression-test the bare global directly, the way the threat model does.
+        blind_fid = results[CASES[0]["name"]]["fid"]
+        await pg.evaluate("() => { settings.annotationMode = true; }")
+        bare = await pg.evaluate(
+            f"() => {{ const f = state.figures.find(x => x.id === '{blind_fid}'); "
+            f"const w = []; const o = console.warn; console.warn = (...a) => w.push(a.join(' ')); "
+            f"const boxes = suggestSubfiguresLegacy(f, 2); console.warn = o; "
+            f"return {{ n: (boxes || []).length, warned: w.some(m => m.includes('refused')) }}; }}")
+        wrapped = await pg.evaluate(
+            f"() => window.figureExtractor.suggestSubfiguresLegacy('{blind_fid}')")
+        core = await pg.evaluate(
+            f"() => window.figureExtractor.detectPanels('{blind_fid}', {{ apply: true }})")
+        await pg.evaluate("() => { settings.annotationMode = false; }")
+        results["_blinding"] = dict(bare=bare, wrapped=wrapped, core=core)
+
         await browser.close()
 
     hard_errors = [e for e in errors if "favicon" not in e and "net::ERR" not in e]
@@ -570,6 +591,22 @@ def check(results):
         if not res["ok"]:
             expect(case["name"], not results[case["name"]]["subs"],
                    f"ok=false wrote nothing (subfigures={len(results[case['name']]['subs'])})")
+
+    # BLINDING: every detector entry point must refuse in annotationMode. The bare global
+    # is the one that matters -- it leaves no fingerprint, so rvcommon.blinding_violations
+    # cannot detect its output after the fact. Guarding only the wrapper (the state this
+    # suite shipped in previously) left a hole that no downstream audit could ever see.
+    b = results.get("_blinding")
+    if b:
+        expect("blinding", b["bare"]["n"] == 0,
+               f"bare global suggestSubfiguresLegacy refuses (got {b['bare']['n']} boxes)")
+        expect("blinding", b["bare"]["warned"], "bare global warns on refusal")
+        expect("blinding", b["wrapped"]["flags"] == ["annotation-mode"] and not b["wrapped"]["panels"],
+               f"API wrapper refuses (flags={b['wrapped']['flags']})")
+        expect("blinding", b["core"]["flags"] == ["annotation-mode"] and not b["core"]["panels"],
+               f"detectPanels refuses (flags={b['core']['flags']})")
+    else:
+        failures.append("blinding: no annotationMode results captured")
 
     return failures
 

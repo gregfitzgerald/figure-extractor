@@ -500,6 +500,18 @@ def cmd_ingest(args):
             "jitter": jitter_report(dig, extraction),
             "ambiguities": form.get("ambiguities") or [], "notes": form.get("notes") or ""})
 
+    # A BLINDING failure is never bypassable. `--allow-problems` exists so a missing note or
+    # an unreadable single export does not block the other 19 items, but a blinding failure
+    # is a statement about the RATER'S SETUP (the Settings toggle was off, or a detector was
+    # run), and a setup fault implicates every item read in that session -- not just the one
+    # that happened to leave a fingerprint. Downgrading it to a stderr line would let the
+    # study proceed on a silently reduced, non-randomly-selected sample.
+    blinding = [p for p in problems if p.startswith("BLINDING ")]
+    if blinding:
+        print("\n".join("  ! " + p for p in blinding), file=sys.stderr)
+        raise SystemExit(f"\n{len(blinding)} BLINDING failure(s) -- not bypassable by "
+                         f"--allow-problems. The session's blinding is in question; re-read "
+                         f"the affected articles with annotationMode on.")
     if problems and not args.allow_problems:
         print("\n".join("  ! " + p for p in problems), file=sys.stderr)
         raise SystemExit(f"\n{len(problems)} problem(s) -- fix and re-run "
@@ -539,10 +551,21 @@ def cmd_ingest(args):
                                 "captionSource", "captionBounds", "captionConfidence",
                                 "notes", "createdAt", "locked", "finishedAt")},
                             "digitization": None, "characterization": None,
-                            "extraction": None, "panelDetection": None,
+                            # `digitization`/`characterization`/`extraction` are nulled here
+                            # because at figure level they are genuinely empty -- they live on
+                            # the subfigures. `panelDetection` is NOT measurement, it is the
+                            # blinding evidence, so it is carried through verbatim. Hardcoding
+                            # it to None made re-running rv.blinding_violations on the sealed
+                            # GT vacuous: it passed by construction rather than on evidence,
+                            # so the gate was trust-on-first-run and not reproducible.
+                            "extraction": None,
+                            "panelDetection": f.get("panelDetection"),
                             "subfigures": subs})
         out_ann = {"schemaVersion": rv.SCHEMA_VERSION, "project": session, "article": aid,
                    "exportedAt": rv.now_iso(), "pages": raw.get("pages", []),
+                   # The rater's own attestation, preserved so the sealed record can be
+                   # re-audited independently of this run.
+                   "annotationMode": raw.get("annotationMode"),
                    "figures": figures}
         rv.write_json(gdir / aid / "annotations.json", out_ann)
         sealed.append(gdir / aid / "annotations.json")

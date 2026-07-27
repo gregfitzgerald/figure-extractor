@@ -793,11 +793,22 @@ def cmd_selftest(_args):
         s1 = realised_seed(seed_tmp)
         s2 = realised_seed(seed_tmp)
         check("the realised seed is stable once drawn", s1 == s2)
-        check("the realised seed differs from Greg's", s1 != ps.SEED)
+        # Greg's seed used to be the module constant `prepare_session.SEED`, so this check
+        # could compare against it directly. That constant WAS the defect -- committed, and
+        # date-shaped, it let anyone with the repo recompute Greg's intra-rater repeat
+        # assignments. It is now resolved from a gitignored sealed file, so the stronger
+        # invariant is that no such constant exists to compare against.
+        ps_src = pathlib.Path(ps.__file__).resolve().read_text(encoding="utf-8")
+        check("Greg's seed is not a hard-coded constant either",
+              not re.search(r"^SEED\s*=", ps_src, re.M))
         check("the realised seed is not the retired constant 20260728", s1 != 20260728)
+        check("the realised seed is not Greg's retired constant 20260727", s1 != 20260727)
         check("the seed file is not the seed's own fingerprint",
               seed_fingerprint(s1) != seed_fingerprint(s1 + 1))
-        r1, r2 = random.Random(s1), random.Random(ps.SEED)
+        # A fixed probe stands in for "some other rater's seed"; the property under test is
+        # that the two id streams cannot collide, not the value of Greg's seed.
+        probe_seed = 20260727
+        r1, r2 = random.Random(s1), random.Random(probe_seed)
         a = dan_anon_id(r1, 1, set())
         b = rv.anon_id(r2, 1, set())
         check("a Dan id can never collide with a Greg id", a != b and not a.startswith("it"),
