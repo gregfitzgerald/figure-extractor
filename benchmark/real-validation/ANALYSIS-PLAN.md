@@ -24,7 +24,7 @@ Three questions, three annotation tiers, one pre-committed metric set.
 |---|---|---|---|---|
 | **D** detection | does Docling's figure bbox + caption association hold beyond N=1? | figure | human-drawn box, human-confirmed caption | **accuracy** (the human is a valid reference for "which box, which caption") |
 | **P** panels | what is the synthetic->real transfer gap in panel decomposition? | panel | human-drawn panel boxes + letters | **accuracy** (the human is a valid reference for boxes, counts, letters) |
-| **E** extraction | how do classification, series->arm parsing, central tendency and **dispersion** behave? | landmark / comparison | mixed -- see section 3 | **accuracy** for discrete targets (type, arm identity, n); **agreement + a three-reading variance decomposition** for dispersion values; real-figure accuracy only if the oracle stratum survives verification |
+| **E** extraction | how do classification, series->arm parsing, central tendency and **dispersion** behave? | landmark / comparison | mixed -- see section 3 | **accuracy** for discrete targets (type, arm identity, n); **agreement + a three-reading variance decomposition** for dispersion values; real-figure accuracy on the verified oracle stratum -- **20 comparisons / 17 panels / 12 figures / 12 articles corpus-wide, and only 5 / 5 / 3 / 3 inside LOCK**, so it is DESCRIPTIVE, not powered (sec.1.4b) |
 
 The headline output is not any single accuracy. It is
 **Delta = metric(synthetic) - metric(real)**, computed metric-by-metric and
@@ -119,35 +119,75 @@ identifies each method's error variance from the three pairwise difference varia
 sigma_M^2 = [ Var(M-G) + Var(M-D) - Var(G-D) ] / 2      (and cyclically for G, D)
 ```
 
-equivalently `sigma_M^2 = Cov(M-G, M-D)`. No oracle is required. This is the primary
-dispersion analysis.
+equivalently `sigma_M^2 = Cov(M-G, M-D)`. No oracle is required. It is **one of three
+estimates of the dispersion channel**, reported beside Bland-Altman and the oracle stratum,
+with its assumption stated every time.
 
-**The confound, stated up front and signed.** `D` and `G` are the same person. Their errors
-may share a component (a habitual way of reading a cap: its centre line vs its upper edge, a
-consistent tick-identification bias) with covariance `c >= 0`. Then:
+**The assumption, and why the earlier version of this section was wrong.**
+Grubbs identifies `sigma_M` only if `e_D`, `e_G` and `e_M` are **mutually uncorrelated**.
+Writing `c_XY = Cov(e_X, e_Y)`, the estimator's expectation with correlated errors is:
 
 ```
-E[sigma_M^2 (Grubbs)] = sigma_M^2 + c        <- machine variance INFLATED
-E[sigma_G^2 (Grubbs)] = sigma_G^2 - c        <- human variance DEFLATED
+E[sigma_M^2 (Grubbs)] = sigma_M^2 + c_DG - c_DM - c_GM
+E[sigma_G^2 (Grubbs)] = sigma_G^2 + c_GM - c_DG - c_DM
+E[sigma_D^2 (Grubbs)] = sigma_D^2 + c_DM - c_DG - c_GM
 ```
 
-So shared-person error biases the comparison **against the machine**. Every machine-vs-human
-statement produced this way is therefore *conservative*, and that direction must be stated
-wherever the number appears. We do not get to claim the machine is better than the estimate
-says; we do get to claim it is at least that good.
+Earlier versions of this plan kept only the `+ c_DG` term -- `D` and `G` are the same
+person, so their errors plausibly share a component (a habitual way of reading a cap: its
+centre line vs its upper edge, a consistent tick-identification bias) -- and concluded that
+the estimate could only ever be too LARGE, i.e. **"conservative against the machine"**.
 
-**Bracketing `c`.** The intra-rater repeat subset gives `sigma_G^2` directly and independently
-of Grubbs: `Var(G1 - G2) = 2 * sigma_G_repeat^2`. Then
+**That conclusion is withdrawn.** `c_DM` and `c_GM` are not zero, and they enter with a
+MINUS sign. Section 7 of this document lists *"machine and human both misread the same
+ambiguous cap the same way"* as a live validity threat; a cap hidden behind a significance
+asterisk, a cap on a 6-pixel error bar, a bar top under a data-point cloud -- these are
+difficulties shared by **every** reader of that panel, human or machine. Whenever a panel is
+hard for the human it tends to be hard for the machine, and that is precisely a positive
+`c_DM` and `c_GM`.
+
+**Binding consequence: the direction of the bias is UNKNOWN** without assuming the machine's
+errors are uncorrelated with the humans'. No sentence anywhere in this study, in the scorer's
+output, or in the write-up may describe the Grubbs estimate as conservative, as a bound, or
+as biased against the machine. It may be described only as *an estimate under an
+independence assumption that the design cannot verify from the three readings alone*, because
+a shared error looks exactly like agreement. Selftest **D5b** reproduces the
+anti-conservative case with a known truth -- a shared-difficulty component makes Grubbs
+return a `sigma_M` well below the true value -- so the failure mode stays visible in the
+test output rather than living only in this paragraph.
+
+**Bracketing `c_DG` (and only `c_DG`).** The intra-rater repeat subset gives `sigma_G^2`
+directly and independently of Grubbs: `Var(G1 - G2) = 2 * sigma_G_repeat^2`. Then
 
 ```
 c_hat = sigma_G_repeat^2 - sigma_G^2 (Grubbs)
 ```
 
-and we report the machine variance as an interval
+and the machine variance is reported as an interval
 `sigma_M in [ sqrt(max(0, sigma_M^2(Grubbs) - c_hat)), sqrt(sigma_M^2(Grubbs)) ]`.
-`sigma_G_repeat` is a *within-tool* test-retest quantity and therefore itself understates the
-across-tool human component, so `c_hat` is a lower bound on `c` and the corrected endpoint is
-still an upper bound on `sigma_M`. Both endpoints are reported; neither is presented alone.
+**This interval brackets `c_DG` alone. It does not bracket `c_DM` or `c_GM`**, so when
+shared reading difficulty dominates, the whole interval can sit *below* the true `sigma_M`.
+Both endpoints are reported; neither is presented alone; and neither is called a bound.
+
+**The cross-check that can actually see the confound: the ORACLE stratum.**
+On the oracle rows the truth is **printed in the paper**. It was not read off the drawing by
+anybody, so no error shared between the machine and the humans can move it. `sd(log(M /
+printed truth))` is therefore an estimate of `sigma_M` that carries no `c_DM`, no `c_GM` and
+no `c_DG` -- the only such estimate the design has.
+
+> **Pre-specified reading rule.** Report Grubbs `sigma_M` and oracle `sigma_M` side by side,
+> with the oracle stratum's size at the scope being analysed. If the **oracle estimate is
+> materially larger** than the Grubbs estimate, that is evidence the shared-difficulty
+> confound is present and **Grubbs is understating the machine's error** -- the
+> anti-conservative direction. Say so in those words. If the oracle estimate is materially
+> smaller, `c_DG` is likely dominating and Grubbs is overstating. If they agree, the
+> independence assumption has survived a real test, which is the only circumstance in which
+> the Grubbs number should be quoted without the assumption attached.
+>
+> The scorer computes this as `_dispersion.grubbsVsOracle` and prints it as layer (f) of the
+> dispersion report. It is **underpowered at the oracle stratum's realised size** (sec.1.4b),
+> and the report says so; an underpowered check that can detect the confound is still the
+> only check that can detect it at all.
 
 **What `D` vs `G` is and is not.** Because both are Greg, `Var(D-G)` bounds **intra-rater,
 cross-tool, cross-occasion** reliability. It is **not** inter-rater reliability and will
@@ -161,15 +201,21 @@ gap.
 The four options are not alternatives; they answer different questions and they are layered,
 cheapest claim first:
 
-1. **Bland-Altman on `log(M/G)` and `log(M/D)`** -- the *reporting form*. Bias (systematic
-   offset) and 95% limits of agreement (random spread). This is the honest description of
-   "are these two readings interchangeable in a meta-analysis?", which is the question a
-   reviewer actually has. It makes no accuracy claim and needs no assumptions beyond
-   approximate normality of log-ratios. **Always reported.**
+1. **Bland-Altman on `log(M/G)` and `log(M/D)`, reported BY CAP-LENGTH TERTILE** -- the
+   *reporting form*. Bias (systematic offset) and 95% limits of agreement (random spread).
+   This is the honest description of "are these two readings interchangeable in a
+   meta-analysis?", which is the question a reviewer actually has. It makes no accuracy
+   claim. Its one assumption -- approximate normality of the log-ratios -- is now *screened*
+   with a probability-plot correlation rather than assumed, and the LoA is computed within
+   strata because the log transform does not stabilise the variance here (section 3.3).
+   **Always reported.**
 2. **Intra-rater noise floor from repeats** -- the *yardstick*. Machine error is reported as a
    ratio to the human's own measured repeatability, never against zero. **Always reported.**
-3. **Grubbs three-reading decomposition** -- the *primary inferential claim*. The only route
-   to a per-method error variance without an oracle. **Primary dispersion analysis.**
+3. **Grubbs three-reading decomposition** -- **one of three estimates, not the primary
+   claim** (amendment A2). The only route to a per-method error variance without an oracle,
+   and it buys that at the cost of an independence assumption the three readings cannot
+   themselves verify. Reported with its assumption attached and never as a bound. See
+   section 1.3.
 4. **Accuracy restricted to a gold standard** -- reported on two strata where a gold standard
    genuinely exists: (a) the **synthetic benchmark** (R's exact descriptives; already done,
    cited not re-run); (b) a **text-anchored real stratum** -- rows whose numeric value is also
@@ -178,63 +224,223 @@ cheapest claim first:
    `Data_Extraction_Method` naming a text or table source. **This is the only real-figure
    accuracy claim in the study and it is confined to that stratum.**
 
-### 1.4b The oracle stratum was tested, and it does not hold up
+### 1.4b The oracle stratum, re-tested against all three places a number can be printed
 
-The layer-4 accuracy claim looked much bigger than it is. **138 of the 434 figure-derived
-comparisons, across 54 articles**, carry a `Data_Extraction_Method` that *claims* a text
-or table source ("Reported in text/figure" 89, "Reported in text and figure" 30,
-"Reported in text and figures" 15, "Reported in figure/table" 1, "Reported in inset table
-in Figure 3" 1, "Direct from text and figures" 2). If the paper prints the number and
-plots the same quantity, the printed number is genuine ground truth for the figure read --
-which would convert the headline from *agreement* to *accuracy*, on real figures, with no
-human annotation at all.
+**The first test asked the wrong question.** `verify_oracle.py` (v1) searched the article's
+BODY TEXT only, over the 138 comparisons whose `Data_Extraction_Method` *claims* a text
+source, and returned **1 confirmed of 34 checkable**. Two things were wrong with that.
 
-**The field is ambiguous and the workbooks' own `Help` sheet does not define it.** It
-documents `Data_Extraction_Method` only as e.g. "Reported in text", "Reported in table",
-"Visual analysis of figure elements". So "Reported in text/figure" may equally mean *the
-coder digitized the figure and the text corroborated it*. That difference is the whole
-claim, so it was checked rather than assumed.
+*First, the semantics.* Greg (the coder) has since clarified that "Reported in text and
+figure" / "Reported in text/figure" means the number appeared in **any** of: (a) the body
+text, (b) the **figure caption**, or (c) **printed inside the figure itself** -- above a
+bar, or in an inset table. v1 could see (a) only, so it undercounted by construction.
 
-**The check (`verify_oracle.py`), pre-specified and mechanical.** Open the article PDF,
-take the body text with the reference list stripped (a reference list is a dense field of
-years, volumes and page numbers that will match almost any 2-4 digit value by chance), and
-require the coded **mean and its variance to appear as printed numbers within 120
-characters of each other** -- the signature of a printed `35.2 +/- 4.8`. Either number
-alone is not evidence: in the first article tried, `20.13` matched a DOI and `2.7` matched
-a section heading.
+*Second, the universe.* v1 resolved PDFs through `benchmark/real/pdf_map.json`, which
+covers the **43** articles that survived the meta-analysis' content screen, not the 171
+with figure data. 104 of its 138 candidates came back `NO_PDF` -- it checked 34 rows and
+called the answer. Resolving DOIs directly against Zotero reaches **164 of 171** articles.
+And the label restriction was itself a mistake: the label does **not** predict the verdict
+(table below), so filtering on it discarded most of the real hits before the search began.
 
-**Measured result, over the 34 claimed comparisons whose PDF currently resolves:**
+**The re-test (`verify_oracle_v2.py`).** Every one of the 434 figure-derived comparisons,
+against three DISJOINT zones of its PDF:
 
-| verdict | n | share of checkable |
+| zone | what it is | how it is read |
 |---|---|---|
-| TEXT_CONFIRMED | **1** | 2.9% |
-| PARTIAL | 3 | 8.8% |
-| NOT_FOUND | **30** | **88.2%** |
-| NO_PDF (not yet checkable) | 104 | -- |
+| `TEXT` | every block that is not a real caption and is not a short label inside a figure, references stripped | PDF text layer |
+| `CAPTION` | the caption block of the *named* figure ("Figure 5B" -> the "Fig. 5." block) | PDF text layer |
+| `IN_FIGURE_VECTOR` | text spans whose bbox falls inside the figure's region on the page | PDF text layer -- no OCR needed |
+| `IN_FIGURE_OCR` | the figure region rendered at 400 dpi | tesseract 5.5 |
 
-**The oracle hypothesis is falsified at the rate observed.** "Reported in text/figure"
-means *corroborated*, not *quoted*. Concretely: Aykan2024 Figure 5B is coded
-20.13 +/- 2.01 (SEM, n=8) and labelled "Reported in text and figure", yet none of 20.13,
-21.7, 0.53 or 0.43 appears in the paper's body text.
+Disjointness is load-bearing: without it every caption hit would also count as a body hit
+and the provenance split would mean nothing.
+
+**Confirmation requires a PAIR.** The coded mean *and* its variance must be found together
+as a printed `m +/- s`, `m (s)`, or `m, SEM = s`. A lone number is not evidence: measured
+on this corpus, coded 20.13 "matches" the 20 of "20 mg/kg", coded 0.53 matches "exceeding
+0.5, the chance level", and coded 21.7 matches a grant number. Inside a figure the problem
+is worse -- every axis tick is a lone number -- so the mean-only tier additionally drops
+tokens belonging to an arithmetic tick sequence, and is never run over body text at all.
+
+**Tolerance is the printed token's own rounding half-width**, not a flat percentage. A
+value printed as `20.1` asserts only that the truth lies in [20.05, 20.15), so that
+half-width is the match radius; coded 20.13 matches printed `20.1` and printed `20`, but
+not printed `20.2`. This is the correct model of "the paper rounded", and it is what
+resolves the two near-misses that a flat 6% bar mis-ruled (SAMPLING-AND-WORKLIST.md sec.0b).
+The variance channel accepts either the coded variance as recorded **or** the SD derived
+from it, so a paper printing `mean +/- SD` against a coder who recorded SEM is a
+confirmation of both numbers rather than a miss; which one matched is recorded per row.
+
+**Measured result, over all 421 checkable comparisons (13 of 434 have no PDF).** These are
+the counts AFTER the guard restoration and the hand adjudication described immediately
+below; the first version of this table reported 33 and was wrong.
+
+| verdict | comparisons | share of checkable |
+|---|---|---|
+| CONFIRMED_TEXT | **18** | 4.3% |
+| CONFIRMED_CAPTION | **2** | 0.5% |
+| CONFIRMED_IN_FIGURE_VECTOR | **0** | 0.0% |
+| CONFIRMED_IN_FIGURE_OCR | **0** | 0.0% |
+| REJECTED_ADJUDICATION | 12 | 2.9% |
+| PARTIAL_MEAN | 28 | 6.7% |
+| NOT_FOUND | 361 | 85.7% |
+
+**20 confirmed comparisons across 17 distinct PANELS, 12 distinct FIGURES and 12 articles.**
+All 20 have both the mean and the variance channel confirmed.
+
+> **Panels are not figures and the plan previously conflated them.** The earlier "21 panels"
+> was produced by a helper keyed on `figureId`, so `Zhang2017` "Figure 3d" and "Figure 3e" --
+> two panels of one figure -- collapsed into one. That number was a FIGURE count standing
+> next to a panel-level bar. `verify_oracle_v2.py::summarise` now keys panels on
+> `(article, figureId, panelLetter)` and reports comparisons, panels, figures and articles
+> as four separate columns, at every scope.
+
+**How 33 became 20.** Two independent corrections, both of which reduce the count:
+
+1. **The pair guard was restored (13 -> 12 of the loss is here: one row).** `match_arm`
+   had been relaxed from "the printed MEAN token must be informative" to "the mean OR the
+   variance must be", specifically so that `Bakeche2020`'s printed `(3 +/- 0.81)` would
+   confirm. Hand inspection shows that confirmation is false in four separate ways -- wrong
+   outcome, wrong lighting condition, wrong phase, and the arms inverted -- so the
+   relaxation bought exactly one false positive and no true ones. A one-digit mean cannot
+   carry a match: it collides with an axis tick, a group size or a day index far too often.
+   Restored at `verify_oracle_v2.py::match_arm`.
+2. **Twelve rows failed hand adjudication.** The mechanical search cannot tell that a
+   printed `110.5 +/- 21.6` belongs to the 14-month cohort rather than the 4-month row that
+   claimed it, or that a sentence describes the elevated zero maze rather than the Barnes
+   maze panel named by the row. That judgement requires reading the article. The ledger
+   lives in `verify_oracle_v2.py::ADJUDICATION`, is applied before anything is counted or
+   written, is disabled by `--no-adjudication`, and reproduces every rejection with the
+   sentence that decides it. Its rules are: it may only REJECT what the mechanical search
+   proposed (never promote); it judges on the evidence sentence and the coded row's own
+   outcome/group/timepoint, never on how anything later scores; and it rejects only where
+   the article DEMONSTRABLY contradicts, never on silence.
+
+   The two acceptance conditions are (a) each printed `m +/- s` is the quantity the coded
+   arm names, and (b) nothing in the article contradicts the row's `dataSource` panel.
+   Condition (b) is not pedantry: the oracle's job is to be the truth for the value a rater
+   and the machine read *out of that panel*, so a row that names panel C while its printed
+   numbers belong to panel D would score a correct machine read as a gross error.
+
+   The twelve rejections, by failure class: **wrong age cohort or apparatus** (3 --
+   `Singhal2019` x3, where the paper prints the 4-month control as 3.7 +/- 0.7 while the row
+   claims 110.5 +/- 21.6, and where an elevated-zero-maze open-arm sentence was matched to a
+   Barnes-maze escape-latency panel); **wrong panel** (4 -- `Ederer2022` x2, `Lee2024_1_1`,
+   `Mansk2023_2_1`); **wrong source table** (2 -- `Frick2003` x2, where the values are cells
+   of a platform-trial summary table while the named figure is a per-block acquisition
+   curve); **wrong arm** (2 -- `Mansk2023_1_1`, where 0.40 +/- 0.08 is the C57BL/6 strain
+   and not the "Swiss enriched" arm; `Gawryluk2024_2_1`, where both printed values are the
+   SAME arm on day 1 and day 3); **pre-test read as the test** (1 -- `Smith2018_1_1`).
+
+**The permutation null, re-run against the right alternative.** The shipped null drew donor
+codings from the WHOLE CORPUS at `--null-reps 3`, so the headline FDR rested on two events
+and on trials that were 99.35% cross-article. Both defects are fixed: the default is now
+`--null-reps 1000`, and four nulls are reported.
+
+| null | donors | trials | confirmed | rate | implied FDR on 20 |
+|---|---|---|---|---|---|
+| **magnitude-matched (PRIMARY)** | other article, control mean within a factor of ~1.8 | 404 000 | 1 203 | **0.298%** | **6.3%** (~1.3 rows) |
+| within-article, donors this paper does NOT print | same article, own verdict `NOT_FOUND` | 328 000 | 0 | 0.000% | 0% |
+| within-article, ANY donor | same article, any row | 368 000 | 28 068 | 7.627% | 160% -- absurd |
+| corpus-wide (what v2 shipped) | anywhere | 86 611 | 297 | 0.343% | 7.2% |
+
+Read that table honestly, because it does **not** say what the objection to it predicted.
+The alarming "within-article collisions are ~18x more likely" figure is line 3, and line 3
+is not a null at all: a donor drawn from the same paper very often has its *own* values
+printed there, so the trial confirms because the donor is genuinely printed, not by chance.
+The hypothesis being simulated is false for the donor by construction. Line 2 removes that
+tautology but has a measured coverage hole -- 12 of the 17 mechanically-confirming articles
+contain no `NOT_FOUND` row, so it is dominated by papers that print nothing. Line 1 keeps
+the magnitude realism (magnitude is what drives a chance collision) while guaranteeing the
+donor is not printed in the target's paper, and it lands at **0.9-1.0x the corpus-wide
+rate**. **The corpus-wide null was not the thing that was wrong.** What inflated the count
+was the relaxed pair guard and twelve semantic mismatches, and those are what the corrected
+count removes.
+
+**The label does not predict the verdict.** This reproduces the sampling document's
+finding and is worth reporting on its own:
+
+| `Data_Extraction_Method` | CONFIRMED | PARTIAL |
+|---|---|---|
+| Reported in text | **16** | 1 |
+| Reported in text/figure | **3** | 10 |
+| Extracted from figure | **6** | 5 |
+| Reported in text and figure | **4** | 5 |
+| Reported in text and figures | **2** | 0 |
+
+"Reported in text/figure" confirms at 3 of 13; plain "Reported in text" at 16 of 17, and
+*"Extracted from figure"* -- a label that denies a text source -- yields 6. The provenance
+field is not a usable selector. The mechanical check is.
+
+**The most valuable hypothesis is dead, and the negative is well measured.** A value
+printed inside the figure, beside the mark you would measure, would be a within-figure
+accuracy oracle needing no annotation and no cross-referencing assumption. It does not
+exist in this corpus. 224 of 238 figure regions were located; **68 carried readable vector
+text spans (924 numeric tokens) and 174 were OCR'd (3842 numeric tokens)** -- and across
+all 4766 tokens there is **not one printed `mean +/- variance` pair**. The five candidate
+pairs OCR returned are artefacts: `0.01 (0.003)` is a p-value annotation, `1 (1,14)` is
+the `F(1,14)` of a test statistic, `4 084` is OCR noise. Inspected directly, the numbers
+inside these figures are axis ticks, group labels (`SC-2`, `EE-15`), timeline annotations
+(`3X`, `5 min`, `20X`) and sample sizes. **The rodent enrichment literature does not print
+its data values in its figures.** That is a measurement over 222 surveyed figures, not an
+impression, and it should be reported as such -- it is also the reason the extraction tool
+this study evaluates has to exist.
+
+**The stratum size AT THE SCOPE BEING ANALYSED, which is the only size that may be quoted
+beside a result.** The corpus-wide count describes 434 coded comparisons across 171
+articles. The study does not analyse 171 articles; it analyses the worklist, split
+DEV/LOCK. Those are different, much smaller numbers, and a Tier-1 result may not cite the
+corpus-wide 20 any more than it could cite the old 33.
+
+| scope | comparisons | panels | figures | articles |
+|---|---|---|---|---|
+| corpus-wide (all 434 coded) | 20 | 17 | 12 | 12 |
+| worklist tiers 1-1 | 4 | 4 | 2 | 2 |
+| tiers 1-1, DEV | 0 | 0 | 0 | 0 |
+| tiers 1-1, **LOCK** | **4** | **4** | **2** | **2** |
+| worklist tiers 1-3 | 5 | 5 | 3 | 3 |
+| tiers 1-3, DEV | 0 | 0 | 0 | 0 |
+| tiers 1-3, **LOCK** | **5** | **5** | **3** | **3** |
+
+`verify_oracle_v2.py` emits this table on every run (`scopes` in the report JSON) and
+`score_real_validation.py` prints the joined stratum's size, at the run's own
+`--split-filter`, immediately beneath the oracle accuracy line. Only nine of the twenty
+oracle articles fall inside the worklist frame at all, and only three inside the LOCK half
+of it -- so the oracle stratum is essentially a **corpus-level** result that the
+confirmatory set barely touches.
 
 **Consequences, binding:**
 
-1. The study stays **agreement-first**. The Grubbs three-reading decomposition is the
-   primary dispersion analysis; the oracle stratum is a small **conditional sensitivity**
-   stratum, not the headline.
-2. `isOracle` is **false by construction** in the coded reference and is set *only* by
-   `verify_oracle.py` on a TEXT_CONFIRMED verdict. The scorer will not admit a row to the
-   accuracy analysis on the strength of the label. A selftest is unnecessary here because
-   the default is refusal.
-3. `verify_oracle.py` is **re-run** once the sampling protocol resolves PDFs for the full
-   171-article set; 104 of 138 candidates are currently unchecked, so the confirmed count
-   can only grow. If it grows past **30 confirmed comparisons across >= 10 articles**, the
-   oracle stratum is promoted to a reported accuracy analysis with an explicit selection
-   caveat (papers that print their numbers are plausibly better-reported papers). Below
-   that it is reported as a descriptive footnote with its rule-of-three bound.
-4. This negative result is itself reportable: a provenance field that a reader would
-   naturally take as "the number came from the text" does not mean that, and the
-   discrepancy is only visible because the check was mechanised.
+1. The pre-registered bar was **>= 30 confirmed comparisons across >= 10 articles**.
+   Observed after correction: **20 comparisons / 17 panels / 12 figures / 12 articles ->
+   NOT MET.** The comparisons bar fails; the articles bar passes. The oracle stratum is
+   therefore **NOT promoted to a powered accuracy analysis**. It is reported
+   **descriptively**, always with its n at the analysed scope, and it may not carry a
+   threshold verdict. The corresponding row of the section-3.3 metric table is marked
+   "not establishable -- reported descriptively only".
+2. It nonetheless retains one job that nothing else can do: it is the **only estimate of
+   `sigma_M` immune to the shared-difficulty confound** of section 1.3, because its truth
+   is printed rather than read. Underpowered at n = 5 LOCK comparisons (10 arm-values), the
+   cross-check is weak -- but a weak check that can see the confound is the only check that
+   can see it at all, and the report prints its n beside it so nobody mistakes it for
+   strong.
+3. `isOracle` is set exclusively by `verify_oracle_v2.py`, on a `CONFIRMED_*` verdict that
+   has also survived adjudication. Each such row carries `oracleSource`
+   (`body_text` | `caption` | `in_figure_vector` | `in_figure_ocr`) and the two channel
+   flags `oracleMeanConfirmed` / `oracleVarianceConfirmed`; all 20 have both.
+4. **The selection caveat is not optional.** These rows were found by searching for the
+   coded value, so the procedure can only find printed values that AGREE with the coding;
+   a panel the coder read badly cannot enter the stratum. This does not invalidate the
+   oracle for its actual purpose -- scoring the *machine's* read against the printed truth
+   -- but it does mean the stratum is a non-random sample of panels, biased toward
+   well-reported papers and accurate codings. Report it with the estimate, every time.
+5. Provenance is **body text (18) and caption (2)**. No accuracy claim of the form "the
+   value was printed in the figure" is available at any n.
+6. **The adjudication is itself a finding about the corpus**, and should be reported as
+   one: 12 of 32 mechanically-confirmed rows (38%) were cross-panel, cross-cohort or
+   cross-outcome mismatches between a coded row and the sentence that appears to support
+   it. Anyone building a text-anchored oracle by regex alone, without reading the papers,
+   should expect a comparable rate.
 
 **What is explicitly NOT claimable and will not be reported:** any statement of the form "the
 machine's dispersion error on real figures is X%" derived from machine-vs-human disagreement
@@ -288,27 +494,67 @@ article (43)  ->  figure  ->  panel  ->  landmark (arm-value)  ->  comparison (r
                   ~200         ~200        220                     145
 ```
 
-Metrics live at different levels; inference must respect the nesting. **All confidence
-intervals are computed by article-level cluster bootstrap (B = 10000 resamples of articles
-with replacement).** Design-effect arithmetic appears only in the sample-size section, for
-planning; it is never used for inference.
+Metrics live at different levels; inference must respect the nesting. **Every confidence
+interval this study reports is computed by article-level cluster bootstrap (B = 10000
+resamples of articles with replacement)**, via the single entry point
+`score_real_validation.py::cb`, which is called for the caption gates, letter-set accuracy,
+figure-bbox IoU, every panel-tier rate and median, every extraction-tier rate, the naive and
+central medians, the Bland-Altman bias and both limits of agreement, the Grubbs
+`sigma_M / sigma_G` ratio, and the oracle median. Design-effect arithmetic appears only in
+the sample-size section, for planning; it is never used for inference.
+
+**The exceptions, stated here and labelled again at the point of printing.** A blanket
+"all CIs are clustered" claim that the program does not implement is worse than no claim,
+so the list is exhaustive:
+
+- **The rule-of-three zero-event upper bound** (silent mislabel, arm-name error, sign flip)
+  is **not cluster-adjusted, and cannot be.** With 0 observed events every bootstrap
+  resample also has 0 events, so the bootstrap returns `[0, 0]` and carries no information.
+  The report prints the panel-level bound *and* the article-level bound and says in the
+  output that neither is a cluster bootstrap.
+- **`R_floor`** is printed as a point estimate with **no interval at all**.
+- Lines suffixed `_iid` (`captionCI_iid`, `ratio_MG_ci_iid`, `medianCI_iid`) are the naive
+  intervals, printed **only** as the labelled contrast that shows how much narrower they
+  would have been. They are never the reported interval.
+
+Selftest `S2b` measures the difference on a deliberately clustered sample: the cluster
+interval comes out **2.88x** the width of the Wilson interval it replaced. The i.i.d.
+intervals this plan previously described as clustered were, on the shipped code, roughly
+19-25% too narrow at the panel level and about 1.6x too narrow at the article level.
 
 ### 2.2 The three tiers, and why they have different sample sizes
 
 Detection GT is cheap (one box, one caption confirmation). Panel GT is moderate. Extraction GT
 is expensive and is additionally *capped* by the existence of a historical coded reading. So:
 
-| tier | annotate on | target N | cap |
-|---|---|---|---|
-| D | **every** figure on every page sampled from the PDFs, coded or not | >= 150 figures, >= 30 articles | none (labour only) |
-| P | a stratified sample of **compound** figures from the same PDFs | >= 180 panels / >= 55 figures | none (labour only) |
-| E | only panels with a historical coded reading: **355 available** (868 arm-values, 434 comparisons) | **>= 120 panels** (~290 arm-values); stretch 200 | hard: 355 |
+| tier | unit | annotate on | ORIGINAL target N | **ACHIEVABLE at LOCK** (worklist, 21.9 h) |
+|---|---|---|---|---|
+| D | **figure** | every figure on every page sampled from the PDFs, coded or not | >= 150 figures, >= 30 articles | **49 figures / 30 articles** |
+| P | **panel** | a stratified sample of **compound** figures from the same PDFs | >= 180 panels / >= 55 figures | **175 panels / 49 figures** |
+| E discrete | **panel** | only panels with a historical coded reading | >= 120 panels | **69 panels** |
+| E dispersion | **arm-value** | 2 per coded comparison | ~290 arm-values | **200 arm-values** |
+| end-to-end | **comparison** | coded comparisons | 145 comparisons | **100 comparisons** |
 
-Tier E is the only tier bounded by the dissertation, and the workbooks raise that bound from
-98 panels to **355**, so it is now bounded by Greg's time rather than by data. Tier E is
-therefore *sized to the precision it needs* (section 4.4) rather than to what exists: 120
-panels already delivers the discrimination every gate requires, and going beyond ~200 buys
-diminishing returns on every metric except the zero-event bounds.
+**The units are not interchangeable and the plan previously mixed them.** The ">= 120
+panels" target was derived in section 4.2 from the *silent-mislabel* arithmetic, which is a
+**Tier P** quantity -- and Tier P clears it comfortably at 175 LOCK panels. It was then
+also applied to **Tier E**, where the annotation unit is a coded panel and only 69 exist in
+the LOCK half of the worklist. Dispersion is measured on **arm-values**, of which there are
+two per comparison, so that channel is better powered than the sign-flip channel on the
+identical sample. Section 4.0 states what each unit buys.
+
+**Regenerate these numbers rather than trusting them:**
+
+```bash
+python3 score_real_validation.py --power     # prints the achievable-N table from worklist.json
+```
+
+Tier E is the only tier bounded by the dissertation. The workbooks raise the theoretical
+bound from 98 panels to **355**, so the binding constraint is now Greg's time and the
+worklist's own sampling frame, not the data: the sampled worklist reaches 86 coded panels
+in total and 69 in LOCK. Extending Tier E toward the 355-panel ceiling would require
+drawing more articles into the worklist, which is a sampling decision, not an annotation
+one.
 
 ### 2.3 DEV / LOCK split -- assigned NOW, by rule, before any figure is seen
 
@@ -316,14 +562,26 @@ Split at the **article** level (never the panel level: two panels of one figure 
 typeface, gutter and journal, so panel-level splitting leaks).
 
 ```
-h      = sha256("figure-extractor-real-validation-v1|" + Article_ID).hexdigest()
+key    = canonical_article(Article_ID)             # lowercase, strip every non-alphanumeric
+h      = sha256("figure-extractor-real-validation-v1|" + key).hexdigest()
 bucket = int(h[:8], 16) % 3
 split  = "dev" if bucket == 0 else "lock"          # ~1/3 dev, ~2/3 lock
 ```
 
 The salt string `figure-extractor-real-validation-v1` is fixed by this document. Anyone can
-recompute the assignment; it cannot be redrawn to suit a result. `score_real_validation.py
---split` prints the assignment and writes `split.json`.
+recompute the assignment from the salt and the article name alone; it is a pure function and
+it cannot be redrawn to suit a result. `score_real_validation.py --split` prints the
+assignment and writes `split.json`.
+
+**`canonical_article` is not cosmetic** (amendment A8). The corpus spells the same article
+both ways: `Garcia-Capdevila2009` in the coded reference, `GarciaCapdevila2009` in the
+worklist; likewise `Sampedro-Piquero2018`, `Mora-Gallegos2015`, `Del-Arco2007`. Hashing the
+raw name made an article's split depend on its typography, and exact-string membership in
+`PERMANENT_DEV` failed outright -- see the amendment for what that cost. One canonicalisation
+helper is used for `PERMANENT_DEV`, for the hash, for the `split.json` lookup, for the
+figure-id join between the GT store and the coded reference, and for the cluster-bootstrap
+cluster key. Selftests `S1b`-`S1d` assert it over every `PERMANENT_DEV` entry in fourteen
+spellings.
 
 **Permanently DEV, never LOCK, regardless of hash** -- these are already contaminated (they
 produced the asterisk-occlusion finding and the pilot numbers):
@@ -335,10 +593,14 @@ Bonaccorsi2013        (fig1b 1-day, 10-day, 20-day)
 Kazlauckas2011        (fig3A -- excluded pilot panel; the exclusion reasoning is known)
 ```
 
-Applied to the 171 articles of the coded reference this yields **71 DEV / 100 LOCK**
-(`split.json`, regenerate with `--split`). The DEV share exceeds one third by chance; the
-assignment stands as drawn, because re-drawing it after seeing the counts is exactly the
-degree of freedom the rule exists to remove.
+Applied to the 171 articles of the coded reference this yields **53 DEV / 118 LOCK**
+(`split.json`, regenerate with `--split`). Under the pre-canonicalisation rule it was
+71 / 100; moving the hash onto the canonical key reassigns 84 of the 171 (amendment A8,
+which records the measured impact and the reason a redraw was preferred to a patch). The
+assignment stands as drawn. Re-drawing it after seeing a *result* is the degree of freedom
+this rule exists to remove, and no result exists: no LOCK panel, and no DEV panel outside
+the four permanently-DEV pilot articles, has been annotated. Those four are unaffected by
+the redraw, because `PERMANENT_DEV` overrides the hash.
 
 **Rules of use, binding:**
 
@@ -466,9 +728,9 @@ calibration or panel cropping, not the dispersion channel, and the diagnosis cha
 | quantity | how | threshold |
 |---|---|---|
 | (a) `dispersion_naive_disagreement` -- median abs % `M` vs `G` | direct | **reported, never interpreted as accuracy**; context only |
-| (b) Bland-Altman on `log(SD_M / SD_G)`: bias and 95% LoA | mean and mean +/- 1.96 sd of log-ratios, back-transformed | **abs(bias) <= 5%; LoA within [-25%, +25%]** **GATE** |
-| (c) Grubbs `sigma_M / sigma_G` (and `sigma_M / sigma_D`) | section 1.3, reported as the `c`-corrected interval | **<= 1.5** **GATE**; target <= 1.0 |
-| (d) accuracy on the text-anchored oracle stratum (n ~ 52 rows / 17 articles) | vs the published number | **median <= 5%, p90 <= 15%** |
+| (b) Bland-Altman on `log(SD_M / SD_G)`: bias and 95% LoA, **BY CAP-LENGTH TERTILE** | mean and mean +/- 1.96 sd of log-ratios, back-transformed, computed within each tertile | **abs(bias) <= 5%; LoA within [-25%, +25%], evaluated per tertile** **GATE**. The pooled LoA is printed as a diagnostic and is NOT a result -- see below |
+| (c) Grubbs `sigma_M / sigma_G` (and `sigma_M / sigma_D`) | section 1.3, reported as the `c_DG`-corrected interval, with the bias direction stated as UNKNOWN and the oracle cross-check beside it | **<= 1.5** **GATE**; one of three estimates, assumption stated every time |
+| (d) accuracy on the verified oracle stratum. Corpus-wide n = 20 comparisons / 17 panels / 12 figures / 12 articles; **at LOCK n = 5 comparisons / 5 panels / 3 articles** (sec.1.4b) | vs the published number | **NOT ESTABLISHABLE -- reported descriptively only.** The pre-registered >=30-comparison bar is NOT MET (20). No threshold verdict is issued. Median and p90 are printed with the n at the analysed scope beside them. |
 
 plus, stratified by **cap length in pixels (tertiles)**:
 
@@ -477,16 +739,55 @@ plus, stratified by **cap length in pixels (tertiles)**:
 | shortest-cap tertile, median abs % error vs `G` | **<= 10%** **GATE** |
 | middle and longest tertiles | **<= 5%** |
 
+**Why the Bland-Altman LoA is reported by stratum and the pooled figure is not a result.**
+A limit of agreement is a `+/- 1.96 sd` interval and is only a 95% interval if the
+log-ratios are approximately normal, so the scorer prints a probability-plot correlation as
+a normality screen -- pooled and per tertile -- rather than assuming it. More importantly,
+the log transform is the right scale for a *multiplicative* error, and the dominant error
+here is not multiplicative: it is ~1 pixel of hand jitter on a cap whose length varies about
+tenfold across the corpus, so `sd(log-ratio)` still scales with `1/capLen` and logging does
+**not** stabilise the variance. A pooled LoA is therefore a mixture of a wide short-cap
+distribution and a narrow long-cap one, and describes neither: the pilot measured
+`[-41.9%, +59.1%]` in the shortest tertile against `[-5.0%, +4.4%]` in the longest. The
+gate is evaluated **within each cap-length tertile**. The pooled numbers remain in the
+output, labelled "DIAGNOSTIC ONLY, describes no stratum", because their absence would be
+harder to explain than their presence.
+
+**Dropped rows are counted, never absorbed.** Every log-ratio site -- Bland-Altman `M`-vs-`G`,
+Bland-Altman `M`-vs-`D`, the Grubbs triplets, the oracle accuracy -- silently discarded rows
+that could not form a ratio (a missing or non-positive reading, or a coded quantum above 1%).
+A metric computed on an unstated subset is not a metric. Each site now reports its own
+`nDropped` beside its `n`, split by reason where more than one applies, and the report prints
+both.
+
 and the **noise-floor ratio**, the number the project's thesis actually turns on:
 
 ```
-R_floor = median|M - G| / RC_intra ,   RC_intra = 1.96 * sqrt(2) * sigma_G_repeat
+                sd( log(SD_M / SD_G) )          <- how far the machine and the human differ
+R_floor  =  ---------------------------------
+                sd( log(SD_G1 / SD_G2) )        <- how far the human differs from HIMSELF
+
+numerator estimated robustly as  median|log(SD_M/SD_G)| / 0.6745
 ```
 
-`R_floor <= 1` means the machine's disagreement with the human sits inside the range two of the
-human's own readings differ by -- i.e. **the machine is indistinguishable from the human's own
-repeatability, and no accuracy claim in either direction is supportable from real figures.**
-That is a publishable finding and it is also the ML-detector no-go condition (section 8).
+**Both sides are difference-SDs on the same scale**, which is the whole point.
+`Var(M - G) = sigma_M^2 + sigma_G^2` and `Var(G1 - G2) = 2 sigma_G^2`, so `R_floor == 1`
+exactly when `sigma_M == sigma_G`. The classical-sd variant of the numerator is printed
+beside the robust one so the estimator choice is visible rather than assumed.
+
+`R_floor <= 1` means the machine's disagreement with the human sits inside the range two of
+the human's own readings differ by -- i.e. **the machine is indistinguishable from the
+human's own repeatability, and no accuracy claim in either direction is supportable from
+real figures.** That is a publishable finding and it is also the ML-detector no-go condition
+(section 8.2).
+
+> **Amendment A7.** As shipped, the numerator was a **median absolute** (`0.6745 sigma` for
+> a normal) and the denominator was a **repeatability coefficient** (`2.77 sigma`). Mixing
+> the two scales meant `R_floor > 1.0` required `sd(M-G) > 4.11 x sd(G1-G2)` -- the machine
+> had to be about four times worse than the human before the mandatory AND-conjunct of the
+> section-8.2 GO rule could fire. On a like-for-like sample the shipped formula returned
+> **0.24** where the corrected one returns **0.93** (selftest S3). The threshold of 1.0 is
+> unchanged and now means what this section has always said it means.
 
 **End-to-end (the test that matters).** See section 6.
 
@@ -512,118 +813,205 @@ count is not a zero rate.
 
 ---
 
-## 4. Sample size: what N buys what precision
+## 4. Sample size: what N buys what precision, and what it does NOT buy
 
 All figures below are computed in `score_real_validation.py --power` (Wilson intervals,
-two-proportion power at alpha = 0.05 / 80%, order-statistic median CIs, F-based variance-ratio
-CIs). Clustering is handled by cluster bootstrap at analysis time; the design effects here are
-planning aids only.
+two-proportion power at alpha = 0.05 / 80%, order-statistic median CIs, F-based
+variance-ratio CIs) and the achievable-N table is derived live from `worklist.json` and the
+canonical split. Clustering is handled by cluster bootstrap at analysis time (section 2.1);
+the design effects here are planning aids only.
 
-### 4.1 Proportions -- Wilson 95% CI half-width (pp)
+### 4.0 What the sample ACTUALLY yields, per tier, per split
+
+Previous versions of this section stated targets without checking them against the sample
+that exists. They are not all reachable, and the gate table below is written against what
+is (amendment A4). Regenerate with `--power`.
+
+| scope | hours | figures | articles | P-panels | E-panels | comparisons | arm-values |
+|---|---|---|---|---|---|---|---|
+| tiers 1-1, DEV | | 4 | 4 | 23 | 3 | 3 | 6 |
+| tiers 1-1, **LOCK** | | **10** | **10** | **41** | **19** | **30** | **60** |
+| tiers 1-1, all | 3.9 | 14 | 14 | 64 | 22 | 33 | 66 |
+| tiers 1-2, DEV | | 15 | 7 | 80 | 11 | 15 | 30 |
+| tiers 1-2, **LOCK** | | **28** | **17** | **110** | **45** | **66** | **132** |
+| tiers 1-2, all | 13.0 | 43 | 24 | 190 | 56 | 81 | 162 |
+| tiers 1-3, DEV | | 22 | 12 | 102 | 17 | 28 | 56 |
+| tiers 1-3, **LOCK** | | **49** | **30** | **175** | **69** | **100** | **200** |
+| tiers 1-3, all | 21.9 | 71 | 42 | 277 | 86 | 128 | 256 |
+
+**Which unit belongs to which metric, stated once so it is never mixed again:**
+
+| unit | how it is counted | which metrics use it |
+|---|---|---|
+| **figure** | one per worklist item | Tier D: bbox IoU, recall, precision, caption association, caption -> letter set |
+| **P-panel** | the caption's letter count (the **conservative** of the two available counts) | Tier P: per-panel IoU, exact count, label accuracy, **silent mislabel** |
+| **E-panel** | a panel carrying a historical coded reading | Tier E discrete: chart type, dispersion type, priority flip |
+| **comparison** | a coded control/intervention row | end-to-end golden diff, **effect sign flips** |
+| **arm-value** | 2 per comparison | **dispersion**: naive, Bland-Altman, Grubbs, oracle, arm-name binding |
+
+**Two P-panel counts exist and the conservative one is used.** The worklist records both
+`caption_letter_count` (what the caption enumerates) and `visual_tile_count_survey` (what
+a survey of the rendered figure counted). They disagree -- 277 vs 367 corpus-wide, 175 vs
+228 at LOCK -- and §8.8 of `PROTOCOL.md` tells the annotator to draw *the boxes she can
+see*, so the realised count will land between them and nearer the tile count. The tables
+above use the **caption count**, the smaller of the two, so no bar is cleared on the
+strength of the more generous number. The silent-mislabel gate clears either way
+(120 needed; 175 or 228 available), and §4.7's labour table uses the tile count because
+that is what the time model was built on -- which is why its per-tier panel numbers are
+larger than §4.0's.
+
+There are twice as many arm-values as comparisons, so **the dispersion channel is better
+powered than the sign-flip channel on the identical sample**. Reporting one N for "the
+extraction tier" hides that and was the source of the original ">= 120 panels" confusion:
+that number came from the *silent-mislabel* arithmetic, which is a P-panel quantity.
+
+### 4.1 Proportions -- Wilson 95% CI half-width (pp), at the achievable LOCK n
 
 | n | p=0.80 | p=0.90 | p=0.95 | p=0.98 | p=1.00 |
 |---|---|---|---|---|---|
-| 50 | 10.9 | 8.5 | 6.2 | 5.1 | 3.6 |
-| 98 | 7.9 | 6.1 | 4.6 | 3.3 | 1.9 |
-| 150 | 6.4 | 4.8 | 3.7 | 2.5 | 1.2 |
-| 200 | 5.5 | 4.2 | 3.1 | 2.1 | 0.9 |
+| 30 (T1-1 comparisons) | 13.9 | 11.1 | 9.7 | 8.0 | 5.7 |
+| 49 (T1-3 figures) | 11.1 | 8.7 | 6.3 | 5.2 | 3.6 |
+| 69 (T1-3 E-panels) | 9.4 | 7.2 | 5.3 | 3.8 | 2.6 |
+| 100 (T1-3 comparisons) | 7.8 | 6.0 | 4.5 | 3.2 | 1.8 |
+| 175 (T1-3 P-panels) | 5.9 | 4.4 | 3.4 | 2.2 | 1.1 |
+| 200 (T1-3 arm-values) | 5.5 | 4.2 | 3.1 | 2.1 | 0.9 |
 
 ### 4.2 Zero-event outcomes -- the rule of three
 
-The catastrophic classes (silent mislabel, arm-name error, sign flip) are expected to be zero.
-A zero count is only as strong as its denominator:
+The catastrophic classes (silent mislabel, arm-name error, sign flip) are expected to be
+zero. A zero count is only as strong as its denominator, and this bound is the **one
+quantity in the study that is not cluster-adjusted** (section 2.1): with 0 events every
+bootstrap resample also has 0 events. It is printed at both the panel level and the article
+level, and labelled as not cluster-adjusted in the report itself.
 
-| n with 0 events | 95% upper bound |
-|---|---|
-| 60 | 5.0% |
-| 98 | 3.1% |
-| 120 | 2.5% |
-| 150 | 2.0% |
-| 220 | 1.4% |
-
-**This is what sets the panel target, and it now also sets the Tier-E target.** To claim
-"silent mislabels <= 2.5%" the LOCK panel count must be **>= 120**. The same arithmetic
-applies to the arm-name and sign-flip gates: 0 events in the ~290 arm-values from 120
-Tier-E panels bounds arm-name error at **1.0%**, and 0 flips in the ~145 LOCK comparisons
-bounds the flip rate at **2.1%**. At the observed ~3.3 panels per compound figure that is ~37 LOCK
-compound figures, hence a total Tier-P target of **>= 180 panels / >= 55 figures** (2/3 in
-LOCK). Below 120 LOCK panels the silent-mislabel claim weakens to <= 5% and the panel gate in
-section 8 must be read at that weaker level -- stated now so the trade is made knowingly.
-
-### 4.3 Detectable transfer gaps (80% power, alpha = 0.05)
-
-| metric | synthetic n | real n | smallest detectable drop |
+| n with 0 events | 95% upper bound | | claim that needs it |
 |---|---|---|---|
-| panel exact count (fig-level, p_syn=0.951) | 41 figs | 55 figs | **20.9 pp** |
-| panel exact count | 41 figs | 100 figs | 18.6 pp |
-| panels IoU >= 0.9 (p_syn=0.881) | 159 | 150 | **12.2 pp** |
-| panel label accuracy (p_syn=1.000) | 159 | 150 | **4.9 pp** |
-| chart-type accuracy (p_syn=1.000) | 80 | 98 | **8.8 pp** |
-| series mark accuracy (p_syn=1.000) | 495 | 220 | **2.1 pp** |
+| 49 | 6.1% | | |
+| 60 | 5.0% | | sign flips <= 5% |
+| 69 | 4.3% | | |
+| 100 | 3.0% | | |
+| 120 | 2.5% | | silent mislabel <= 2.5%; sign flips <= 2.5% |
+| 175 | 1.7% | | |
+| 200 | 1.5% | | |
+| 300 | 1.0% | | arm-name error <= 1.0% |
 
-Read this honestly: **the figure-level exact-count `Delta` is the weakest number in the study.**
-With ~55 real compound figures we can only detect a drop of ~21 pp, so a real exact-count of
-80% would *not* be distinguishable from the synthetic 95.1%. The pre-registered response is
-not to pretend otherwise: the exact-count `Delta` is reported with its CI and explicitly
-labelled underpowered, and the decision rule in section 8 leans on the panel-level metrics
-(label accuracy, silent mislabel, IoU) which are adequately powered at n=150-200 panels.
+### 4.3 THE GATE TABLE, rewritten to the achievable bars
 
-### 4.4 Continuous outcomes
+This replaces the aspirational thresholds. Every row states its unit, the achievable LOCK n,
+and whether the pre-registered bar can be established **at all** on this sample. A gate
+marked *not establishable* is **reported descriptively only** -- the number and its interval
+are printed, and no PASS/FAIL verdict is issued against the original threshold.
+
+| gate | unit | LOCK n | original bar | achievable bar | status |
+|---|---|---|---|---|---|
+| **P: silent mislabel, 0 observed** | P-panel | 175 | UB <= 2.5% (needs 120) | **UB 1.7%** | **ESTABLISHABLE -- and stronger than pre-registered** |
+| **P: net figures saved > 0** | figure | 49 | > 0 | > 0 | ESTABLISHABLE (a sign test, not a rate) |
+| **E: sign flips, 0 observed** | comparison | 100 | UB <= 2.5% (needs 120) | **UB 3.0%** | **NOT ESTABLISHABLE at 2.5%.** Establishable at <= 5.0%; the section-8.1 no-transfer trigger (> 5%) is unaffected, the 8.3 ship criterion is reported descriptively |
+| **E: arm-name error, 0 observed** | arm-value | 200 | UB <= 1.0% (needs 300) | **UB 1.5%** | **NOT ESTABLISHABLE at 1.0%.** Establishable at <= 1.5% |
+| **E: arm-name accuracy >= 99%** | arm-value | 200 | >= 99% | half-width ~0.9 pp at p=1.00 | ESTABLISHABLE |
+| **D: caption association >= 95%** | figure | 49 | >= 95% | half-width 6.3 pp at p=0.95 -> CI ~[0.89, 0.99] | **NOT ESTABLISHABLE.** 95% is not distinguishable from 85% at n=49. Reported descriptively; the 8.1 no-transfer trigger (< 85%) is still usable because it is a much larger gap |
+| **D: caption -> letter set >= 95%** | figure | 49 | >= 95% | as above | **NOT ESTABLISHABLE**, same reason |
+| **E: chart-type accuracy >= 90%** | E-panel | 69 | >= 90% | half-width 7.2 pp -> CI ~[0.79, 0.96] | marginal; reported with its CI, verdict issued only if the CI clears 0.90 entirely |
+| **E: priority-flip <= 5%** | E-panel | 69 | <= 5% | UB 4.3% at 0 events | ESTABLISHABLE if 0 events; otherwise descriptive |
+| **E: dispersion-type flag recall >= 80%** | disagreeing E-panel | unknown (subset of 69) | >= 80% | **NOT ESTABLISHABLE** -- the denominator is the number of *disagreements*, which cannot be known in advance and will plausibly be single digits | descriptive only |
+| **E: Grubbs sigma_M/sigma_G <= 1.5** | arm-value | 200 | <= 1.5 | CI ~[0.78, 1.28] at effective n ~125 | ESTABLISHABLE against 1.5; **NOT** against 1.2 vs 1.0 |
+| **E: BA bias within +/-5%, LoA within +/-25%** | arm-value | 200, split 3 ways by cap tertile | pooled | ~67 per tertile | ESTABLISHABLE per tertile; **the pooled figure is not reported as a result** (section 3.3) |
+| **E: shortest-cap tertile median <= 10%** | arm-value | ~67 | <= 10% | median CI spans ~25% of the ordered sample | marginal; reported with its cluster-bootstrap CI |
+| **E: oracle accuracy median <= 5%, p90 <= 15%** | oracle comparison | **5** | n >= 30 | -- | **NOT ESTABLISHABLE.** The stratum has 20 comparisons corpus-wide and 5 in LOCK (section 1.4b). Descriptive only, always with its n at the analysed scope |
+| **E (tier target): >= 120 coded panels** | E-panel | 69 | >= 120 | -- | **NOT REACHABLE** on this worklist. The target was a P-panel figure applied to the wrong unit |
+
+### 4.4 Detectable transfer gaps (80% power, alpha = 0.05), at the achievable n
+
+| metric | synthetic n | LOCK n | smallest detectable drop |
+|---|---|---|---|
+| panel exact count (fig-level, p_syn=0.951) | 41 figs | **49 figs** | **21.5 pp** |
+| panels IoU >= 0.9 (p_syn=0.881) | 159 | **175** | **11.8 pp** |
+| panel label accuracy (p_syn=1.000) | 159 | **175** | **4.7 pp** |
+| chart-type accuracy (p_syn=1.000) | 80 | **69** | **9.7 pp** |
+| series mark accuracy (p_syn=1.000) | 495 | **200** | **2.2 pp** |
+
+Read this honestly: **the figure-level exact-count `Delta` is the weakest number in the
+study.** At 49 real compound figures we can only detect a drop of ~21.5 pp, so a real
+exact-count of 80% would not be distinguishable from the synthetic 95.1%. The pre-registered
+response is not to pretend otherwise: the exact-count `Delta` is reported with its
+cluster-bootstrap CI and explicitly labelled underpowered, and the decision rule in section
+8 leans on the panel-level metrics (label accuracy, silent mislabel, IoU), which are
+adequately powered at 175 LOCK panels.
+
+### 4.5 Continuous outcomes
 
 Median abs % error, distribution-free 95% CI as a share of the sample spread:
 
 | n | CI spans |
 |---|---|
 | 50 | ~30% of the ordered sample |
-| 98 | ~21% |
-| 150 | ~18% |
-| 220 | ~14% |
+| 100 | ~21% |
+| 175 | ~17% |
+| 200 | ~15% |
 
-Grubbs variance ratio `sigma_M / sigma_G`, 95% CI multiplier on the SD scale:
+Grubbs variance ratio `sigma_M / sigma_G`, 95% CI multiplier on the SD scale (i.i.d. n, and
+then at the effective n after a within-panel ICC of 0.4-0.6, design effect ~1.6):
 
-| n arm-values | SD-ratio CI |
-|---|---|
-| 50 | [0.75, 1.33] |
-| 98 | [0.82, 1.22] |
-| 150 | [0.85, 1.17] |
-| 220 | [0.88, 1.14] |
-
-Because coded rounding cancels out of `sigma_M` (section 1.5), **no arm-values are lost to
-the quantum filter** and the usable n is the full complement. At the **120-panel** Tier-E
-target (~290 arm-values) with a plausible within-panel ICC of 0.4-0.6 (design effect
-~1.5-1.7, effective n ~ 170-195), the SD-ratio CI is roughly **[0.86, 1.16]**. At the
-355-panel ceiling (868 arm-values, effective ~510) it tightens to ~[0.92, 1.09]. Both are
-sufficient to discriminate the section-8 gate value of 1.5 from parity, which is the
-discrimination the study needs; only the ceiling would resolve a 1.2 vs 1.0 difference, and
-that is the one thing worth spending extra annotation hours on if the ratio lands near 1. **Pre-specified:** no claim of the form "the machine is *more* precise
-than the human on real figures" will be made unless the upper end of the corrected
-`sigma_M / sigma_G` interval is below 1.0. Given the conservative bias of section 1.3, that
-bar is deliberately hard.
-
-### 4.5 End-to-end
-
-| quantity | n needed | available |
-|---|---|---|
-| sign flips 0 with UB <= 5% | 60 comparisons | **434 exist; ~145 at the 120-panel target** |
-| sign flips 0 with UB <= 2.5% | 120 comparisons | yes |
-| 3-level `rma.mv(~1 \| article/row)` non-singular | >= 2 articles with >= 2 rows | 171 articles |
-| multi-arm shared-control correction exercised | >= 20 affected rows | 194 multi-arm / 110 shared-control |
-
-### 4.6 Labour budget, stated so the effort is spent knowingly
-
-| tier | unit cost (est.) | N | hours |
+| n arm-values | i.i.d. SD-ratio CI | effective n | clustered SD-ratio CI |
 |---|---|---|---|
-| D | ~30 s / figure | 150-200 | 1.5-2 |
-| P | ~3 min / figure | 55-60 | 3 |
-| E | ~10 min / panel | 120 (of 355 available) | 20 |
-| E repeats (20%) | ~10 min / panel | 24 | 4 |
-| **total** | | | **~28-29 h** |
+| 60 (T1-1 LOCK) | [0.69, 1.44] | 38 | **[0.63, 1.60]** |
+| 132 (T1-2 LOCK) | [0.78, 1.28] | 82 | **[0.73, 1.36]** |
+| 200 (T1-3 LOCK) | [0.82, 1.22] | 125 | **[0.78, 1.28]** |
 
-Staged, with a hard stop at each stage: **Stage 1** = a DEV slice (~40 panels, ~8 h) --
-interface shakedown and tuning only. **Stage 2** = LOCK to >= 120 panels (~20 h) -- scored
-once. **Stage 3 (optional)** = extend LOCK toward the 355-panel ceiling, and only if the
-Grubbs ratio lands near 1.0 where the extra precision changes a conclusion. If Stage 2 cannot be completed, the study reports the reduced-N thresholds of section
-4.2 / 4.4 rather than the full ones, and says which claims were lost.
+Because coded rounding cancels out of `sigma_M` (section 1.5), no arm-values are lost to the
+quantum filter and the usable n is the full complement. At the full worklist the interval is
+**[0.78, 1.28]**: sufficient to discriminate the section-8 gate value of 1.5 from parity,
+which is the discrimination the decision rule needs, and **insufficient** to resolve 1.2 from
+1.0. Say the second part out loud in the write-up; it is the difference between "the machine
+is not much worse" and "the machine is as good", and this sample supports only the first.
+
+**Pre-specified:** no claim of the form "the machine is *more* precise than the human on
+real figures" will be made unless the upper end of the `c_DG`-corrected `sigma_M / sigma_G`
+interval is below 1.0 **and** the oracle-stratum cross-check of section 1.3 does not
+contradict it. The Grubbs interval alone cannot license that claim, because its bias
+direction is unknown: a shared reading difficulty would make the machine look better than it
+is, which is exactly the error this bar exists to prevent. At n = 5 LOCK oracle comparisons
+the cross-check is weak, so in practice this claim is **not available from this study** and
+the write-up should not go looking for it.
+
+### 4.6 End-to-end
+
+| quantity | n needed | achievable at LOCK |
+|---|---|---|
+| sign flips 0 with UB <= 5% | 60 comparisons | **100 -> yes** |
+| sign flips 0 with UB <= 2.5% | 120 comparisons | **100 -> NO** (achieved UB 3.0%) |
+| 3-level `rma.mv(~1 \| article/row)` non-singular | >= 2 articles with >= 2 rows | 30 LOCK articles -> yes |
+| multi-arm shared-control correction exercised | >= 20 affected rows | 194 multi-arm / 110 shared-control corpus-wide; the LOCK subset must be counted at analysis time and reported |
+
+### 4.7 Labour budget, stated so the effort is spent knowingly
+
+The worklist's own time model (`worklist.json.budget`) is the authority; these are its
+numbers, not an independent estimate.
+
+| tier | figures | P-panels | landmark panels | hours | cumulative |
+|---|---|---|---|---|---|
+| 1 | 14 | 95 | 11 | 3.9 | 3.9 |
+| 2 | 29 | 170 | 32 | 9.1 | 13.0 |
+| 3 | 28 | 102 | 49 | 9.0 | 21.9 |
+
+Staged, with a hard stop at each stage. **Stage 1** = the DEV slice -- interface shakedown
+and tuning only; across all three tiers that is 22 figures / 102 P-panels / 17 E-panels.
+**Stage 2** = the LOCK set, scored once: 49 figures / 175 P-panels / 69 E-panels /
+100 comparisons / 200 arm-values, and that is the whole confirmatory study.
+**Stage 3 (optional)** = extend the *worklist* -- not the annotation -- toward the
+355-panel Tier-E ceiling, which requires drawing more articles into the sampling frame and
+is a sampling decision. It is worth doing only if the Grubbs ratio lands near 1.0, where the
+extra precision would change a conclusion, or to add oracle rows, which section 11 identifies
+as the highest-value extension available.
+
+**If Stage 2 cannot be completed**, the study reports the reduced-N bounds of section 4.2 /
+4.5 rather than the full ones and states, gate by gate, which claims were lost.
+
+**Every precision claim in this document, and in the report the scorer prints, states
+whether it is DEV, LOCK, or both.** A number without that label is a defect: `--split-filter`
+defaults to `lock`, so an unlabelled figure quoted from a default run describes the
+confirmatory half only, and the same figure quoted from `--split-filter all` describes
+roughly twice as much data. Tier 1 alone splits 4 DEV / 10 LOCK figures.
 
 ---
 
@@ -745,7 +1133,7 @@ make and the strongest one the design supports.
 |---|---|---|
 | **Anchoring on the machine** | seeing a prediction pulls the click toward it | The annotation harness must run **machine-blind**: no detector output, no suggested boxes, no auto-panels, no pre-filled landmark values visible during annotation. The scorer refuses to score any GT record carrying `sawPrediction: true`. |
 | **Anchoring on the coded value** | Greg knows this dataset; recalling "16.55" makes the click confirm the memory | Coded values are **never displayed** during annotation. Annotation order is **randomized** (seeded, recorded). The harness records `durationSec` per panel; the scorer flags panels read in under 60 s as `fast-read` and reports the dispersion metrics with and without them. |
-| **Recognition is unavoidable** | he will recognise his own dissertation figures; full blinding is impossible | Do not pretend otherwise. Report the **provenance stratum** (`text-anchored oracle` vs `figure-digitized`) and the DEV/LOCK split separately, and state the residual risk in the limitations. The Grubbs decomposition is partially protected: recall-driven convergence of `G` toward `D` increases `c`, which *inflates* the estimated `sigma_M` -- again conservative against the machine. |
+| **Recognition is unavoidable** | he will recognise his own dissertation figures; full blinding is impossible | Do not pretend otherwise. Report the **provenance stratum** (`text-anchored oracle` vs `figure-digitized`) and the DEV/LOCK split separately, and state the residual risk in the limitations. Recall-driven convergence of `G` toward `D` raises `c_DG`, which pushes the Grubbs `sigma_M` UP -- but `c_DM`/`c_GM` push it down and the net direction is unknown (sec.1.3). Do not present this as protection; present it as an unsigned bias, and read the oracle cross-check. |
 | **Fatigue** | later panels in a session are read less carefully | Record `session` and `positionInSession`. Pre-specified test: Spearman rho of `abs(log(G/D))` against `positionInSession`. If abs(rho) > 0.2 at p < 0.05, report the metrics additionally with a session-position covariate and cap sessions at the observed breakpoint. Recommended cap: 20 panels / session. |
 | **Learning / drift** | early panels read differently from late ones | Repeats are drawn **uniformly across the whole annotation timeline**, not front-loaded. Pre-specified test: Spearman rho of `abs(log(G/D))` against global annotation index. |
 | **Intra-rater repeat contamination** | he remembers the panel he annotated last week | Repeats scheduled **>= 14 days** after the first read, presented under a **different anonymized id**, in randomized order among fresh panels. The harness must not reveal that a panel is a repeat. |
@@ -813,6 +1201,13 @@ dispersion is 4-9% synthetic and 3.67% median / 18.1% worst on the real pilot, c
 short caps and asterisk-occluded caps -- exactly what a sub-pixel specialist trained to ignore
 significance glyphs would remove.
 
+`R_floor` is the corrected, like-for-like ratio of section 3.3 (amendment A7): the SD of the
+machine-vs-human log difference over the SD of the human's own test-retest log difference,
+so `> 1.0` genuinely means "the machine's error exceeds the human's own repeatability". It
+is evaluated mechanically and appears in the report's gate table
+(`E: R_floor = sd(logM/G)/sd(logG1/G2)`), with selftests S3/S3b/S3c asserting that it reads
+1.0 at parity, rises above 1 when the machine is worse, and is actually wired into the gate.
+
 **The `R_floor > 1.0` conjunct is a hard no-go, and it is the honest part of this rule.** If
 the machine's disagreement with the human is no larger than the human's disagreement with
 himself, then **the residual error is not measurable against any available reference, and a
@@ -862,6 +1257,13 @@ cited, on the **synthetic** benchmark against R's exact descriptives. The real-f
 establishes **transfer and interchangeability**. Keeping those two sentences apart is the
 study's main methodological contribution and the report prints both, adjacent, every run.
 
+The 20-comparison oracle stratum of section 1.4b does not change this. It is a descriptive
+result on 17 panels selected by a procedure that can only find codings that were already
+right, in 12 papers that happened to print their numbers -- and only 5 of those comparisons,
+in 3 articles, fall inside LOCK. It licenses "on these panels,
+the machine's read differed from the published value by X"; it does not license a
+comparative claim about humans, and it does not generalise to the other 400 comparisons.
+
 ---
 
 ## 9. The scorer and its self-test
@@ -896,15 +1298,39 @@ D3  HUMAN-JITTER CONTROL  -> machine EXACTLY right, human jittered:
                                                                <- proves the section-1 distinction
 D4  Grubbs recovery       -> on simulated data with known sigma_D, sigma_G, sigma_M, the
                              estimator recovers all three within tolerance
-D5  shared-person bias    -> injecting cov(e_G, e_D) = c inflates Grubbs sigma_M by ~c,
-                             confirming the conservative direction claimed in section 1.3
+D5  c_DG alone           -> injecting cov(e_G, e_D) = c inflates Grubbs sigma_M by ~c.
+                             This is HALF the story and is labelled as such.
+D5b ANTI-CONSERVATIVE    -> a difficulty component SHARED by D, G and M (an occluded cap;
+                             a 6-px error bar) makes Grubbs UNDERSTATE sigma_M -- measured
+                             at -40% against a known truth of 0.100 -- while the ORACLE
+                             estimate recovers 0.100 exactly.
+                                          <- the failure mode that killed "conservative
+                                             against the machine" (sec.1.3), kept executable
+                                             so it cannot quietly come back
+S1  split determinism    -> two draws agree
+S1b permanent-DEV        -> EVERY PERMANENT_DEV article is DEV in EVERY spelling
+                             (14 spellings of 4 articles)
+S1c spelling invariance  -> `Garcia-Capdevila2009` and `GarciaCapdevila2009` -- and the
+                             space/underscore/case variants -- land in the SAME bucket
+S1d canonicalisation     -> strips typography, never identity
+S2  CI provenance        -> the CIs the report prints are the cluster bootstrap the plan
+                             promises, not the i.i.d. interval
+S2b clustering bites     -> on a deliberately clustered sample the cluster interval is
+                             2.88x the width of the Wilson interval it replaced
+S3  R_floor units        -> sigma_M == sigma_G gives R_floor ~ 1.0 (the shipped formula
+                             returned 0.24 on the same data)
+S3b R_floor direction    -> sigma_M = 3 x sigma_G gives R_floor 2.28
+S3c R_floor is gated     -> the sec.8.2 AND-conjunct appears in the gate table
 X1  missing prediction    -> scored as a total miss, no crash
 X2  missing input store   -> graceful skip, non-zero information, no crash
 ```
 
 `P3` and `E3` are the tests that matter most: both are silent catastrophic classes that every
 geometric or magnitude metric reports as perfect. `D3` is the test that encodes this document's
-central methodological claim as an executable assertion.
+central methodological claim as an executable assertion, and **`D5b` is the test that keeps
+the plan honest about the claim it had to withdraw**: it reproduces, against a known truth,
+the case in which the Grubbs estimate is anti-conservative. A guarantee that survives only in
+prose is a guarantee nobody can check.
 
 ---
 
@@ -1064,9 +1490,13 @@ Built by `make_coded_reference.py` from
   "dataSource": "Figure 5B", "figureNumber": "5", "panelLetter": "B",
   "figureId": "Aykan2024_fig5", "figureDerived": true,
   "extractionMethod": "Reported in text and figure",
-  "oracleClaimed": true,        // the LABEL claims a text source
-  "oracleVerified": "NOT_FOUND",// verify_oracle.py verdict; the only thing that counts
-  "isOracle": false,            // true ONLY on TEXT_CONFIRMED -- see sec.1.4b
+  "oracleClaimed": true,        // the LABEL claims a text source -- NOT a selector, sec.1.4b
+  "oracleVerified": "NOT_FOUND",// verify_oracle_v2.py verdict; the only thing that counts
+  "isOracle": false,            // true ONLY on a CONFIRMED_* verdict -- see sec.1.4b
+  "oracleSource": null,         // body_text | caption | in_figure_vector | in_figure_ocr
+  "oracleMeanConfirmed": false, // the two channels are recorded separately: a panel whose
+  "oracleVarianceConfirmed": false, //  mean is printed but whose SEM is not still counts
+                                //  for central tendency and not for dispersion
   "direction": "higher better", "design": "between-groups",
   "controlArmName": "SE+Vehicle", "intervArmName": "EE+Vehicle",   // series->arm reference
   "multiArm": true, "nArms": 2, "sharedControl": false, "vifMultiarm": 1.0,
@@ -1108,15 +1538,26 @@ Stated now so they are not discovered as objections later.
    Generalisation to other fields, and to figures produced by other plotting toolchains, is
    unestablished. The `journal` and `origin` strata are the only evidence the study can offer
    on this and they are descriptive.
-6. **The oracle stratum is currently 1 confirmed comparison, not the ~52 the labels
-   suggested** (section 1.4b). Until `verify_oracle.py` is re-run over the full
-   171-article PDF set there is effectively **no real-figure accuracy stratum**, and the
-   study's dispersion claim is an agreement claim. If the stratum does materialise it will
-   still be non-random -- papers that print their numbers are plausibly better-reported
-   papers -- and carries that selection caveat.
-7. **PDF coverage is the binding constraint on the oracle check**: 104 of 138 candidate
-   comparisons could not be checked because the article's PDF is not yet resolved. That is
-   a resolvable engineering gap, not a measurement one.
+6. **The oracle stratum does not clear its pre-registered bar.** 20 confirmed comparisons /
+   17 panels / 12 figures / 12 articles corpus-wide, against a bar of >= 30 comparisons
+   across >= 10 articles -- and only **5 comparisons in 3 articles inside LOCK** (section
+   1.4b). It is reported descriptively, never with a threshold verdict, and always with the
+   n at the scope being analysed. The stratum is non-random by construction -- it was found
+   by searching for the coded value, so it selects panels the coder read accurately, in
+   papers that print their numbers -- and carries that caveat wherever it is reported.
+   Its one irreplaceable role is as the cross-check on the Grubbs independence assumption
+   (section 1.3), and at n = 5 LOCK comparisons that cross-check is weak. **This is the
+   single most damaging gap in the design**: the plan's primary dispersion estimator has an
+   assumption the plan cannot verify, and the only instrument that could verify it is
+   underpowered. Adding oracle rows -- by widening the frame to the 9 worklist-eligible
+   oracle articles, or by hand-verifying `PARTIAL_MEAN` rows -- is the highest-value
+   extension available and costs no annotation time.
+7. **No value is printed inside any figure in this corpus.** 4766 numeric tokens were read
+   out of 242 figure interiors (68 vector, 174 OCR) and not one forms a printed
+   `mean +/- variance` pair; they are axis ticks, group labels and sample sizes
+   (section 1.4b). The within-figure accuracy oracle -- truth and measurand in the same
+   image -- does not exist here at any n. The 13 remaining unresolved PDFs are the only
+   residual coverage gap, down from 104.
 8. **~94% of the corpus is SEM.** The study will say a great deal about the short-cap
    regime and comparatively little about SD-plotted figures (~50 arm-values), which are
    the easier case. Generalising the dispersion result to SD-plotted literature is not
@@ -1126,8 +1567,304 @@ Stated now so they are not discovered as objections later.
 
 ## 12. Amendments
 
-None. Any change after LOCK is scored goes here with a date, a reason, and a note of which
-results become post hoc.
+Any change after LOCK is scored goes here with a date, a reason, and a note of which results
+become post hoc.
+
+**Status of everything below: PRE-DATA.** No LOCK panel has been annotated. No DEV panel
+outside the four permanently-DEV pilot articles has been annotated. **No result of any kind
+exists**, so nothing here can have been chosen to suit an outcome and nothing below is
+post hoc. They are recorded as amendments anyway, because a pre-registration whose changes
+are not logged is not a pre-registration.
+
+---
+
+### A1 -- `annotationMode` is enforced for BOTH raters. 2026-07-27.
+
+**What changed.** `rvcommon.annotation_mode_violations()` (new, `rvcommon.py`) is the single
+implementation of the check; `ingest_annotations.py` calls it on both the Stage A and Stage B
+exports (`cmd_ingest`), alongside the existing `blinding_violations`. `PROTOCOL.md` §1.3
+lists `Annotation mode` as a REQUIRED setting with a one-minute verification step; §4 rule 1
+and §12 are rewritten as implemented rather than proposed.
+
+**Why.** `annotationMode` was implemented in the tool but the protocol still described it as
+"not yet implemented -- do not edit figure-extractor.html", the settings list did not mention
+it, and `ingest_annotations.py` contained zero references to it -- while
+`prepare_dan_session.check_exports` had always hard-rejected a second-rater export without
+the stamp. The two readings being compared were therefore blinded by different mechanisms:
+one mechanical, one by good intentions. A difference between the raters could then have been
+a difference in how they were blinded, which is a threat to the only comparison the second
+rater exists to supply.
+
+### A2 -- "conservative against the machine" is WITHDRAWN. 2026-07-27.
+
+**What changed.** Section 1.3 now states the full algebra
+`E[sigma_M^2] = sigma_M^2 + c_DG - c_DM - c_GM`; every unqualified claim that the Grubbs
+estimate is conservative, a bound, or biased against the machine has been deleted from this
+document and from `score_real_validation.py`'s output and docstring. Grubbs is demoted from
+"the primary inferential claim" to **one of three estimates, with its assumption stated at
+every appearance**. The oracle stratum is elevated to the cross-check, with a pre-specified
+reading rule for what Grubbs-vs-oracle disagreement means. New selftest **D5b** reproduces
+the anti-conservative case against a known truth.
+
+**Why.** The derivation kept only `+ c_DG` and concluded the estimate could only be too
+large. `c_DM` and `c_GM` are not zero -- section 7 lists shared misreading of the same
+ambiguous cap as a live threat -- and they enter with a minus sign. Measured in D5b: a
+shared-difficulty component makes Grubbs return `sigma_M = 0.060` against a true 0.100, a
+40% understatement, while the oracle estimate recovers 0.100 exactly. The bias direction is
+**unknown** without assuming the machine's errors are uncorrelated with the humans', and a
+guarantee that is false in the dangerous direction is worse than no guarantee.
+
+### A3 -- every reported CI is actually a cluster bootstrap. 2026-07-27.
+
+**What changed.** `cluster_bootstrap` had **zero call sites** and `BOOTSTRAP_B` was unused,
+while section 2.1 claimed in bold that all CIs used it and `--power` printed the same claim.
+Added `cb` / `cb_rate` / `cb_median` (`score_real_validation.py`) and wired them into every
+reported interval: caption association, letter set, figure IoU, all panel-tier rates and
+medians, all extraction-tier rates, naive and central medians, Bland-Altman bias and both
+limits, the Grubbs ratio, the oracle median. Default `B` is now `BOOTSTRAP_B` (10000). The
+report ends with a CI-provenance block listing the exceptions. Selftests S2/S2b.
+
+**Why.** Shipped intervals were i.i.d. and roughly 19-25% too narrow at the panel level and
+1.6x too narrow at the article level. **No statement may survive that the code does not
+implement**: the rule-of-three zero-event bound genuinely cannot be clustered (with 0 events
+the bootstrap returns [0, 0]), so it is now labelled "not cluster-adjusted" at the point of
+printing, with both the panel-level and article-level bounds shown, and the blanket claim in
+section 2.1 has been replaced by an exhaustive list.
+
+### A4 -- the gate table is rewritten to the ACHIEVABLE N. 2026-07-27.
+
+**What changed.** New section 4.0 (achievable N per tier per split, generated live by
+`--power` from `worklist.json` and the canonical split) and a rewritten section 4.3 gate
+table. Units are stated per metric: figures for Tier D, P-panels for decomposition, E-panels
+for Tier E discrete, comparisons for the end-to-end, **arm-values for dispersion**. Section
+2.2's target table gains an ACHIEVABLE column. Every gate that cannot be established at the
+achievable N is marked **"not establishable -- reported descriptively only"**.
+
+**Why.** The plan required >= 120 LOCK panels and the full worklist (21.9 h) yields 69 LOCK
+E-panels. The ">= 120" figure came from the *silent-mislabel* arithmetic, a P-panel
+quantity -- and Tier P clears it at 175 LOCK panels. Applying one N to both units hid a
+reachable bar behind an unreachable one. Not establishable at the achievable N: sign flips
+at UB <= 2.5% (100 comparisons gives 3.0%), arm-name error at UB <= 1.0% (200 arm-values
+gives 1.5%), both caption gates at 95% (49 figures cannot separate 95% from 85%), the
+dispersion-type flag-recall gate (its denominator is unknowable in advance), and the oracle
+accuracy gate (section 1.4b). Newly *stronger* than pre-registered: silent mislabel, at
+UB 1.7%.
+
+Also: `--split-filter` defaults to `lock`, so published "14 figures / 95 panels" precision
+claims were describing Tier 1 in full while the confirmatory set is 10 figures / 41 panels.
+Every precision claim in this document now states whether it is DEV, LOCK or both.
+
+### A5 -- the oracle stratum is reported at the SCOPE being analysed. 2026-07-27.
+
+**What changed.** `verify_oracle_v2.py` emits an oracle-size table at every scope the study
+analyses (corpus, worklist tiers 1-1/1-2/1-3, each split by DEV/LOCK), and
+`score_real_validation.py` prints the joined stratum's size at the run's own
+`--split-filter` immediately beneath the oracle accuracy line, with an explicit instruction
+not to quote the corpus-wide count beside it. Section 1.4b carries the same table.
+
+**Why.** The >= 30 / >= 10 bar was evaluated corpus-wide, but the study analyses the
+worklist. The corpus-wide stratum intersects Tier 1 at 4 comparisons in 2 articles and the
+full worklist at 5 comparisons in 3 articles, all in LOCK. A Tier-1 result citing the
+corpus-wide count would overstate its evidence by roughly fivefold.
+
+### A6 -- the oracle count is corrected from 33 to 20, and the null is re-run. 2026-07-27.
+
+**What changed.** Four things, in `verify_oracle_v2.py`:
+
+1. **The pair guard is restored** (`match_arm`): the printed MEAN token must be informative
+   in its own right. It had been relaxed to "mean OR variance" specifically so that
+   `Bakeche2020`'s printed `(3 +/- 0.81)` would confirm; that confirmation is false in four
+   ways and the relaxation bought no true positives. Cost: 1 row.
+2. **A committed hand-adjudication ledger** (`ADJUDICATION`), applied before anything is
+   counted or written, disabled by `--no-adjudication`, reproducing every rejection with the
+   sentence that decides it. It may only REJECT, never promote. **12 of 32 rows rejected**
+   for cross-cohort, cross-panel, cross-outcome or wrong-arm mismatches, each verified
+   against the source PDF.
+3. **The permutation null is re-run at `--null-reps 1000`** (was 3 -- the shipped FDR rested
+   on two events) against four donor schemes, with a magnitude-matched cross-article donor
+   as the primary. Reported FDR on the corrected count: **6.3%**.
+4. **Panels are counted as `(article, figureId, panelLetter)`**; the previous helper keyed on
+   `figureId` alone, so "21 panels" was really 21 figures. Comparisons, panels, figures and
+   articles are now four separate columns. `--dry-run` no longer writes the report (it wrote
+   `oracle_report_v2.json` outside the guard).
+
+**Result: 20 comparisons / 17 panels / 12 figures / 12 articles. The pre-registered bar of
+>= 30 comparisons is NOT MET.** The oracle stratum is demoted to a descriptive result.
+
+**An honest correction to the objection that prompted this.** The claim was that
+within-article donors collide 17.8x more often than corpus-wide ones, implying an FDR near
+68%. Measured at 1000 reps: the unrestricted within-article rate is indeed ~25x the
+corpus-wide one, **but that comparison is not a null** -- a donor drawn from the same paper
+very often has its own values printed there, so it confirms because it is genuinely printed.
+Removing that tautology (magnitude-matched donors from a different paper) gives 0.298% against
+the corpus-wide 0.343%, i.e. **0.9x**. The corpus-wide null was not the source of the error.
+The relaxed guard and twelve semantic mismatches were, and those are what the correction
+removes.
+
+### A7 -- `R_floor` is rescaled so 1.0 means what it says. 2026-07-27.
+
+**What changed.** `R_floor = sd(log(SD_M/SD_G)) / sd(log(SD_G1/SD_G2))`, both sides on the
+difference-SD scale, numerator estimated robustly as `median|log ratio| / 0.6745`; the
+classical-sd variant is printed beside it. Section 3.3 restated; the conjunct is now
+evaluated mechanically in the gate table. Selftests S3/S3b/S3c.
+
+**Why.** The shipped formula divided a **median absolute** (`0.6745 sigma`) by a
+**repeatability coefficient** (`2.77 sigma`), so `R_floor > 1.0` demanded `sd(M-G) > 4.11 x
+sd(G1-G2)` -- the machine had to be about four times worse than the human before the
+mandatory AND-conjunct of the section-8.2 GO rule could fire. On like-for-like data the old
+formula returns 0.24 where the new one returns 0.93. The threshold of 1.0 is unchanged; only
+the scale is fixed, and the GO rule now reads correctly.
+
+### A8 -- article keys are canonicalised everywhere. 2026-07-27.
+
+**What changed.** `score_real_validation.canonical_article()` (lowercase, strip every
+non-alphanumeric character) is the single helper, used for `PERMANENT_DEV` membership, for
+the split hash, for the `split.json` lookup (which now also carries a `byCanonicalKey`
+index), for the figure-id join between the GT store and the coded reference, and for the
+cluster-bootstrap cluster key. Selftests S1b-S1d cover every `PERMANENT_DEV` entry in
+fourteen spellings and assert that hyphen, space, underscore and case never change a bucket.
+
+**Why.** `PERMANENT_DEV` held `GarciaCapdevila2009` while the coded reference writes
+`Garcia-Capdevila2009`, and membership was tested with exact `in`. The result: a
+**pilot-contaminated article -- one that produced the asterisk-occlusion finding and that
+both raters see as a calibration figure -- was sitting in LOCK.** Three worklist articles
+(`GarciaCapdevila2009`, `MoraGallegos2015`, `SampedroPiquero2018`) also had no split
+assignment at all, because the worklist spells them without hyphens and `split.json` with.
+
+**Impact, stated because it is the uncomfortable part.** Hashing the canonical key rather
+than the raw name reassigns **84 of 171 articles**, changing the corpus split from 71 DEV /
+100 LOCK to **53 DEV / 118 LOCK**, and the full-worklist LOCK yield from 55 to 69 E-panels.
+The alternative -- canonicalising only for membership and lookups while hashing the raw
+name -- would have moved one article, but it makes the split a function of which spelling
+the coded reference happened to use, i.e. data-dependent rather than a pure function of the
+published salt. The pure function was preferred because section 2.3's whole claim is that
+anyone can recompute the assignment. The four permanently-DEV articles are unaffected
+(`PERMANENT_DEV` overrides the hash), so no pilot-contaminated article moved into LOCK, and
+no annotation exists against either draw.
+
+### A9 -- ingest refuses a destructive re-ingest. 2026-07-27.
+
+**What changed.** `ingest_annotations.py::cmd_ingest` compares the session's existing records
+against the new ones, names every panel that would disappear, and refuses unless `--reingest`
+is given. `PROTOCOL.md` §10 documents it.
+
+**Why.** Re-ingest silently replaced every record for a session, so a `--allow-problems` run
+after a clean one destroyed the panels that no longer validated: demonstrated 4 records ->
+3, with no warning, against a protocol that promises "nothing is written until it all
+passes". A panel that ingested cleanly before and does not now is a regression, not a
+correction.
+
+### A10 -- the zoom floor is reconciled between screen and image pixels. 2026-07-27.
+
+**What changed.** `persistDig()` exports `view`, `scale` and `k = scale * zoom`, and every
+point records the `k` in force when it was clicked; the digitizer header prints `k` live;
+`jitter_report` reads it and the audit prints image px, `k`, **screen px** and an explicit
+RE-PICK verdict per landmark. New `PROTOCOL.md` §7.2 states the arithmetic.
+
+**Why.** The rule was written in SCREEN pixels ("at least ~100 screen pixels ... do not argue
+with it") and measured in IMAGE pixels. The 1:1 grating guarantees `k >= 1`, so the
+image-pixel floor was conservative rather than wrong -- but it over-flagged landmarks picked
+at high magnification and the artifact contained no way to tell. With `k` recorded the audit
+computes the screen span instead of assuming it.
+
+### A11 -- `suggestSubfiguresLegacy` is guarded by `annotationMode`. 2026-07-27.
+
+**What changed.** `figure-extractor.html` -- the legacy XY-cut entry point now refuses in
+annotation mode, in the same result shape `detectPanels` uses.
+
+**Why.** It was unguarded, and because it returns bare boxes it writes no `panelDetection`
+and stamps no `captionSource: 'panel-split'`. Boxes taken from it left **no fingerprint at
+all**, so the after-the-fact blinding check could not see them. An unguarded API producing
+untraceable machine suggestions is strictly worse than the guarded one.
+
+### A12 -- stale `localStorage` can no longer override a rebuilt session. 2026-07-27.
+
+**What changed.** `figure-extractor.html::loadArticleAnnotations` honours
+`"forceCleanLoad": true` in a session's `annotations.json` by discarding the cached copy and
+saying so; where the cache still wins it now raises a visible toast naming the conflict.
+
+**Why.** `localStorage` is keyed by article name and a harness reuses names across rebuilds,
+so a rebuilt session silently served the previous run's boxes over the freshly written file.
+The rater then annotates on top of work that is no longer the task.
+
+### A13 -- Bland-Altman limits of agreement are reported BY STRATUM. 2026-07-27.
+
+**What changed.** LoA and bias are computed within each cap-length tertile, with a
+probability-plot normality screen per stratum; the pooled figure remains, labelled
+"DIAGNOSTIC ONLY, describes no stratum". Section 3.3 restated. Every log-ratio site now
+reports its dropped-row count.
+
+**Why.** There was no normality check at all behind a `+/- 1.96 sd` interval, and the log
+transform does not stabilise the variance under a pixel-additive error: `sd(log-ratio)`
+still scales with `1/capLen`, so a pooled LoA is a mixture of a wide short-cap distribution
+(`[-41.9%, +59.1%]` on the pilot) and a narrow long-cap one (`[-5.0%, +4.4%]`) and describes
+neither.
+
+---
+
+### Second-rater amendments (owned by `SECOND-RATER-PROTOCOL.md`, logged here)
+
+### A-H2-01 -- calibration round extended to Stage B. 2026-07-27.
+
+`prepare_dan_session.cmd_calibrate` built only Stage A; it is now a two-phase command
+(`calibrate`, then `calibrate --stage-b` once both raters' Stage-A exports return).
+`SECOND-RATER-PROTOCOL.md` §4 and the new `PROTOCOL.md` §4b are written against it, with the
+convention table split into Stage-A and Stage-B columns.
+
+**Why.** Every convention the round exists to settle -- bar top, cap centre line vs upper
+edge, asterisk vs cap, what counts as occluded -- is a **Stage B** landmark quantity. A
+Stage-A-only warm-up reconciles the boxes and none of the measurements, and the tool
+contradicted the protocol text that already told both raters to do Stage B.
+
+### A-H2-02 -- the second rater's handoff is self-contained. 2026-07-27.
+
+`cmd_pack` now ships `figure-extractor.html` and a new dependency-free `dan_timer.py` at the
+archive root plus a generated `HANDOFF.txt`, and prints the tool's sha256.
+`SECOND-RATER-PROTOCOL.md` §3/§6/§12 rewritten so no path on Greg's machine appears in any
+instruction addressed to the rater.
+
+**Why.** The protocol told the rater to unzip to his own machine and then open the tool and
+the timer from Greg's WSL and Windows paths, which do not exist for him. Recording the tool
+hash makes the version he annotated with provable rather than recalled.
+
+### A-H2-03 -- the H2 id stream and item order moved out of the source. 2026-07-27.
+
+`SEED_DAN = 20260728` removed; the seed is drawn once from `os.urandom` into the untracked
+`dan/keys/seed.json`, and the item order is drawn from it via `interleave_by_stratum`.
+`SECOND-RATER-PROTOCOL.md` §2 restated: blinding is primarily **procedural**, the
+cryptographic half is secondary, and the old claim is recorded as having been false.
+
+**Why.** With the seed, the subset and `dan_anon_id` all committed, `anon_id -> item_id` was
+replayable in about a dozen lines -- and because an anon id embeds its position, a fixed
+source order gave the mapping away even without the seed. `attack_dan_ids.py` demonstrates
+7/7 recovery before and 0/7 after. The selection rule C1..C5 and the realised subset stay
+public: they are the pre-registration.
+
+**Operational consequence, and it must be acted on:** `dan/keys/plan.key.json` on disk was
+generated by the old code and is crackable. Delete `dan/plan.json` and `dan/keys/plan.key.json`
+and re-run `plan` before any session is handed out. Rebuild
+`dan/calibration/DAN-C01-stageA.zip` with `calibrate --force`; the existing one predates
+A-H2-02 and contains neither the tool nor the timer.
+
+### A-H2-04 -- the pre-registered Stage-B cap made deterministic. 2026-07-27.
+
+`_cap_stage_b` breaks ties with a sha256-derived index instead of the builtin `hash()`.
+
+**Why.** Python salts `hash()` on `str` per process, so two runs of the same command kept
+different panels and `shutil.rmtree`d different losers -- a "pre-registered" cap whose
+realised set depended on `PYTHONHASHSEED`. Demonstrated over four seed values: the old code
+produced four different scored sets, the new code one.
+
+### A-H2-05 -- the `extractable` (abstention) agreement channel made joinable. 2026-07-27.
+
+`inter_rater.py` rebuilds a `(item_id, panel letter)` identity for **any** record, joins on
+it, and reports one-sided panels as `absent` rather than dropping them; the reader guard now
+tests the readers present.
+
+**Why.** `ingest_annotations.py` writes a non-extractable panel with no `item_id`, so
+abstentions never reached the join: the one channel `Lyst2012_F7` was selected to test could
+report agreement but never disagreement, and a single abstention in the second rater's store
+would in fact have crashed the script. `ingest_annotations.py` was not modified.
 
 ---
 
@@ -1138,7 +1875,11 @@ results become post hoc.
 | `ANALYSIS-PLAN.md` | this pre-registration |
 | `synthetic_reference.json` | frozen synthetic comparators + every pre-specified threshold, so `Delta` is computed against a citable artifact rather than a remembered number |
 | `make_coded_reference.py` | workbooks (198 `.xlsm`) -> `coded/coded_reference.json`; per-arm variance TYPE, arm names, VIF, rounding quantum. `--stats` prints the population table |
-| `verify_oracle.py` | the mechanical oracle test of section 1.4b; sets `isOracle` only on TEXT_CONFIRMED |
+| `verify_oracle.py` | superseded by `verify_oracle_v2.py`; kept for the v1 body-text-only number quoted in sec.1.4b |
+| `verify_oracle_v2.py` | the mechanical oracle test of section 1.4b: body text + caption + inside-the-figure (vector spans and OCR); four permutation nulls at 1000 reps; the committed hand-adjudication ledger (`ADJUDICATION`); sets `isOracle`, `oracleSource` and the two channel flags. Also builds `coded/pdf_map_full.json` (168/171 articles resolved) from Zotero |
+| `dan_timer.py` | dependency-free stopwatch shipped inside the second rater's zip; writes `timing.jsonl` on his machine (amendment A-H2-02) |
+| `attack_dan_ids.py` | the 12-line replay attack on the second rater's anon-ids, kept as an executable regression: 7/7 recovered before amendment A-H2-03, 0/7 after |
+| `inter_rater.py` | the two-rater agreement report, including the abstention (`extractable`) channel |
 | `score_real_validation.py` | the scorer: tiers D/P/E, stratification, transfer gap, gates, `--selftest`, `--power`, `--split` |
 | `golden_diff_rv.R` | the end-to-end metafor stage: three readings, pairwise triangle, cluster bootstrap, TOST, mechanical threshold check |
 | `split.json` | the DEV/LOCK assignment (generated, recomputable from the published salt) |
@@ -1148,7 +1889,8 @@ Reproduce:
 ```bash
 cd benchmark/real-validation
 python3 make_coded_reference.py            # coded/coded_reference.json  (+ --stats)
-python3 verify_oracle.py                   # sets isOracle where the text confirms it
+python3 verify_oracle_v2.py                # sets isOracle/oracleSource where the ARTICLE prints the value
+python3 verify_oracle_v2.py --no-ocr       # same, vector+caption+text only (fast)
 python3 score_real_validation.py --split   # split.json
 python3 score_real_validation.py --power   # the sample-size table
 python3 score_real_validation.py --selftest

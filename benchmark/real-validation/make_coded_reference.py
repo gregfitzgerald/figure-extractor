@@ -201,7 +201,12 @@ def build(rows):
         ivt = r.get("Intervention_Group_Variance_Type")
         rec = {
             "article": art, "doi": r.get("DOI"),
+            # `comparisonId` is the workbook's OWN Comparison_ID, kept for traceability back to
+            # the source -- it is NOT unique (one id can cover several panels, e.g. Zhang2017_3_1
+            # is both "Figure 3d" and "Figure 3e"). Anything that keys on it silently collapses
+            # rows. Use `rowId` as the join key; it is made unique below.
             "comparisonId": str(r.get("Comparison_ID") or f"{art}_?"),
+            "rowId": None,                # assigned after the loop, guaranteed unique
             "dataSource": ds, "extractionMethod": dm,
             "figureNumber": fignum, "panelLetter": letter,
             "figureId": f"{art}_fig{fignum}" if fignum else None,
@@ -229,7 +234,31 @@ def build(rows):
         rec["complete"] = all(rec[k].get("sd") is not None and rec[k].get("mean") is not None
                               and rec[k].get("n") for k in ("control", "interv"))
         out.append(rec)
+    _assign_row_ids(out)
     return out
+
+
+def _assign_row_ids(recs):
+    """Give every record a unique, stable, human-traceable `rowId`.
+
+    Base is article::comparisonId::dataSource -- which disambiguates the common case (one
+    Comparison_ID spanning several panels). Where even that collides (the same panel yielding
+    several outcomes), a #n ordinal is appended in encounter order. Emits a warning naming the
+    source collisions so the upstream data can be fixed rather than silently worked around."""
+    import collections
+    src_dupes = collections.Counter(r["comparisonId"] for r in recs)
+    seen = collections.Counter()
+    for r in recs:
+        base = f'{r["article"]}::{r["comparisonId"]}::{str(r.get("dataSource") or "?").strip().lower()}'
+        seen[base] += 1
+        r["rowId"] = base if seen[base] == 1 else f"{base}#{seen[base]}"
+    ids = [r["rowId"] for r in recs]
+    assert len(ids) == len(set(ids)), "rowId must be unique"
+    collided = {k: v for k, v in src_dupes.items() if v > 1}
+    if collided:
+        n = sum(collided.values())
+        print(f"  [warn] {len(collided)} source Comparison_ID values are reused across {n} rows "
+              f"(e.g. {sorted(collided)[0]!r}); `comparisonId` is NOT a key -- use `rowId`.")
 
 
 def _f(v, default=None):

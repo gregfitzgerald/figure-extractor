@@ -227,6 +227,31 @@ def pct(est, ref):
 # is written only by applyPanelResult (the "Auto-panels" button / detectPanels API), and
 # `captionSource:'panel-split'` is stamped only on auto-created subfigures. A blind human
 # pass must carry neither.
+ANNOTATION_MODE_MESSAGE = (
+    "annotationMode is not true in the export -- the Settings checkbox was off, so the "
+    "tool cannot assert that Auto-panels was unavailable. This export is not usable.")
+
+
+def annotation_mode_violations(annotations):
+    """The POSITIVE half of the doubled blinding, and it is the half that matters.
+
+    `blinding_violations` below is negative evidence: it detects that the detector ran and
+    throws the figure away afterwards. `annotationMode: true` is the tool asserting that
+    the detector COULD NOT have run -- the Settings toggle hides the Auto-panels button,
+    makes `detectPanels` refuse (it returns `flags:['annotation-mode']` and no boxes), and
+    stamps the marker into both export sites.
+
+    BOTH RATERS ARE HELD TO THE SAME BAR. `prepare_dan_session.check_exports` has always
+    hard-rejected a Dan export without the stamp; Greg's ingest did not check for it at
+    all, so the two readings being compared were blinded by different mechanisms -- one
+    mechanical, one by good intentions. That asymmetry is itself a threat to the
+    comparison, because a difference between the two readers could then be a difference in
+    how they were blinded. Same check, same severity, same wording, both sides
+    (amendment A1).
+    """
+    return [] if annotations.get("annotationMode") is True else [ANNOTATION_MODE_MESSAGE]
+
+
 def blinding_violations(annotations):
     bad = []
     for f in annotations.get("figures", []):

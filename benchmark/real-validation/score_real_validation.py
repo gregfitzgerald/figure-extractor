@@ -24,19 +24,41 @@ disagreement. It reports, in this order:
   (b) Bland-Altman bias + limits of agreement on log(M/G) -- the interchangeability
       question a reviewer actually has;
   (c) the intra-rater noise floor from Greg's own repeat annotations, and the ratio
-      R_floor = median|M-G| / RC_intra;
+      R_floor = sd(log(SD_M/SD_G)) / sd(log(SD_G1/SD_G2)) -- both sides on the
+      difference-SD scale, so R_floor == 1 exactly when sigma_M == sigma_G;
   (d) the GRUBBS three-reading variance decomposition over
       D (dissertation, years ago, different tool) / G (fresh) / M (machine), which
       identifies each reader's error variance with NO gold standard;
   (e) accuracy, restricted to the text-anchored oracle stratum where the paper prints
-      the number.
+      the number;
+  (f) the CROSS-CHECK: Grubbs sigma_M against the oracle sigma_M.
 
-D and G are the same person, so their errors may share a component c >= 0. That
-inflates Grubbs sigma_M by c and deflates sigma_G by c -- i.e. it biases the
-comparison AGAINST the machine. Every such number is therefore reported as an
-interval bracketed by the repeat-based estimate of c, and labelled conservative.
-`--selftest D3` proves the whole point: an EXACTLY CORRECT machine still shows a
-large naive disagreement against a jittering human, while Grubbs recovers sigma_M ~ 0.
+WHAT (d) IS NOT. Grubbs identifies sigma_M only if e_D, e_G and e_M are mutually
+uncorrelated. With correlated errors,
+
+    E[sigma_M^2 (Grubbs)] = sigma_M^2 + c_DG - c_DM - c_GM
+
+D and G are the same person, so c_DG >= 0 pushes the estimate UP. But c_DM and c_GM
+push it DOWN and are not zero: machine and human misreading the SAME ambiguous cap
+the same way is a named validity threat, and an occluded cap is hard for every reader
+of that panel. THE BIAS DIRECTION IS UNKNOWN. Nothing here calls Grubbs conservative,
+a bound, or biased against the machine; it is one of three estimates with its
+assumption attached. The [corrected, uncorrected] interval brackets c_DG alone.
+
+Only (e) is immune -- its truth is printed in the paper, so no shared reading error
+can move it -- which is why (f) exists: Grubbs-vs-oracle disagreement IS the evidence
+that the confound is present.
+
+`--selftest D3` proves the layer-(a) distinction: an EXACTLY CORRECT machine still
+shows a large naive disagreement against a jittering human, while Grubbs recovers
+sigma_M ~ 0. `--selftest D5b` proves the limit of (d): a shared-difficulty component
+makes Grubbs return sigma_M 40% BELOW a known truth while the oracle recovers it.
+
+EVERY confidence interval printed is an article-level CLUSTER BOOTSTRAP (B = 10000)
+through `cb`/`cb_rate`/`cb_median`. The only exceptions are the rule-of-three
+zero-event bound, which has no clustered analogue and is labelled "not
+cluster-adjusted" where it prints, and the `_iid` lines, which exist only as the
+labelled contrast. See the CI-provenance block at the foot of every report.
 
 Run:
   python3 score_real_validation.py --split                  # print/write the DEV/LOCK split
@@ -234,10 +256,17 @@ def median_ci(v):
     return (s[k], s[min(n - 1, n - 1 - k)])
 
 
-def cluster_bootstrap(items, cluster_key, stat, B=2000, seed=17):
+def cluster_bootstrap(items, cluster_key, stat, B=None, seed=17):
     """95% CI for `stat(list_of_items)` resampling CLUSTERS (articles) with replacement.
     Nesting is real -- panels of one article share layout, journal and typeface -- so a
-    naive i.i.d. interval would be too narrow."""
+    naive i.i.d. interval would be too narrow.
+
+    ANALYSIS-PLAN sec.2.1 pre-registers this as the interval for EVERY reported CI, with
+    B = 10000. `cb_*` below are the only CI helpers the report is allowed to call; a
+    quantity that genuinely cannot be clustered (the rule-of-three zero-event bound is
+    the only one) must be printed with the words "not cluster-adjusted" beside it."""
+    if B is None:
+        B = BOOTSTRAP_B
     if not items:
         return (NA, NA)
     by = collections.defaultdict(list)
@@ -262,6 +291,34 @@ def cluster_bootstrap(items, cluster_key, stat, B=2000, seed=17):
         return (NA, NA)
     vals.sort()
     return (vals[int(0.025 * len(vals))], vals[min(len(vals) - 1, int(0.975 * len(vals)))])
+
+
+def _cluster_of(row):
+    """The bootstrap cluster: the ARTICLE, canonicalised so two spellings are one cluster.
+    Accepts a row dict, or a (row, value) pair as the log-ratio sites produce."""
+    if isinstance(row, tuple):
+        row = row[0]
+    return canonical_article(row.get("article") or row.get("figure") or "unknown")
+
+
+def cb(rows, stat, B=None):
+    """Article-level cluster-bootstrap 95% CI for `stat(rows)`. The ONE entry point."""
+    return cluster_bootstrap(rows, _cluster_of, stat, B=B)
+
+
+def cb_rate(rows, pred):
+    """CI for a proportion over clustered rows."""
+    return cb(rows, lambda g: (sum(1 for r in g if pred(r)) / len(g)) if g else None)
+
+
+def cb_median(rows, val):
+    """CI for a median over clustered rows (replaces the order-statistic interval, which
+    assumes i.i.d. observations and is ~19-25% too narrow on this nesting)."""
+    def stat(g):
+        v = [val(r) for r in g]
+        v = [x for x in v if x is not NA and x is not None]
+        return statistics.median(v) if v else None
+    return cb(rows, stat)
 
 
 def spearman(xs, ys):
@@ -310,6 +367,108 @@ def bland_altman(log_ratios):
         "loaSeLogFrac": se_loa / sd if sd else NA,
         "loaHalfWidthPctOnLog": 100 * 1.959964 * se_loa,
     }
+
+
+def _grubbs_ratio_stat(rows):
+    """sigma_M / sigma_G from a bootstrap resample of (row, (logD, logG, logM)) pairs."""
+    if len(rows) < 5:
+        return None
+    a = [t[0] for _, t in rows]
+    b = [t[1] for _, t in rows]
+    c = [t[2] for _, t in rows]
+    gr = grubbs_three(a, b, c)
+    if not gr or gr["var_b"] <= 0 or gr["var_c"] <= 0:
+        return None
+    return math.sqrt(gr["var_c"]) / math.sqrt(gr["var_b"])
+
+
+def _loa(pairs, sign):
+    """One Bland-Altman limit of agreement, back-transformed to %, from (row, log) pairs."""
+    v = [x for _, x in pairs]
+    if len(v) < 3:
+        return None
+    return 100 * (math.exp(statistics.fmean(v) + sign * 1.959964 * statistics.stdev(v)) - 1)
+
+
+def shapiro_like(v):
+    """A cheap, dependency-free normality screen: the correlation between the ordered
+    sample and the normal quantiles it would have under normality (the Filliben /
+    probability-plot correlation coefficient). 1.0 is perfectly normal; the 5%
+    critical value is about 0.96-0.99 over n = 20-200.
+
+    It exists because the Bland-Altman LoA is a +/-1.96 sd interval and is only a 95%
+    interval if the log-ratios are approximately normal. Reporting a LoA without ever
+    checking that is reporting an interval with an unverified coverage."""
+    n = len(v)
+    if n < 8:
+        return NA
+    s = sorted(v)
+    m = statistics.fmean(s)
+    # Blom plotting positions -> normal quantiles via an inverse-erf approximation
+    q = [_probit((i + 1 - 0.375) / (n + 0.25)) for i in range(n)]
+    mq = statistics.fmean(q)
+    num = sum((a - m) * (b - mq) for a, b in zip(s, q))
+    den = math.sqrt(sum((a - m) ** 2 for a in s) * sum((b - mq) ** 2 for b in q))
+    return (num / den) if den else NA
+
+
+def _probit(p):
+    """Acklam's inverse normal CDF, |error| < 1.15e-9. No scipy."""
+    a = [-3.969683028665376e+01, 2.209460984245205e+02, -2.759285104469687e+02,
+         1.383577518672690e+02, -3.066479806614716e+01, 2.506628277459239e+00]
+    b = [-5.447609879822406e+01, 1.615858368580409e+02, -1.556989798598866e+02,
+         6.680131188771972e+01, -1.328068155288572e+01]
+    c = [-7.784894002430293e-03, -3.223964580411365e-01, -2.400758277161838e+00,
+         -2.549732539343734e+00, 4.374664141464968e+00, 2.938163982698783e+00]
+    d = [7.784695709041462e-03, 3.224671290700398e-01, 2.445134137142996e+00,
+         3.754408661907416e+00]
+    pl, ph = 0.02425, 1 - 0.02425
+    if p < pl:
+        q = math.sqrt(-2 * math.log(p))
+        return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+               ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    if p > ph:
+        q = math.sqrt(-2 * math.log(1 - p))
+        return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) / \
+               ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)
+    q = p - 0.5
+    r = q * q
+    return (((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q / \
+           (((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)
+
+
+def _ba_by_stratum(pairs):
+    """Bland-Altman LoA per CAP-LENGTH TERTILE, plus the normality screen per stratum.
+
+    The log transform is the right scale for a MULTIPLICATIVE error. The dominant error
+    here is not multiplicative: it is a fixed ~1 px of hand jitter on a cap whose length
+    varies ~10x across the corpus, so the relative error is pixel-additive/cap-length and
+    the log-ratio variance still scales with 1/capLen. Logging therefore does NOT
+    stabilise the variance, and a pooled LoA is a mixture of a wide short-cap
+    distribution and a narrow long-cap one -- an interval that describes no stratum.
+    Report by stratum. The pooled figure remains only as a diagnostic."""
+    withcap = [(r, v) for r, v in pairs if r.get("capLenPx")]
+    out = {}
+    norm = {"pooled": shapiro_like([v for _, v in pairs])}
+    if len(withcap) >= 6:
+        caps = sorted(r["capLenPx"] for r, _ in withcap)
+        t1, t2 = caps[len(caps) // 3], caps[2 * len(caps) // 3]
+        buckets = collections.defaultdict(list)
+        for r, v in withcap:
+            b = ("short" if r["capLenPx"] <= t1
+                 else "mid" if r["capLenPx"] <= t2 else "long")
+            buckets[b].append((r, v))
+        for k, g in buckets.items():
+            ba = bland_altman([v for _, v in g])
+            if ba:
+                ba["capLenMedianPx"] = med([r["capLenPx"] for r, _ in g])
+                ba["biasCI"] = cb(g, lambda gg: 100 * (
+                    math.exp(statistics.fmean([v for _, v in gg])) - 1))
+                ba["normalityR"] = shapiro_like([v for _, v in g])
+                out[k] = ba
+            norm[k] = shapiro_like([v for _, v in g])
+        out["_cuts"] = [t1, t2]
+    return out, norm
 
 
 def grubbs_three(a, b, c):
@@ -425,13 +584,48 @@ def hedges_g(m1, sd1, n1, m2, sd2, n2):
 
 
 # ============================================================ DEV / LOCK split
+def canonical_article(article):
+    """THE article key. One helper, used by PERMANENT_DEV, the split, and every join.
+
+    The corpus spells the same article both ways -- `Garcia-Capdevila2009` in the coded
+    reference and `GarciaCapdevila2009` in the worklist, `Sampedro-Piquero2018` and
+    `SampedroPiquero2018`, `Del-Arco2007` and `DelArco2007`. Exact string membership
+    therefore silently failed in three places at once:
+
+      * PERMANENT_DEV listed `GarciaCapdevila2009` while the data carried
+        `Garcia-Capdevila2009`, so a PILOT-CONTAMINATED article -- one that produced the
+        asterisk-occlusion finding and that BOTH raters see as a calibration figure --
+        was assigned to LOCK;
+      * three worklist articles had no split assignment at all;
+      * the two spellings hash to different buckets, so one article could be DEV in one
+        file and LOCK in another.
+
+    Canonicalise once, here, and the failure cannot recur. Hyphens, spaces, underscores,
+    periods and case are all stripped: they are typography, not identity.
+    """
+    return re.sub(r"[^a-z0-9]+", "", (article or "").lower())
+
+
+PERMANENT_DEV_CANON = {canonical_article(a) for a in PERMANENT_DEV}
+
+
+def canonical_figure_id(fid):
+    """Figure ids embed the article name (`Garcia-Capdevila2009_fig1`), so a join on the
+    raw id inherits the spelling problem. Canonicalise the whole id the same way."""
+    return canonical_article(fid)
+
+
 def split_of(article):
     """Deterministic, recomputable, published-salt article-level split. Fixed by
     ANALYSIS-PLAN sec.2.3 before any figure was seen; it cannot be redrawn to suit a
-    result. Split at ARTICLE level -- panels of one figure share everything."""
-    if article in PERMANENT_DEV:
+    result. Split at ARTICLE level -- panels of one figure share everything.
+
+    The hash is taken over the CANONICAL key, so the two spellings of an article always
+    land in the same bucket (amendment A8)."""
+    key = canonical_article(article)
+    if key in PERMANENT_DEV_CANON:
         return "dev"
-    h = hashlib.sha256(f"{SPLIT_SALT}|{article}".encode()).hexdigest()
+    h = hashlib.sha256(f"{SPLIT_SALT}|{key}".encode()).hexdigest()
     return "dev" if int(h[:8], 16) % 3 == 0 else "lock"
 
 
@@ -932,7 +1126,8 @@ def score_extraction(gt, pred, coded_by_panel):
                              and gt["durationSec"] < FAST_READ_SEC),
             })
 
-        for row in coded_by_panel.get((gt["id"], norm_label(gp.get("label"))), []):
+        for row in coded_by_panel.get(
+                (canonical_figure_id(gt["id"]), norm_label(gp.get("label"))), []):
             crows.append(_comparison_row(gt, gp, pp, row, lrows))
     return prows, lrows, crows
 
@@ -1058,43 +1253,118 @@ def dispersion_analysis(lrows, crows, repeat_pairs):
     out = {}
 
     # (a) NAIVE DISAGREEMENT -- reported, never interpreted as accuracy.
-    naive = [r["dispPct"] for r in lrows if r["dispPct"] is not NA]
+    naive_rows = [r for r in lrows if r["dispPct"] is not NA]
+    naive = [r["dispPct"] for r in naive_rows]
     out["naive"] = {
         "n": len(naive), "medianPct": med(naive), "p90Pct": pctl(naive, 0.90),
         "worstPct": max(naive) if naive else NA,
-        "medianCI": median_ci(naive),
+        "medianCI": cb_median(naive_rows, lambda r: r["dispPct"]),
+        "medianCI_iid": median_ci(naive),
         "_WARNING": "TWO-READER DISAGREEMENT, NOT MACHINE ACCURACY. "
                     "Greg's own 1px jitter is 4.15% median / 37.3% worst on this channel.",
     }
-    central = [r["centralPct"] for r in lrows if r["centralPct"] is not NA]
+    central_rows = [r for r in lrows if r["centralPct"] is not NA]
+    central = [r["centralPct"] for r in central_rows]
     out["central"] = {
         "n": len(central), "medianPct": med(central), "p95Pct": pctl(central, 0.95),
-        "worstPct": max(central) if central else NA, "medianCI": median_ci(central),
+        "worstPct": max(central) if central else NA,
+        "medianCI": cb_median(central_rows, lambda r: r["centralPct"]),
+        "medianCI_iid": median_ci(central),
     }
 
     # (b) BLAND-ALTMAN on log(SD_M / SD_G) -- the interchangeability question.
+    #     Rows that cannot form a log-ratio are DROPPED; the count is reported rather
+    #     than silently absorbed (a metric computed on an unstated subset is not a
+    #     metric). Every log-ratio site below reports its own `nDropped`.
+    def logr_rows(rows, fa, fb):
+        keep, drop = [], 0
+        for r in rows:
+            x, y = fa(r), fb(r)
+            if x in (None, NA) or y in (None, NA) or not (x > 0 and y > 0):
+                drop += 1
+                continue
+            keep.append((r, math.log(x / y)))
+        return keep, drop
+
     def logr(a, b):
         return [math.log(x / y) for x, y in zip(a, b)
                 if x not in (None, NA) and y not in (None, NA) and x > 0 and y > 0]
 
-    mg = [(r["sdM"], r["sdG"]) for r in lrows]
-    out["blandAltman_MG"] = bland_altman(logr([a for a, _ in mg], [b for _, b in mg]))
+    mg_rows, mg_drop = logr_rows(lrows, lambda r: r["sdM"], lambda r: r["sdG"])
+    out["blandAltman_MG"] = bland_altman([v for _, v in mg_rows])
+    out["blandAltman_MG_dropped"] = mg_drop
+    if out["blandAltman_MG"]:
+        out["blandAltman_MG"]["nDropped"] = mg_drop
+        out["blandAltman_MG"]["nCandidate"] = len(lrows)
+        out["blandAltman_MG"]["biasCI"] = cb(
+            mg_rows, lambda g: 100 * (math.exp(statistics.fmean([v for _, v in g])) - 1))
+        out["blandAltman_MG"]["loaLoCI"] = cb(mg_rows, lambda g: _loa(g, -1))
+        out["blandAltman_MG"]["loaHiCI"] = cb(mg_rows, lambda g: _loa(g, +1))
+        # LoA BY STRATUM. A pooled LoA assumes one error distribution; the pilot showed
+        # the short-cap tertile at [-41.9, +59.1]% and the long at [-5.0, +4.4]%, so a
+        # pooled figure describes neither. Reported per cap-length tertile; the pooled
+        # number stays only as a diagnostic and is labelled as one.
+        out["blandAltman_MG_byCapTertile"], out["blandAltman_MG_normality"] = \
+            _ba_by_stratum(mg_rows)
 
     # (c) NOISE FLOOR from Greg's own repeats. Machine error is reported relative to
     #     the range two of the human's OWN readings differ by, never against zero.
     if repeat_pairs and len(repeat_pairs) >= 3:
         lr = [math.log(a / b) for a, b in repeat_pairs if a > 0 and b > 0]
         if len(lr) >= 3:
-            sd_within = statistics.stdev(lr) / math.sqrt(2)
-            rc = 1.959964 * math.sqrt(2) * sd_within
-            mgd = [abs(x) for x in logr([r["sdM"] for r in lrows], [r["sdG"] for r in lrows])]
+            # UNITS (fixed 2026-07-27, amendment A7). R_floor compares two DIFFERENCE
+            # distributions and both sides must be on the same scale.
+            #
+            #   sd_diff_repeat = sd of log(G1/G2)        <- the human's own test-retest diff
+            #   sigmaG_repeat  = sd_diff_repeat/sqrt(2)  <- the per-reading human error
+            #   RC_intra       = 1.96 * sd_diff_repeat   <- repeatability coefficient (95%)
+            #
+            # As shipped the numerator was median|log(M/G)| -- a MEDIAN ABSOLUTE, i.e.
+            # 0.6745 * sd for a normal -- divided by RC_intra = 2.77 * sigmaG_repeat.
+            # That mixes a robust half-width with a 95% band, so R_floor > 1 required
+            # sd(M-G) > 2.77/0.6745 = 4.11 x sd(G1-G2): the machine had to be ~4x worse
+            # than the human before the mandatory AND-conjunct of the sec.8.2 GO rule
+            # could fire. The rule was unreachable in practice and read backwards.
+            #
+            # Fixed by putting both sides on the DIFFERENCE-SD scale. The median absolute
+            # log-ratio is converted to an SD by /0.6745 (the normal-consistency constant
+            # that makes a MAD-style estimator agree with sd), and divided by the sd of the
+            # human's own test-retest difference:
+            #
+            #   R_floor = sd_diff(M,G) / sd_diff(G1,G2)
+            #
+            # Var(M-G) = sigma_M^2 + sigma_G^2 and Var(G1-G2) = 2*sigma_G^2, so
+            # R_floor == 1 EXACTLY when sigma_M == sigma_G. The threshold of 1.0 in the
+            # GO rule now means what sec.3.3 and sec.8.2 say it means: "machine error
+            # comparable to human test-retest". Both robust and classical numerators are
+            # reported so the estimator choice is visible rather than assumed.
+            MEDIAN_ABS_TO_SD = 0.674490                     # Phi^-1(0.75)
+            sd_diff_repeat = statistics.stdev(lr)
+            sd_within = sd_diff_repeat / math.sqrt(2)
+            rc = 1.959964 * sd_diff_repeat
+            mg_log = logr([r["sdM"] for r in lrows], [r["sdG"] for r in lrows])
+            mgd = [abs(x) for x in mg_log]
+            sd_diff_mg_robust = (med(mgd) / MEDIAN_ABS_TO_SD) if mgd else NA
+            sd_diff_mg_classical = statistics.stdev(mg_log) if len(mg_log) >= 2 else NA
             out["noiseFloor"] = {
                 "nRepeatPairs": len(lr),
                 "sigmaG_repeat_log": sd_within,
                 "sigmaG_repeat_pct": 100 * (math.exp(sd_within) - 1),
+                "sd_diff_repeat_log": sd_diff_repeat,
                 "RC_intra_pct": 100 * (math.exp(rc) - 1),
                 "median_absLogMG": med(mgd),
-                "R_floor": (med(mgd) / rc) if rc and mgd else NA,
+                "median_absLogMG_pct": (100 * (math.exp(med(mgd)) - 1)) if mgd else NA,
+                "sd_diff_MG_log": sd_diff_mg_robust,
+                "sd_diff_MG_log_classical": sd_diff_mg_classical,
+                "R_floor": ((sd_diff_mg_robust / sd_diff_repeat)
+                            if sd_diff_repeat and sd_diff_mg_robust is not NA else NA),
+                "R_floor_classical": ((sd_diff_mg_classical / sd_diff_repeat)
+                                      if sd_diff_repeat
+                                      and sd_diff_mg_classical is not NA else NA),
+                "_definition": "R_floor = sd(log M/G) / sd(log G1/G2), both on the "
+                               "difference scale. The numerator is the robust estimate "
+                               "median|log(M/G)| / 0.6745; R_floor_classical uses the "
+                               "sample sd instead. R_floor == 1 iff sigma_M == sigma_G.",
                 "_note": "R_floor <= 1 means the machine sits inside the human's own "
                          "test-retest range: no accuracy claim either way is supportable "
                          "from real figures, and the ML detector has no accuracy case.",
@@ -1115,18 +1385,19 @@ def dispersion_analysis(lrows, crows, repeat_pairs):
     # uses ALL complete triplets (recovering the full n), while the M-vs-D PAIRWISE
     # comparisons and the oracle accuracy analysis -- where Q does NOT cancel -- keep
     # the <=1% restriction. Selftest D6 enforces the cancellation.
-    trip, quanta = [], []
+    trip, quanta, trip_rows, trip_drop = [], [], [], 0
     for r in crows:
         for tag in ("c", "i"):
             d, g, m = r.get(f"{tag}_sd_D"), r.get(f"{tag}_sd_G"), r.get(f"{tag}_sd_M")
             q = r.get(f"{tag}_quantum")
-            if None in (d, g, m) or NA in (d, g, m):
-                continue
-            if not (d > 0 and g > 0 and m > 0):
+            if None in (d, g, m) or NA in (d, g, m) or not (d > 0 and g > 0 and m > 0):
+                trip_drop += 1
                 continue
             trip.append((math.log(d), math.log(g), math.log(m)))
+            trip_rows.append((r, (math.log(d), math.log(g), math.log(m))))
             if q is not None and q is not NA:
                 quanta.append(q / 100.0)
+    out["grubbs_dropped"] = trip_drop
     if len(trip) >= 5:
         gr = grubbs_three([t[0] for t in trip], [t[1] for t in trip], [t[2] for t in trip])
         sig = {k: (math.sqrt(v) if v > 0 else -math.sqrt(-v))
@@ -1146,14 +1417,33 @@ def dispersion_analysis(lrows, crows, repeat_pairs):
             "sigma_D_pct": 100 * (math.exp(abs(sig["D"])) - 1) * (1 if sig["D"] >= 0 else -1),
             "sigma_G_pct": 100 * (math.exp(abs(sig["G"])) - 1) * (1 if sig["G"] >= 0 else -1),
             "sigma_M_pct": 100 * (math.exp(abs(sig["M"])) - 1) * (1 if sig["M"] >= 0 else -1),
+            "n_dropped": trip_drop,
             "ratio_MG": ratio,
-            "ratio_MG_ci": sd_ratio_ci(gr["n"], ratio) if ratio is not NA else (NA, NA),
+            # PRE-REGISTERED INTERVAL: article-level cluster bootstrap (sec.2.1). The
+            # F-based interval below assumes i.i.d. arm-values and is ~1.6x too narrow
+            # at the article level; it is retained only as the labelled i.i.d. contrast.
+            "ratio_MG_ci": cb(trip_rows, _grubbs_ratio_stat),
+            "ratio_MG_ci_iid": sd_ratio_ci(gr["n"], ratio) if ratio is not NA else (NA, NA),
             "ratio_MG_corrected_lo": corrected,
             "c_hat_shared_person": c_hat,
             "negativeVariance": any(v < 0 for v in (gr["var_a"], gr["var_b"], gr["var_c"])),
-            "_note": "D and G are the same person; shared error covariance c inflates "
-                     "sigma_M and deflates sigma_G, so this comparison is CONSERVATIVE "
-                     "against the machine. Interval = [corrected, uncorrected].",
+            "_biasDirection": "UNKNOWN",
+            "_note": (
+                "The full algebra with correlated errors is\n"
+                "  E[sigma_M^2 (Grubbs)] = sigma_M^2 + c_DG - c_DM - c_GM\n"
+                "where c_XY = Cov(e_X, e_Y). c_DG >= 0 (D and G are the same person) "
+                "pushes the estimate UP, but c_DM and c_GM push it DOWN and are NOT "
+                "zero: sec.7 lists 'machine and human both misread the same ambiguous "
+                "cap the same way' as a live threat, and an asterisk mistaken for a cap "
+                "is exactly a difficulty shared by every reader of that panel. THE BIAS "
+                "DIRECTION IS THEREFORE UNKNOWN without assuming the machine's errors "
+                "are uncorrelated with the humans'. Do not call this conservative. "
+                "The [corrected, uncorrected] interval brackets c_DG only; it does not "
+                "bracket c_DM or c_GM, and when shared difficulty dominates the interval "
+                "can sit entirely below the true sigma_M. Cross-check against the ORACLE "
+                "stratum, which carries true values and so cannot suffer shared-difficulty "
+                "correlation at all: Grubbs-vs-oracle disagreement IS the evidence that "
+                "the confound is present."),
         }
         # sigma_D carries the coded print-precision on top of its reading error. A
         # uniform quantum of half-width h has variance h^2/3 on the relative scale, so
@@ -1177,20 +1467,30 @@ def dispersion_analysis(lrows, crows, repeat_pairs):
 
     # (d2) Pairwise M vs D. Here the coded quantization does NOT cancel, so the
     #      <=1% restriction applies.
-    md = []
+    md, md_rows, md_drop_missing, md_drop_quantum = [], [], 0, 0
     for r in crows:
         for tag in ("c", "i"):
             d, m = r.get(f"{tag}_sd_D"), r.get(f"{tag}_sd_M")
             q = r.get(f"{tag}_quantum")
             if None in (d, m) or NA in (d, m) or not (d > 0 and m > 0):
+                md_drop_missing += 1
                 continue
             if q is None or q is NA or q > ROUNDING_QUANTUM_MAX_PCT:
+                md_drop_quantum += 1
                 continue
             md.append(math.log(m / d))
+            md_rows.append((r, math.log(m / d)))
     out["blandAltman_MD"] = bland_altman(md)
+    if out["blandAltman_MD"]:
+        out["blandAltman_MD"]["nDroppedMissing"] = md_drop_missing
+        out["blandAltman_MD"]["nDroppedQuantum"] = md_drop_quantum
+        out["blandAltman_MD"]["biasCI"] = cb(
+            md_rows, lambda g: 100 * (math.exp(statistics.fmean([v for _, v in g])) - 1))
     out["blandAltman_MD_note"] = (
         f"restricted to coded values whose print-precision is <= "
-        f"{ROUNDING_QUANTUM_MAX_PCT}% of the value ({len(md)} arm-values survive); "
+        f"{ROUNDING_QUANTUM_MAX_PCT}% of the value ({len(md)} arm-values survive; "
+        f"{md_drop_missing} dropped for a missing/non-positive reading, "
+        f"{md_drop_quantum} for a coarse quantum); "
         f"quantization does not cancel in a pairwise contrast.")
 
     # (e) ACCURACY, only where an oracle is VERIFIED. `isOracle` is set exclusively by
@@ -1199,25 +1499,77 @@ def dispersion_analysis(lrows, crows, repeat_pairs):
     #     the checkable rows the "Reported in text/figure" label confirmed at 1/34,
     #     i.e. it means CORROBORATED, not QUOTED.
     orc = [r for r in crows if r.get("isOracle")]
-    acc = []
+    acc, acc_rows, orc_log, orc_drop = [], [], [], 0
     for r in orc:
         for tag in ("c", "i"):
             d, m = r.get(f"{tag}_sd_D"), r.get(f"{tag}_sd_M")
             q = r.get(f"{tag}_quantum")
             if None in (d, m) or NA in (d, m) or not d:
+                orc_drop += 1
                 continue
             if q is not None and q is not NA and q > ROUNDING_QUANTUM_MAX_PCT:
+                orc_drop += 1
                 continue
             acc.append(100 * abs(m - d) / abs(d))
+            acc_rows.append((r, 100 * abs(m - d) / abs(d)))
+            if d > 0 and m > 0:
+                orc_log.append(math.log(m / d))
     out["oracleAccuracy"] = {
-        "n": len(acc), "nRows": len(orc), "medianPct": med(acc), "p90Pct": pctl(acc, 0.90),
+        # SCOPE. This count describes the rows joined IN THIS RUN, i.e. at the
+        # --split-filter and GT coverage actually being analysed. It is NOT the
+        # corpus-wide oracle count and must never be reported as one (sec.1.4b).
+        "n": len(acc), "nRows": len(orc), "nDropped": orc_drop,
+        "nPanels": len({(canonical_figure_id(r.get("figure")),
+                         norm_label(r.get("panel"))) for r in orc}),
+        "nArticles": len({canonical_article(r.get("article")) for r in orc}),
+        "scope": "rows joined in THIS run/split -- not the corpus-wide stratum",
+        "medianPct": med(acc), "p90Pct": pctl(acc, 0.90),
+        "medianCI": cb(acc_rows, lambda g: statistics.median([v for _, v in g]) if g else None),
         "ub95_ruleOfThree": rule_of_three(len(acc)),
         "_note": "VERIFIED oracle only: the paper prints this number, so it IS ground "
                  "truth for the drawing. The only real-figure accuracy claim available. "
                  "Small and non-randomly selected -- report with its caveat.",
-    } if acc else {"n": 0, "_note": "not available -- no VERIFIED oracle rows joined "
-                                    "(run verify_oracle.py; the label alone does not "
-                                    "qualify a row)"}
+    } if acc else {"n": 0, "nRows": len(orc), "nDropped": orc_drop,
+                   "_note": "not available -- no VERIFIED oracle rows joined "
+                            "(run verify_oracle_v2.py; the label alone does not "
+                            "qualify a row)"}
+
+    # (f) THE CROSS-CHECK THAT MATTERS: Grubbs sigma_M against the ORACLE sigma_M.
+    #
+    # Grubbs identifies sigma_M only if e_D, e_G and e_M are mutually uncorrelated. The
+    # threat sec.7 names -- machine and human both misreading the same ambiguous cap the
+    # same way -- violates exactly that, and it CANNOT be detected from the three
+    # readings alone, because a shared error looks like agreement.
+    #
+    # The oracle stratum can see it. There the truth is PRINTED IN THE PAPER, so no
+    # amount of shared reading difficulty can move it: sd(log(M / truth)) is an estimate
+    # of sigma_M that carries no c_DM, no c_GM and no c_DG. If the two estimates agree,
+    # the independence assumption survives a real test. If the oracle estimate is LARGER
+    # than Grubbs, that is evidence the shared-difficulty confound is present and Grubbs
+    # is UNDERSTATING the machine's error -- the anti-conservative direction. Say so.
+    gsm = (out.get("grubbs") or {}).get("sigma_M_log")
+    if len(orc_log) >= 5 and gsm is not None and gsm is not NA:
+        osm = statistics.stdev(orc_log)
+        out["grubbsVsOracle"] = {
+            "nOracleArmValues": len(orc_log),
+            "sigma_M_grubbs_log": gsm,
+            "sigma_M_oracle_log": osm,
+            "sigma_M_grubbs_pct": 100 * (math.exp(abs(gsm)) - 1),
+            "sigma_M_oracle_pct": 100 * (math.exp(osm) - 1),
+            "ratio_oracle_over_grubbs": (osm / gsm) if gsm else NA,
+            "verdict": ("oracle LARGER -- shared-difficulty confound indicated; Grubbs "
+                        "is understating sigma_M (ANTI-conservative)"
+                        if gsm and osm > 1.25 * abs(gsm) else
+                        "oracle SMALLER -- consistent with c_DG dominating; Grubbs may be "
+                        "overstating sigma_M" if gsm and osm < 0.8 * abs(gsm) else
+                        "consistent -- no evidence of a shared-error confound at this n"),
+            "_note": "Grubbs-vs-oracle disagreement IS the evidence that the confound of "
+                     "sec.1.3 is present. Underpowered at small oracle n; report the n.",
+        }
+    else:
+        out["grubbsVsOracle"] = {
+            "_note": f"not available -- need >=5 oracle arm-values (have {len(orc_log)}) "
+                     f"and a Grubbs estimate"}
 
     # cap-length tertiles: the pre-specified driver of dispersion error
     withcap = [r for r in lrows if r.get("capLenPx") and r["dispPct"] is not NA]
@@ -1279,6 +1631,16 @@ def f(v, spec="{:.3f}", na="  n/a"):
         return spec.format(v)
     except Exception:
         return str(v)
+
+
+def ci(pair, spec="{:.3f}"):
+    """Render a cluster-bootstrap 95% CI. Every interval printed by this report goes
+    through here, and every one of them is an article-level cluster bootstrap
+    (ANALYSIS-PLAN sec.2.1). The ONLY exceptions are printed with the words
+    'not cluster-adjusted' beside them."""
+    if not pair or pair[0] is NA or pair[0] is None:
+        return "[95% CI  n/a]"
+    return f"[95% CI {f(pair[0], spec)}, {f(pair[1], spec)}]"
 
 
 def transfer_table(real, synth):
@@ -1345,10 +1707,20 @@ def gate_check(real, synth):
         add("E: BA LoA within +/-25%",
             max(abs(ba.get("loaLoPct", 0)), abs(ba.get("loaHiPct", 0))), "<=", 25.0)
     gr = disp.get("grubbs") or {}
+    _gci = gr.get("ratio_MG_ci") or (NA, NA)
     add("E: Grubbs sigma_M / sigma_G", gr.get("ratio_MG"), "<=", 1.5,
-        "conservative: shared-person error inflates this")
+        "BIAS DIRECTION UNKNOWN (c_DG - c_DM - c_GM); one of three estimates, "
+        f"not a bound. cluster-boot CI [{f(_gci[0],'{:.2f}')}, {f(_gci[1],'{:.2f}')}]. "
+        "Cross-check against the oracle stratum.")
     ct = (disp.get("byCapTertile") or {}).get("short") or {}
     add("E: shortest-cap tertile median %", ct.get("medianPct"), "<=", 10.0)
+    # The R_floor conjunct of the sec.8.2 GO rule, evaluated mechanically so the rescaling
+    # of amendment A7 is visible in the gate table rather than only in the prose.
+    nf = disp.get("noiseFloor") or {}
+    add("E: R_floor = sd(logM/G)/sd(logG1/G2)", nf.get("R_floor"), ">=", 1.0,
+        "sec.8.2 AND-conjunct: > 1.0 means the machine is WORSE than the human's own "
+        "test-retest, which is what a detector would have to beat. PASS here means the "
+        "ML-detector accuracy case is OPEN, not that the tool failed.")
     return g
 
 
@@ -1388,12 +1760,16 @@ def report(res, run, split_filter, out=sys.stdout):
         p("    not available -- no detection ground truth in the GT store")
     else:
         p(f"    figures {d['n']}   articles {d['nArticles']}")
-        p(f"    figure-bbox IoU   median {f(d['iouMedian'])}   >=0.75 {f(d['pct75'],'{:.1%}')}"
+        p(f"    figure-bbox IoU   median {f(d['iouMedian'])}"
+          f" {ci(d.get('iouMedianCI'))}   >=0.75 {f(d['pct75'],'{:.1%}')}"
           f"   >=0.50 {f(d['pct50'],'{:.1%}')}")
         p(f"    recall {f(d['recall'],'{:.1%}')}   spurious/page {f(d['spuriousPerPage'],'{:.2f}')}")
         p(f"    CAPTION-ASSOCIATION accuracy {f(d['captionAccuracy'],'{:.1%}')}"
-          f"   [95% CI {f(d['captionCI'][0],'{:.1%}')}, {f(d['captionCI'][1],'{:.1%}')}]")
-        p(f"    caption -> letter-set accuracy {f(d['letterAccuracy'],'{:.1%}')}")
+          f"   {ci(d.get('captionCI'), '{:.1%}')}")
+        p(f"      (i.i.d. Wilson interval, for contrast only: "
+          f"{f(d['captionCI_iid'][0],'{:.1%}')}, {f(d['captionCI_iid'][1],'{:.1%}')})")
+        p(f"    caption -> letter-set accuracy {f(d['letterAccuracy'],'{:.1%}')}"
+          f" {ci(d.get('letterCI'), '{:.1%}')}")
         p("    (no synthetic detection benchmark exists -- Delta is undefined for this tier)")
     p("")
 
@@ -1407,21 +1783,33 @@ def report(res, run, split_filter, out=sys.stdout):
     else:
         p(f"    figures {pn['nFigures']}   panels {pn['nPanels']}   articles {pn['nArticles']}")
         p("    LOCALISATION")
-        p(f"      per-panel IoU   median {f(pn['iouMedian'])}   mean {f(pn['iouMean'])}"
-          f"   worst {f(pn['iouWorst'])}")
-        p(f"      IoU >= 0.9 {f(pn['pct90'],'{:.1%}')}   IoU >= 0.5 {f(pn['pct50'],'{:.1%}')}"
+        p(f"      per-panel IoU   median {f(pn['iouMedian'])} {ci(pn.get('iouMedianCI'))}"
+          f"   mean {f(pn['iouMean'])}   worst {f(pn['iouWorst'])}")
+        p(f"      IoU >= 0.9 {f(pn['pct90'],'{:.1%}')} {ci(pn.get('pct90CI'),'{:.1%}')}"
+          f"   IoU >= 0.5 {f(pn['pct50'],'{:.1%}')} {ci(pn.get('pct50CI'),'{:.1%}')}"
           f"   never matched {pn['missed']}")
         p("    COUNT")
         p(f"      exact panel count {f(pn['countAcc'],'{:.1%}')}"
+          f" {ci(pn.get('countAccCI'),'{:.1%}')}"
           f"   over {f(pn['overSplit'],'{:.1%}')}   under {f(pn['underSplit'],'{:.1%}')}"
           f"   spurious boxes {pn['falsePositives']}")
         p("    ASSIGNMENT  (the silent catastrophic class)")
-        p(f"      localised panels given the RIGHT letter {f(pn['labelAccLocalised'],'{:.1%}')}")
+        p(f"      localised panels given the RIGHT letter {f(pn['labelAccLocalised'],'{:.1%}')}"
+          f" {ci(pn.get('labelAccLocalisedCI'),'{:.1%}')}")
         p(f"      SILENT MISLABELS {pn['silentMislabelCount']} / {pn['nPanels']}"
-          f" = {f(pn['silentMislabel'],'{:.2%}')}")
+          f" = {f(pn['silentMislabel'],'{:.2%}')} {ci(pn.get('silentMislabelCI'),'{:.2%}')}")
         if pn["silentMislabelCount"] == 0:
             p(f"        0 observed -> 95% upper bound {f(rule_of_three(pn['nPanels']),'{:.2%}')}"
               f"  (rule of three; threshold 2.50%)")
+            p("        ** NOT CLUSTER-ADJUSTED ** the rule of three is a binomial")
+            p("        zero-event bound and has no clustered analogue: with 0 events the")
+            p("        bootstrap resamples 0 every time and returns [0, 0]. Read it as an")
+            p("        upper bound on the PANEL-level rate treating panels as independent,")
+            f_eff = pn.get("nArticles") or 0
+            p(f"        which they are not -- at {pn['nPanels']} panels in {f_eff} articles")
+            p(f"        the article-level bound is {f(rule_of_three(f_eff),'{:.2%}')}. Both are stated;")
+            p("        neither is the 'cluster bootstrap' the plan promises, because that")
+            p("        promise cannot be kept for a zero count.")
         p("    ABSTENTION")
         ab = pn["abstention"]
         p(f"      coverage {f(ab['coverage'],'{:.1%}')}   error on answered "
@@ -1463,48 +1851,90 @@ def report(res, run, split_filter, out=sys.stdout):
         p(f"    panels {e['nPanels']}   landmarks {e['nLandmarks']}"
           f"   comparisons joined {e['nComparisonsJoined']}/{e['nComparisons']}")
         p(f"    chart-type accuracy {f(e['chartTypeAccuracy'],'{:.1%}')}"
-          f"   priority-flip rate {f(e['priorityFlipRate'],'{:.1%}')}")
+          f" {ci(e.get('chartTypeCI'),'{:.1%}')}"
+          f"   priority-flip rate {f(e['priorityFlipRate'],'{:.1%}')}"
+          f" {ci(e.get('priorityFlipCI'),'{:.1%}')}")
         p(f"    dispersion-TYPE agreement {f(e['dispTypeAccuracy'],'{:.1%}')}"
-          f"   flag recall on disagreements {f(e['dispTypeFlagRecall'],'{:.1%}')}")
+          f" {ci(e.get('dispTypeCI'),'{:.1%}')}")
+        p(f"      flag recall on disagreements {f(e['dispTypeFlagRecall'],'{:.1%}')}"
+          f" {ci(e.get('dispTypeFlagRecallCI'),'{:.1%}')}")
         p(f"      (SEM read as SD multiplies every SD by sqrt(n) ~ 3.2x at the corpus "
           f"median n=10 -- larger than every pixel effect here)")
         p(f"    series->arm binding error {f(e['armErrorRate'],'{:.2%}')}"
-          f"   ARM-NAME error {f(e['armNameErrorRate'],'{:.2%}')}")
+          f" {ci(e.get('armErrorCI'),'{:.2%}')}")
+        p(f"    ARM-NAME error {f(e['armNameErrorRate'],'{:.2%}')}"
+          f" {ci(e.get('armNameErrorCI'),'{:.2%}')}")
         p(f"      (naming errors are ~10x more damaging than structural ones and are "
           f"invisible to structural metrics -- series tier, measured)")
         if e.get("signFlipRate") is not NA:
             p(f"    effect SIGN FLIPS (M vs G) {e['signFlips']}/{e['nSignComparisons']}"
-              f" = {f(e['signFlipRate'],'{:.2%}')}")
+              f" = {f(e['signFlipRate'],'{:.2%}')} {ci(e.get('signFlipCI'),'{:.2%}')}")
         dsp = res.get("_dispersion") or {}
         p("")
         p("    CENTRAL TENDENCY (the control channel -- long pixel distance)")
         ct = dsp.get("central") or {}
-        p(f"      median {f(ct.get('medianPct'),'{:.2f}')}%   p95 {f(ct.get('p95Pct'),'{:.2f}')}%"
+        p(f"      median {f(ct.get('medianPct'),'{:.2f}')}% {ci(ct.get('medianCI'),'{:.2f}')}"
+          f"   p95 {f(ct.get('p95Pct'),'{:.2f}')}%"
           f"   worst {f(ct.get('worstPct'),'{:.2f}')}%   n={ct.get('n',0)}")
         p("")
-        p("    DISPERSION -- reported in four layers, only (e) is an accuracy")
+        p("    DISPERSION -- reported in five layers; only (e) is an accuracy")
         nv = dsp.get("naive") or {}
         p(f"      (a) naive M-vs-G disagreement: median {f(nv.get('medianPct'),'{:.2f}')}%"
+          f" {ci(nv.get('medianCI'),'{:.2f}')}"
           f"   p90 {f(nv.get('p90Pct'),'{:.2f}')}%   worst {f(nv.get('worstPct'),'{:.2f}')}%"
           f"   n={nv.get('n',0)}")
         p(f"          *** NOT AN ACCURACY *** two imprecise readers; see the header.")
         ba = dsp.get("blandAltman_MG")
         if ba:
-            p(f"      (b) Bland-Altman log(SD_M/SD_G): bias {ba['biasPct']:+.2f}%"
-              f"   95% LoA [{ba['loaLoPct']:+.1f}%, {ba['loaHiPct']:+.1f}%]   n={ba['n']}")
+            p(f"      (b) Bland-Altman log(SD_M/SD_G)   n={ba['n']}"
+              f"   ({ba.get('nDropped',0)} of {ba.get('nCandidate','?')} landmark rows "
+              f"DROPPED: no positive SD on both sides)")
+            p(f"          normality of the log-ratios (probability-plot r) "
+              f"{f((dsp.get('blandAltman_MG_normality') or {}).get('pooled'),'{:.3f}')}"
+              f"   -- a +/-1.96sd LoA is a 95% interval only if this is near 1")
+            byc = dsp.get("blandAltman_MG_byCapTertile") or {}
+            strata_ba = {k: v for k, v in byc.items() if not k.startswith("_")}
+            if strata_ba:
+                p(f"          LoA REPORTED BY CAP-LENGTH TERTILE (cuts at "
+                  f"{byc.get('_cuts')} px). The log transform does NOT stabilise the")
+                p("          variance here -- the error is ~1 px of jitter on a cap whose")
+                p("          length varies ~10x, so sd(log-ratio) still scales with 1/capLen")
+                p("          and a POOLED LoA describes no stratum. Pooled shown last, as a")
+                p("          diagnostic only.")
+                p(f"          {'tertile':<10}{'n':>5}{'medCap px':>11}{'bias%':>9}"
+                  f"{'LoA lo%':>10}{'LoA hi%':>10}{'normR':>8}")
+                for k in ("short", "mid", "long"):
+                    s = strata_ba.get(k)
+                    if not s:
+                        continue
+                    p(f"          {k:<10}{s['n']:>5}{f(s.get('capLenMedianPx'),'{:.0f}'):>11}"
+                      f"{s['biasPct']:>+9.2f}{s['loaLoPct']:>+10.1f}{s['loaHiPct']:>+10.1f}"
+                      f"{f(s.get('normalityR'),'{:.3f}'):>8}")
+            p(f"          pooled (DIAGNOSTIC ONLY, describes no stratum): "
+              f"bias {ba['biasPct']:+.2f}% {ci(ba.get('biasCI'),'{:+.2f}')}")
+            p(f"          pooled 95% LoA [{ba['loaLoPct']:+.1f}%, {ba['loaHiPct']:+.1f}%]"
+              f"   lo {ci(ba.get('loaLoCI'),'{:+.1f}')}  hi {ci(ba.get('loaHiCI'),'{:+.1f}')}")
         else:
-            p("      (b) Bland-Altman: not available (need >=3 paired SDs)")
+            p("      (b) Bland-Altman: not available (need >=3 paired SDs)"
+              f"   ({dsp.get('blandAltman_MG_dropped',0)} rows dropped)")
         bd = dsp.get("blandAltman_MD")
         if bd:
             p(f"      (b2) Bland-Altman log(SD_M/SD_D) [historical reading]: "
-              f"bias {bd['biasPct']:+.2f}%   95% LoA [{bd['loaLoPct']:+.1f}%, "
+              f"bias {bd['biasPct']:+.2f}% {ci(bd.get('biasCI'),'{:+.2f}')}"
+              f"   95% LoA [{bd['loaLoPct']:+.1f}%, "
               f"{bd['loaHiPct']:+.1f}%]   n={bd['n']}")
             p(f"           {dsp.get('blandAltman_MD_note','')}")
         nf = dsp.get("noiseFloor") or {}
         if nf.get("R_floor") is not NA and nf.get("R_floor") is not None:
             p(f"      (c) human noise floor: sigma_G(repeat) {f(nf['sigmaG_repeat_pct'],'{:.2f}')}%"
               f"   RC_intra {f(nf['RC_intra_pct'],'{:.2f}')}%"
-              f"   R_floor = {f(nf['R_floor'],'{:.2f}')}")
+              f"   median|M-G| {f(nf.get('median_absLogMG_pct'),'{:.2f}')}%")
+            p(f"          R_floor = sd(log M/G) / sd(log G1/G2) = "
+              f"{f(nf['R_floor'],'{:.2f}')}"
+              f"   (classical-sd variant {f(nf.get('R_floor_classical'),'{:.2f}')})")
+            p("          Both sides are difference-SDs on the log scale, so R_floor == 1")
+            p("          exactly when sigma_M == sigma_G. NOT cluster-adjusted -- it is a")
+            p("          point estimate with no interval; see the CI note at the foot.")
             if nf["R_floor"] <= 1.0:
                 p("          R_floor <= 1: the machine sits INSIDE the human's own test-retest")
                 p("          range. No accuracy claim either way is supportable from real")
@@ -1516,16 +1946,26 @@ def report(res, run, split_filter, out=sys.stdout):
             lo = gr.get("ratio_MG_corrected_lo")
             p(f"      (d) GRUBBS three-reading decomposition (D=dissertation, G=fresh, "
               f"M=machine), n={gr['n']}")
+            p("          ONE OF THREE ESTIMATES, not a guaranteed bound. Assumption:")
+            p("          e_D, e_G, e_M mutually uncorrelated. Read it beside (b) and (e).")
             p(f"          sigma_D {f(gr['sigma_D_pct'],'{:+.2f}')}%   "
               f"sigma_G {f(gr['sigma_G_pct'],'{:+.2f}')}%   "
               f"sigma_M {f(gr['sigma_M_pct'],'{:+.2f}')}%")
+            p(f"          n={gr['n']} complete triplets ({gr.get('n_dropped',0)} arm-values "
+              f"dropped: incomplete or non-positive D/G/M)")
             p(f"          sigma_M / sigma_G = {f(gr['ratio_MG'],'{:.2f}')}"
-              f"   95% CI [{f(gr['ratio_MG_ci'][0],'{:.2f}')}, "
-              f"{f(gr['ratio_MG_ci'][1],'{:.2f}')}]"
-              + (f"   shared-person-corrected lower end {f(lo,'{:.2f}')}"
+              f"   {ci(gr['ratio_MG_ci'],'{:.2f}')}"
+              + (f"   c_DG-corrected lower end {f(lo,'{:.2f}')}"
                  if lo is not NA and lo is not None else ""))
-            p("          CONSERVATIVE: D and G are the same person; shared error inflates")
-            p("          sigma_M and deflates sigma_G, biasing this AGAINST the machine.")
+            p(f"          (i.i.d. F-based interval, for contrast only: "
+              f"{f(gr['ratio_MG_ci_iid'][0],'{:.2f}')}, "
+              f"{f(gr['ratio_MG_ci_iid'][1],'{:.2f}')})")
+            p("          BIAS DIRECTION UNKNOWN. E[sigma_M^2] = sigma_M^2 + c_DG - c_DM")
+            p("          - c_GM. c_DG (same person, twice) inflates it; c_DM and c_GM")
+            p("          (machine and human misreading the SAME ambiguous cap the same")
+            p("          way -- sec.7) deflate it. Without assuming the machine's errors")
+            p("          are uncorrelated with the humans', this is NOT conservative and")
+            p("          may UNDERSTATE sigma_M. The bracket below covers c_DG only.")
             if gr.get("quantizationVarLog") is not None:
                 p(f"          coded print-precision accounts for "
                   f"{f(gr.get('quantizationPctOfVarD'),'{:.0f}')}% of var(sigma_D); "
@@ -1540,9 +1980,34 @@ def report(res, run, split_filter, out=sys.stdout):
         oa = dsp.get("oracleAccuracy") or {}
         if oa.get("n"):
             p(f"      (e) ACCURACY on the text-anchored oracle stratum: median "
-              f"{f(oa['medianPct'],'{:.2f}')}%   p90 {f(oa['p90Pct'],'{:.2f}')}%   n={oa['n']}")
+              f"{f(oa['medianPct'],'{:.2f}')}% {ci(oa.get('medianCI'),'{:.2f}')}"
+              f"   p90 {f(oa['p90Pct'],'{:.2f}')}%")
+            p(f"          STRATUM SIZE AT THIS SCOPE: {oa['n']} arm-values / "
+              f"{oa.get('nRows')} comparisons / {oa.get('nPanels')} panels / "
+              f"{oa.get('nArticles')} articles")
+            p(f"          ({oa.get('nDropped',0)} arm-values dropped: missing reading or "
+              f"coded quantum > {ROUNDING_QUANTUM_MAX_PCT}%)")
+            p(f"          This is the size AT THE SCOPE ANALYSED (split={split_filter}).")
+            p(f"          Do NOT quote the corpus-wide oracle count beside this result.")
         else:
             p(f"      (e) oracle accuracy: {oa.get('_note','not available')}")
+        gvo = dsp.get("grubbsVsOracle") or {}
+        if gvo.get("nOracleArmValues"):
+            p("")
+            p("      (f) CROSS-CHECK -- Grubbs sigma_M vs ORACLE sigma_M "
+              "(THE test of the Grubbs assumption)")
+            p(f"          sigma_M Grubbs {f(gvo['sigma_M_grubbs_pct'],'{:.2f}')}%"
+              f"   sigma_M oracle {f(gvo['sigma_M_oracle_pct'],'{:.2f}')}%"
+              f"   ratio {f(gvo['ratio_oracle_over_grubbs'],'{:.2f}')}"
+              f"   n={gvo['nOracleArmValues']} oracle arm-values")
+            p(f"          -> {gvo['verdict']}")
+            p("          The oracle truth is PRINTED IN THE PAPER, so it cannot be moved")
+            p("          by any error the machine and the human happen to share. It is the")
+            p("          only estimate here that is immune to the shared-difficulty")
+            p("          confound, and disagreement with Grubbs IS the evidence that the")
+            p("          confound is present.")
+        else:
+            p(f"      (f) Grubbs-vs-oracle cross-check: {gvo.get('_note','not available')}")
         if dsp.get("byCapTertile"):
             p("")
             p(f"      by cap length in px (cuts at {dsp['capTertileCuts']})")
@@ -1599,6 +2064,25 @@ def report(res, run, split_filter, out=sys.stdout):
     p("  DECISION: computed only when every gate has data. Gates with NO DATA mean the")
     p("  study is not yet complete; do not read a decision out of a partial run.")
     p("")
+    p("-" * 92)
+    p("  HOW EVERY INTERVAL IN THIS REPORT WAS COMPUTED")
+    p("-" * 92)
+    p(f"  Every '[95% CI ...]' above is an ARTICLE-LEVEL CLUSTER BOOTSTRAP, B={BOOTSTRAP_B},")
+    p("  resampling articles with replacement (ANALYSIS-PLAN sec.2.1). Panels of one")
+    p("  article share layout, journal, typeface and gutter, so an i.i.d. interval is")
+    p("  materially too narrow -- measured at ~1.6x at the article level.")
+    p("")
+    p("  The exceptions, each labelled in place, are:")
+    p("    * the rule-of-three zero-event upper bound (silent mislabel, arm name, sign")
+    p("      flip). NOT CLUSTER-ADJUSTED: with 0 events every bootstrap resample also has")
+    p("      0 events, so the bootstrap returns [0,0] and carries no information. Both the")
+    p("      panel-level and the article-level bounds are printed; neither is a cluster")
+    p("      bootstrap, and this report does not pretend otherwise.")
+    p("    * R_floor, printed as a point estimate with NO interval.")
+    p("    * `..._iid` lines, printed ONLY as the labelled contrast that shows how much")
+    p("      narrower the naive interval would have been.")
+    p("  No other statement in this report claims an interval it did not compute.")
+    p("")
     text = "\n".join(L)
     print(text, file=out)
     return text
@@ -1612,6 +2096,7 @@ def collect(gts, preds, coded, repeats, abstain_at, split_filter):
     usable = {}
     for k, g in gts.items():
         g.setdefault("article", "unknown")
+        g["_articleKey"] = canonical_article(g["article"])   # the cluster key everywhere
         g["_split"] = g.get("split") or split_of(g["article"])
         g["_gutter"] = (g.get("gutter") or {}).get("bucket") or "unknown"
         if g.get("excluded"):
@@ -1642,9 +2127,12 @@ def collect(gts, preds, coded, repeats, abstain_at, split_filter):
             "spuriousPerPage": (sum(r["spurious"] for r in drows)
                                 / max(1, len({r["pageKey"] for r in drows}))),
             "captionAccuracy": (capk / len(caps)) if caps else NA,
-            "captionCI": wilson(capk, len(caps)) if caps else (NA, NA),
+            "captionCI": cb_rate(caps, lambda r: r["captionCorrect"]),
+            "captionCI_iid": wilson(capk, len(caps)) if caps else (NA, NA),
             "letterAccuracy": (sum(1 for r in lets if r["lettersCorrect"]) / len(lets))
                               if lets else NA,
+            "letterCI": cb_rate(lets, lambda r: r["lettersCorrect"]),
+            "iouMedianCI": cb_median(drows, lambda r: r["iou"]),
         }
 
     # -- tier P
@@ -1653,9 +2141,18 @@ def collect(gts, preds, coded, repeats, abstain_at, split_filter):
     if pfigs:
         A = agg_panels(pfigs)
         allp = [p for fg in pfigs for p in fg["panels"]]
+        loc = [p for p in allp if p["hit"]]
         A.update({
             "nFigures": len(pfigs), "nPanels": len(allp),
-            "nArticles": len({fg["article"] for fg in pfigs}),
+            "nArticles": len({canonical_article(fg["article"]) for fg in pfigs}),
+            # every CI here is an article-level cluster bootstrap (sec.2.1)
+            "iouMedianCI": cb_median(allp, lambda r: r["iou"]),
+            "pct90CI": cb_rate(allp, lambda r: r["tight"]),
+            "pct50CI": cb_rate(allp, lambda r: r["hit"]),
+            "countAccCI": cb_rate(pfigs, lambda r: r["countExact"]),
+            "labelAccLocalisedCI": cb_rate(loc, lambda r: r["labelCorrect"]),
+            "silentMislabelCI": cb_rate(allp, lambda r: r["silentMislabel"]),
+            "figExactCI": cb_rate(pfigs, lambda r: not r["wrong"]),
             "abstention": abstention(pfigs),
             "netFiguresSaved": abstention(pfigs)["net"],
             "strata": {k: strat(allp, k, PANEL_STATS) for k in
@@ -1667,7 +2164,8 @@ def collect(gts, preds, coded, repeats, abstain_at, split_filter):
     # -- tier E
     coded_by_panel = collections.defaultdict(list)
     for row in coded:
-        coded_by_panel[(row.get("figureId"), norm_label(row.get("panelLetter")))].append(row)
+        coded_by_panel[(canonical_figure_id(row.get("figureId")),
+                        norm_label(row.get("panelLetter")))].append(row)
     prows, lrows, crows = [], [], []
     for k, g in usable.items():
         a, b, c = score_extraction(g, preds.get(k), coded_by_panel)
@@ -1701,19 +2199,35 @@ def collect(gts, preds, coded, repeats, abstain_at, split_filter):
             "nSignComparisons": len(signs),
             "signFlipRate": (sum(1 for r in signs if r["signflip_MG"]) / len(signs))
                             if signs else NA,
+            # article-level cluster-bootstrap CIs (sec.2.1) for every rate reported above
+            "chartTypeCI": cb_rate(withpred, lambda r: r["chartTypeCorrect"]),
+            "priorityFlipCI": cb_rate(withpred,
+                                      lambda r: r["priorityGt"] != r["priorityPred"]),
+            "dispTypeCI": cb_rate(dt, lambda r: r["dispTypeCorrect"]),
+            "dispTypeFlagRecallCI": cb_rate(dt_bad, lambda r: r["dispTypeFlagged"]),
+            "armErrorCI": cb_rate(lm_pred, lambda r: not r["armCorrect"]),
+            "armNameErrorCI": cb_rate(lm_pred, lambda r: not r["armNameCorrect"]),
+            "signFlipCI": cb_rate(signs, lambda r: r["signflip_MG"]),
             "strata": {k: strat(lrows, k, LM_STATS) for k in
                        ("chartType", "varianceType", "nBucket",
                         "sigMarkersOverCaps", "split")},
         }
         res["classify"] = {"accuracy": res["extraction"]["chartTypeAccuracy"],
+                           "accuracyCI": res["extraction"]["chartTypeCI"],
                            "priorityFlipRate": res["extraction"]["priorityFlipRate"],
-                           "dispTypeFlagRecall": res["extraction"]["dispTypeFlagRecall"]}
+                           "priorityFlipCI": res["extraction"]["priorityFlipCI"],
+                           "dispTypeFlagRecall": res["extraction"]["dispTypeFlagRecall"],
+                           "dispTypeFlagRecallCI": res["extraction"]["dispTypeFlagRecallCI"]}
+        _ane = res["extraction"]["armNameErrorCI"]
         res["series"] = {"misassignArmBound": res["extraction"]["armErrorRate"],
                          "misassignSeriesBound": res["extraction"]["armErrorRate"],
                          "armNameAccuracy": (1 - res["extraction"]["armNameErrorRate"])
                                             if res["extraction"]["armNameErrorRate"] is not NA
                                             else NA,
-                         "signFlipRate": res["extraction"]["signFlipRate"]}
+                         "armNameAccuracyCI": ((1 - _ane[1], 1 - _ane[0])
+                                               if _ane[0] is not NA else (NA, NA)),
+                         "signFlipRate": res["extraction"]["signFlipRate"],
+                         "signFlipCI": res["extraction"]["signFlipCI"]}
 
     # -- dispersion (the headline), incl. repeats
     rp = []
@@ -1764,7 +2278,82 @@ def write_outputs(res, run):
 
 
 # ============================================================ --power
+def achievable_n():
+    """What the WORKLIST ACTUALLY YIELDS, per tier and per split.
+
+    The plan used to state its targets (>=120 LOCK panels, >=150 figures, ~290 arm-values)
+    without ever checking them against the sample that exists. They are not all reachable.
+    This table is computed from `worklist.json` and the canonical split so the gate table
+    in sec.4 can be written against the achievable N rather than the wished-for one, and so
+    the arithmetic is re-runnable when the worklist changes.
+
+    UNITS ARE NOT INTERCHANGEABLE and the columns are deliberately separate:
+      figures    -- the unit for Tier D (detection, caption association)
+      P-panels   -- the unit for Tier P (decomposition, silent mislabel). Counted as the
+                    caption's letter count, which is what the annotator will draw.
+      E-panels   -- the unit for Tier E discrete metrics (chart type, dispersion type):
+                    only panels that carry a historical coded reading.
+      comparisons-- the unit for the end-to-end golden diff and sign flips.
+      arm-values -- the unit for DISPERSION (2 per comparison). There are twice as many of
+                    these as comparisons, so the dispersion channel is better powered than
+                    the sign-flip channel on the same sample. Never quote one N for both.
+    """
+    wl = HERE / "worklist.json"
+    if not wl.exists():
+        print("  (worklist.json not present -- achievable-N table skipped)\n")
+        return {}
+    items = json.loads(wl.read_text())["items"]
+    budget = json.loads(wl.read_text()).get("budget") or {}
+    print("ACHIEVABLE N -- what the worklist actually yields (ANALYSIS-PLAN sec.4.0)\n")
+    print(f"  {'scope':<20}{'hours':>7}{'figures':>9}{'articles':>10}{'P-panels':>10}"
+          f"{'E-panels':>10}{'comps':>8}{'arm-values':>12}")
+    out = {}
+    for cut in (1, 2, 3):
+        ti = [i for i in items if (i.get("tier") or 9) <= cut]
+        hrs = sum((budget.get(str(t)) or {}).get("hours_total", 0) for t in range(1, cut + 1))
+        for sp in ("dev", "lock", "all"):
+            g = [i for i in ti if sp == "all" or split_of(i["article"]) == sp]
+            rec = {
+                "figures": len(g),
+                "articles": len({canonical_article(i["article"]) for i in g}),
+                "panelsP": sum(i.get("caption_letter_count") or 0 for i in g),
+                "panelsE": sum(i.get("n_coded_panels") or 0 for i in g),
+                "comparisons": sum(i.get("n_coded_comparisons") or 0 for i in g),
+            }
+            rec["armValues"] = 2 * rec["comparisons"]
+            out[f"tiers1-{cut}/{sp}"] = rec
+            print(f"  T1-{cut} {sp:<15}{(f'{hrs:.1f}' if sp=='all' else ''):>7}"
+                  f"{rec['figures']:>9}{rec['articles']:>10}{rec['panelsP']:>10}"
+                  f"{rec['panelsE']:>10}{rec['comparisons']:>8}{rec['armValues']:>12}")
+        print()
+    L = out["tiers1-3/lock"]
+    print("  WHAT IS AND IS NOT ESTABLISHABLE AT THE FULL-WORKLIST LOCK SET")
+    print(f"  (LOCK = {L['figures']} figures / {L['articles']} articles / "
+          f"{L['panelsP']} P-panels / {L['panelsE']} E-panels / "
+          f"{L['comparisons']} comparisons / {L['armValues']} arm-values)\n")
+    rows = [
+        ("P: silent mislabel 0 events, UB <= 2.5%", "P-panels", L["panelsP"], 120,
+         100 * rule_of_three(L["panelsP"])),
+        ("E: arm-name error 0 events, UB <= 1.0%", "arm-values", L["armValues"], 300,
+         100 * rule_of_three(L["armValues"])),
+        ("E: sign flips 0, UB <= 2.5%", "comparisons", L["comparisons"], 120,
+         100 * rule_of_three(L["comparisons"])),
+        ("E: sign flips 0, UB <= 5.0%", "comparisons", L["comparisons"], 60,
+         100 * rule_of_three(L["comparisons"])),
+        ("E (tier target): >= 120 coded panels", "E-panels", L["panelsE"], 120, NA),
+    ]
+    print(f"  {'claim':<44}{'unit':<13}{'have':>6}{'need':>6}  verdict")
+    for name, unit, have, need, ub in rows:
+        ok = have >= need
+        extra = f"  (achieved UB {ub:.2f}%)" if ub is not NA else ""
+        print(f"  {name:<44}{unit:<13}{have:>6}{need:>6}  "
+              f"{'ESTABLISHABLE' if ok else 'NOT ESTABLISHABLE -- descriptive only'}{extra}")
+    print()
+    return out
+
+
 def power_table():
+    achievable_n()
     print("SAMPLE SIZE -- what N buys what precision (ANALYSIS-PLAN sec.4)\n")
     print("  Wilson 95% CI half-width (pp) for an observed proportion")
     print(f"    {'n':>5}" + "".join(f"{p:>9}" for p in (0.80, 0.90, 0.95, 0.98, 1.00)))
@@ -1796,7 +2385,9 @@ def power_table():
     print("\n  Bland-Altman: 95% CI half-width on a limit of agreement, as x sd_diff")
     for n in (30, 50, 98, 150, 220):
         print(f"    n={n:>4}  +/-{1.959964*math.sqrt(1/n + 1.959964**2/(2*(n-1))):.3f}")
-    print("\n  Clustering design effect (planning only; inference uses cluster bootstrap)")
+    print("\n  Clustering design effect (planning only; inference uses the article-level")
+    print("  cluster bootstrap that `collect()` actually calls -- see the CI provenance")
+    print("  block at the foot of every report)")
     for m, icc in ((2.28, 0.3), (2.28, 0.5), (2.24, 0.4), (2.24, 0.6)):
         deff = 1 + (m - 1) * icc
         print(f"    mbar={m}, ICC={icc}: DEFF={deff:.2f} -> 98 panels ~ {98/deff:.0f} eff;"
@@ -1923,6 +2514,17 @@ def _score(gts, preds, coded=None, repeats=None, abstain_at=0.5):
 def run_selftest():
     print("SELFTEST -- each injected failure must move the metric that OWNS it\n")
     fails = []
+    # The suite calls `collect()` about thirty times and each call now runs ~25 cluster
+    # bootstraps. At the production B = 10000 that is minutes of resampling to assert
+    # things the resampling does not affect: every test here asserts that a metric MOVES,
+    # or that an interval is CLUSTERED, never how wide it is. So the suite runs at a small
+    # B, and S0 below pins the production default so this shortcut cannot silently become
+    # the shipped setting.
+    global BOOTSTRAP_B
+    production_B = BOOTSTRAP_B
+    BOOTSTRAP_B = 200
+    print(f"  (bootstrap B lowered to {BOOTSTRAP_B} for speed; production default is "
+          f"{production_B})\n")
 
     def check(name, cond, detail=""):
         print(f"  {'PASS' if cond else 'FAIL'}  {name:<58} {detail}")
@@ -2135,17 +2737,52 @@ def run_selftest():
           all(abs(e - t) < 0.25 * t for e, t in zip(est, (sD, sG, sM))),
           f"true ({sD},{sG},{sM}) -> est ({est[0]:.3f},{est[1]:.3f},{est[2]:.3f})")
 
-    # ---- D5 shared-person covariance inflates sigma_M (the conservative direction)
+    # ---- D5 shared-person covariance c_DG inflates sigma_M (only HALF the story)
     c_true = 0.0016                                   # cov(e_D, e_G)
     shared = [r.gauss(0, math.sqrt(c_true)) for _ in range(n)]
     A2 = [t + s + r.gauss(0, sD) for t, s in zip(T, shared)]
     B2 = [t + s + r.gauss(0, sG) for t, s in zip(T, shared)]
     g2 = grubbs_three(A2, B2, C)
     infl = g2["var_c"] - gg["var_c"]
-    check("D5  shared-person error INFLATES sigma_M (biased against the machine)",
+    check("D5  c_DG alone INFLATES sigma_M (the half of the story sec.1.3 used to tell)",
           infl > 0.4 * c_true,
           f"cov injected {c_true:.4f} -> var_M rose by {infl:.4f} "
           f"({math.sqrt(max(g2['var_c'],0)):.3f} vs {est[2]:.3f})")
+
+    # ---- D5b THE ANTI-CONSERVATIVE CASE. This is the test that keeps the failure mode
+    #      visible, and it is the reason "conservative against the machine" was struck
+    #      from the plan (amendment A2).
+    #
+    #      The full algebra with correlated errors is
+    #          E[sigma_M^2 (Grubbs)] = sigma_M^2 + c_DG - c_DM - c_GM
+    #      The shipped derivation kept only `+ c_DG` and concluded the estimate could
+    #      only ever be too LARGE. But sec.7 lists "machine and human both misread the
+    #      same ambiguous cap the same way" as a live threat, and a cap hidden behind a
+    #      significance asterisk is a difficulty shared by EVERY reader of that panel.
+    #      That is a positive c_DM and c_GM, and they enter with a MINUS sign.
+    #
+    #      Here a single shared "hard panel" component enters all three readings. The
+    #      machine's true sigma_M is 0.10; Grubbs is asked to recover it. If the estimate
+    #      lands materially BELOW 0.10, the guarantee is false in the dangerous direction
+    #      -- the report would understate the machine's error and call it conservative.
+    r2 = random.Random(4242)
+    sD3, sG3, sM3 = 0.09, 0.06, 0.10
+    c_all = 0.0064                       # a difficulty component shared by D, G AND M
+    T3 = [r2.gauss(0, 0.5) for _ in range(n)]
+    hard = [r2.gauss(0, math.sqrt(c_all)) for _ in range(n)]
+    A3 = [t + h + r2.gauss(0, math.sqrt(max(sD3**2 - c_all, 1e-9))) for t, h in zip(T3, hard)]
+    B3 = [t + h + r2.gauss(0, math.sqrt(max(sG3**2 - c_all, 1e-9))) for t, h in zip(T3, hard)]
+    C3 = [t + h + r2.gauss(0, math.sqrt(max(sM3**2 - c_all, 1e-9))) for t, h in zip(T3, hard)]
+    g3 = grubbs_three(A3, B3, C3)
+    est_M = math.sqrt(max(g3["var_c"], 0))
+    # the oracle stratum sees the same data with a TRUE reference, so it cannot be fooled
+    oracle_M = statistics.stdev([c - t for c, t in zip(C3, T3)])
+    check("D5b ANTI-CONSERVATIVE: shared difficulty makes Grubbs UNDERSTATE sigma_M",
+          est_M < 0.85 * sM3 and abs(oracle_M - sM3) < 0.15 * sM3,
+          f"true sigma_M {sM3:.3f} -> Grubbs {est_M:.3f} "
+          f"({100*(est_M/sM3 - 1):+.0f}%, i.e. TOO SMALL, so 'conservative against the "
+          f"machine' is FALSE here) while the ORACLE estimate recovers {oracle_M:.3f}. "
+          f"Grubbs-vs-oracle disagreement is the detector for this confound (sec.1.3)")
 
     # ---- D6 coded print-precision cancels out of sigma_M (and only inflates sigma_D)
     q = 0.05                                   # +/-5% uniform rounding on the D reading
@@ -2191,14 +2828,100 @@ def run_selftest():
           an is not None and an[4] == "FAIL" and sf is not None and sf[4] == "FAIL",
           f"arm-name {an[4] if an else '?'} / sign-flip {sf[4] if sf else '?'}")
 
-    # ---- split determinism
+    # ---- split determinism, over EVERY permanent-DEV entry and BOTH spellings.
+    #      The shipped test checked two of the four names in their canonical spelling only,
+    #      which is exactly why `Garcia-Capdevila2009` sat in LOCK: PERMANENT_DEV held
+    #      `GarciaCapdevila2009` while the coded reference wrote the hyphenated form, and
+    #      an exact `in` test does not notice (amendment A8).
     s1 = {a: split_of(a) for a in arts}
     s2 = {a: split_of(a) for a in arts}
-    check("S1  DEV/LOCK split is deterministic and honours the permanent-DEV list",
-          s1 == s2 and split_of("Bonaccorsi2013") == "dev"
-          and split_of("Gobeske2009") == "dev",
-          f"{s1}")
+    spellings = []
+    for a in sorted(PERMANENT_DEV):
+        variants = {a, a.replace("-", ""), a.lower(), a.upper(),
+                    a.replace("-", " "), a.replace("-", "_")}
+        # inject the hyphenated form for the names the corpus actually hyphenates
+        if a == "GarciaCapdevila2009":
+            variants |= {"Garcia-Capdevila2009", "garcia capdevila2009"}
+        for v in sorted(variants):
+            spellings.append((v, split_of(v)))
+    bad_perm = [v for v, s in spellings if s != "dev"]
+    check("S1  DEV/LOCK split is deterministic",
+          s1 == s2, f"{len(s1)} articles, two identical draws")
+    check("S1b EVERY permanent-DEV article is DEV in EVERY spelling",
+          not bad_perm,
+          f"{len(spellings)} spellings of {len(PERMANENT_DEV)} articles all -> dev"
+          if not bad_perm else f"LEAKED INTO LOCK: {bad_perm}")
+    check("S1c two spellings of the same article get the SAME split",
+          all(split_of(x) == split_of(y) for x, y in
+              (("Garcia-Capdevila2009", "GarciaCapdevila2009"),
+               ("Sampedro-Piquero2018", "SampedroPiquero2018"),
+               ("Mora-Gallegos2015", "MoraGallegos2015"),
+               ("Del-Arco2007", "DelArco2007"),
+               ("Mesa-Gresa2021", "mesa gresa 2021"))),
+          "hyphen / space / case never changes the bucket")
+    check("S1d canonical_article strips typography, not identity",
+          canonical_article("Garcia-Capdevila2009") == "garciacapdevila2009"
+          and canonical_article("Del-Arco2007") != canonical_article("DelArco2008"),
+          f"'Garcia-Capdevila2009' -> '{canonical_article('Garcia-Capdevila2009')}'")
 
+    # ---- CI provenance: the plan says EVERY reported CI is a cluster bootstrap. Assert
+    #      the code actually produces one, and that it is WIDER than the i.i.d. interval
+    #      it replaced (amendment A3). A promise the code does not keep is the defect.
+    rci = _score(gts, base, coded, repeats={}, abstain_at=0.5)
+    cap_cb = (rci.get("detection") or {}).get("captionCI")
+    cap_iid = (rci.get("detection") or {}).get("captionCI_iid")
+    pan_cb = (rci.get("panels") or {}).get("silentMislabelCI")
+    check("S0  the PRODUCTION bootstrap default is the pre-registered B = 10000",
+          production_B == 10000, f"production B = {production_B} (sec.2.1)")
+    check("S2  reported CIs are article-level cluster bootstraps, not i.i.d.",
+          cap_cb is not None and cap_iid is not None and pan_cb is not None
+          and cluster_bootstrap.__doc__ is not None,
+          f"caption CI cluster={cap_cb} iid={cap_iid}; silent-mislabel CI={pan_cb}")
+
+    # a deliberately clustered sample: the naive interval must be the narrower one
+    clus = []
+    rr = random.Random(7)
+    for ai in range(12):
+        p_a = 0.2 if ai % 2 else 0.9              # strong between-article clustering
+        for _ in range(15):
+            clus.append({"article": f"Art{ai}", "ok": rr.random() < p_a})
+    lo_c, hi_c = cb_rate(clus, lambda r: r["ok"])
+    k = sum(1 for r in clus if r["ok"])
+    lo_i, hi_i = wilson(k, len(clus))
+    check("S2b the cluster bootstrap is WIDER than the i.i.d. interval it replaced",
+          (hi_c - lo_c) > 1.3 * (hi_i - lo_i),
+          f"cluster [{lo_c:.3f},{hi_c:.3f}] width {hi_c-lo_c:.3f} vs "
+          f"Wilson [{lo_i:.3f},{hi_i:.3f}] width {hi_i-lo_i:.3f} "
+          f"= {(hi_c-lo_c)/(hi_i-lo_i):.2f}x")
+
+    # ---- R_floor units (amendment A7). Two readings of the SAME quality must give ~1.0.
+    rf = random.Random(31)
+    sg = 0.05
+    rep_pairs = [(math.exp(rf.gauss(0, sg)), math.exp(rf.gauss(0, sg))) for _ in range(400)]
+    lrows_rf = [{"article": f"A{i%20}", "dispPct": NA, "centralPct": NA,
+                 "sdM": math.exp(rf.gauss(0, sg)), "sdG": math.exp(rf.gauss(0, sg)),
+                 "capLenPx": None} for i in range(400)]
+    nf_eq = dispersion_analysis(lrows_rf, [], rep_pairs)["noiseFloor"]
+    lrows_bad = [{"article": f"A{i%20}", "dispPct": NA, "centralPct": NA,
+                  "sdM": math.exp(rf.gauss(0, 3 * sg)), "sdG": math.exp(rf.gauss(0, sg)),
+                  "capLenPx": None} for i in range(400)]
+    nf_bad = dispersion_analysis(lrows_bad, [], rep_pairs)["noiseFloor"]
+    check("S3  R_floor ~ 1.0 when the machine is as good as the human's test-retest",
+          0.8 < nf_eq["R_floor"] < 1.25,
+          f"sigma_M == sigma_G -> R_floor {nf_eq['R_floor']:.2f} "
+          f"(the shipped formula returned ~0.24 here: it divided a median-absolute by a "
+          f"2.77-sigma repeatability coefficient, so the GO rule needed a 4.1x-worse "
+          f"machine before it could fire)")
+    check("S3b R_floor rises above 1 exactly when the machine IS worse",
+          nf_bad["R_floor"] > 1.5,
+          f"sigma_M = 3 x sigma_G -> R_floor {nf_bad['R_floor']:.2f}")
+    grf = gate_check({"_dispersion": {"noiseFloor": nf_bad}}, load_synth())
+    gr_rf = next((g for g in grf if g[0].startswith("E: R_floor")), None)
+    check("S3c the sec.8.2 R_floor conjunct is wired into the gate table",
+          gr_rf is not None and gr_rf[4] == "PASS",
+          f"{gr_rf[0]} -> {gr_rf[4]} at {f(gr_rf[1],'{:.2f}')}" if gr_rf else "gate missing")
+
+    BOOTSTRAP_B = production_B          # never leave the shortcut in place
     print()
     if fails:
         print(f"{len(fails)} FAILED: {', '.join(fails)}")
@@ -2233,16 +2956,31 @@ def main():
         if not arts:
             print("no articles found (need coded/coded_reference.json or gt/); "
                   "the rule is still recomputable for any Article_ID:")
-            print(f'  sha256("{SPLIT_SALT}|" + Article_ID)[:8] % 3 == 0  ->  dev')
+            print(f'  sha256("{SPLIT_SALT}|" + canonical_article(Article_ID))[:8] % 3 == 0'
+                  f'  ->  dev')
+            print("  canonical_article = lowercase, strip every non-alphanumeric char")
             print(f"  permanent DEV: {sorted(PERMANENT_DEV)}")
             return
         assign = {x: split_of(x) for x in arts}
+        # Keyed by the CANONICAL article key as well, so a consumer that spells the
+        # article differently (the worklist writes `GarciaCapdevila2009`, the coded
+        # reference writes `Garcia-Capdevila2009`) still resolves. Three worklist
+        # articles previously resolved to nothing at all.
+        by_canon = {}
+        for x in arts:
+            by_canon.setdefault(canonical_article(x), {"split": assign[x], "spellings": []})
+            by_canon[canonical_article(x)]["spellings"].append(x)
         HERE.mkdir(exist_ok=True)
         (HERE / "split.json").write_text(json.dumps(
             {"salt": SPLIT_SALT, "permanentDev": sorted(PERMANENT_DEV),
-             "assignment": assign}, indent=2))
+             "permanentDevCanonical": sorted(PERMANENT_DEV_CANON),
+             "rule": 'sha256(SALT + "|" + canonical_article(Article_ID))[:8] % 3 == 0 -> dev',
+             "canonicalisation": "lowercase, then strip every non-alphanumeric character",
+             "assignment": assign, "byCanonicalKey": by_canon}, indent=2))
         n_dev = sum(1 for v in assign.values() if v == "dev")
-        print(f"{len(arts)} articles: {n_dev} dev / {len(arts)-n_dev} lock")
+        n_multi = sum(1 for v in by_canon.values() if len(v["spellings"]) > 1)
+        print(f"{len(arts)} articles ({len(by_canon)} canonical keys, "
+              f"{n_multi} with >1 spelling): {n_dev} dev / {len(arts)-n_dev} lock")
         for x in arts:
             print(f"  {assign[x]:<5} {x}")
         print(f"\n[written] {HERE/'split.json'}")

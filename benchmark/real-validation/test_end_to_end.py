@@ -45,7 +45,8 @@ def run(args, data, expect_fail=False):
     return r
 
 
-def fake_stage_a(sdir, anon_id, page_w, page_h, n_panels=2, poisoned=False):
+def fake_stage_a(sdir, anon_id, page_w, page_h, n_panels=2, poisoned=False,
+                 annotation_mode=True):
     """What figure-extractor writes after the rater draws a figure box and n panel boxes."""
     fw, fh = int(page_w * 0.6), int(page_h * 0.28)
     fx, fy = int(page_w * 0.15), int(page_h * 0.12)
@@ -69,6 +70,11 @@ def fake_stage_a(sdir, anon_id, page_w, page_h, n_panels=2, poisoned=False):
     d.mkdir(parents=True, exist_ok=True)
     (d / "annotations.json").write_text(json.dumps(
         {"schemaVersion": 2, "project": "S01", "article": anon_id,
+         # The POSITIVE half of the doubled blinding. A real export carries this whenever
+         # the rater had `Annotation mode` on, and the ingest refuses the export without it
+         # (amendment A1). `annotation_mode=False` builds the export a rater with the
+         # checkbox OFF would produce, which the ingest must reject.
+         "annotationMode": bool(annotation_mode),
          "exportedAt": "2026-07-27T10:30:00.000Z",
          "pages": [{"pageNum": 1, "width": page_w, "height": page_h}],
          "figures": [fig]}, indent=2))
@@ -93,7 +99,7 @@ def fill_form(path, jitter=0.0):
     path.write_text(json.dumps(f, indent=2))
 
 
-def fake_stage_b(sdir, pid, jitter=0.0):
+def fake_stage_b(sdir, pid, jitter=0.0, annotation_mode=True):
     """Axis refs + two bar tops + two error caps, clicked in the documented order."""
     cal = {"x1": {"px": 400, "py": 1500}, "x2": {"px": 800, "py": 1500},
            "y1": {"px": 200, "py": 1500}, "y2": {"px": 200, "py": 200}}
@@ -105,6 +111,7 @@ def fake_stage_b(sdir, pid, jitter=0.0):
     d.mkdir(parents=True, exist_ok=True)
     (d / "annotations.json").write_text(json.dumps(
         {"schemaVersion": 2, "project": "S01", "article": pid,
+         "annotationMode": bool(annotation_mode),
          "exportedAt": "2026-07-27T14:00:00.000Z",
          "pages": [{"pageNum": 1, "width": 1200, "height": 1700}],
          "figures": [{"id": "fig1", "label": pid, "pageNum": 1,
@@ -221,6 +228,17 @@ def main():
         check("an unassigned arm role blocks ingest", "silent catastrophic" in r.stderr)
         bad.write_text(keep)
 
+        # --- blinding, the POSITIVE half: an export with the Settings checkbox OFF is
+        #     refused with the same severity as a detector fingerprint (amendment A1).
+        #     Rebuild ONE Stage B export without the stamp and check the ingest stops.
+        pid0 = sb["items"][0]["panel_item"]
+        keep_b = (s01 / "exports" / "passB" / pid0 / "annotations.json").read_text()
+        fake_stage_b(s01, pid0, annotation_mode=False)
+        r = run(["ingest_annotations.py", "ingest", "S01"], tmp, expect_fail=True)
+        check("an export WITHOUT annotationMode is REFUSED",
+              "annotationMode is not true" in r.stderr and "BLINDING" in r.stderr)
+        (s01 / "exports" / "passB" / pid0 / "annotations.json").write_text(keep_b)
+
         # --- ingest ---
         run(["ingest_annotations.py", "ingest", "S01"], tmp)
         gt = tmp / "gt" / "S01"
@@ -275,6 +293,29 @@ def main():
                   f"{recs[0]['nPanels'] if recs else 0} panels")
         except ImportError:
             print("  SKIP  sibling scorer not present")
+
+        # --- re-ingest must not silently destroy records (amendment A9). Remove one
+        #     panel's Stage B export and re-ingest with --allow-problems: the store already
+        #     holds that panel, so the ingest must NAME it and REFUSE.
+        store = tmp / "gt" / "human_gt.jsonl"
+        before = store.read_text()
+        n_before = len([l for l in before.splitlines() if l.strip()])
+        victim = s01 / "exports" / "passB" / pid0 / "annotations.json"
+        keep_v = victim.read_text()
+        victim.unlink()
+        r = run(["ingest_annotations.py", "ingest", "S01", "--allow-problems"], tmp,
+                expect_fail=True)
+        check("a re-ingest that would LOSE a panel is refused, by name",
+              "RE-INGEST WOULD DESTROY" in r.stderr and pid0 in r.stderr)
+        check("the refused re-ingest changed nothing on disk",
+              store.read_text() == before,
+              f"{n_before} records before and after")
+        run(["ingest_annotations.py", "ingest", "S01", "--allow-problems", "--reingest"], tmp)
+        n_after = len([l for l in store.read_text().splitlines() if l.strip()])
+        check("--reingest goes through and the loss is real",
+              n_after == n_before - 1, f"{n_before} -> {n_after}")
+        victim.write_text(keep_v)
+        run(["ingest_annotations.py", "ingest", "S01"], tmp)
 
         seal = json.loads((gt / "seal.json").read_text())
         check("session is sealed with a timestamp and hashes",

@@ -332,7 +332,19 @@ def jitter_report(dig, extraction):
     if not probe:
         return None
     upp = abs(probe[1]["y"] - probe[0]["y"])
-    out = {"unitsPerPixel": upp, "central": [], "dispersion": [], "capTopPx": []}
+    # MAGNIFICATION, so the audit can work in the unit the human rule is written in.
+    # PROTOCOL sec.7.2: the rater's floor is 100 SCREEN px; the stored geometry is in
+    # IMAGE px; screen = k * image. `k` is exported by persistDig (and per point). When it
+    # is absent -- an export from before the tool recorded it -- fall back to k = 1, which
+    # is the 1:1 grating's guarantee and therefore a LOWER bound on the true screen span.
+    ks = [p["k"] for p in (dig.get("points") or [])
+          if isinstance(p, dict) and isinstance(p.get("k"), (int, float)) and p["k"] > 0]
+    k = (statistics.median(ks) if ks
+         else (dig.get("k") if isinstance(dig.get("k"), (int, float)) and dig.get("k") > 0
+               else None))
+    out = {"unitsPerPixel": upp, "central": [], "dispersion": [], "capTopPx": [],
+           "k": k, "kSource": ("per-point" if ks else "digitization" if k else "assumed-1.0"),
+           "kAssumed": k is None}
     if extraction.get("method") == "bar-endpoints":
         for g in extraction.get("groups") or []:
             if g.get("mean"):
@@ -378,7 +390,7 @@ def cmd_ingest(args):
         if ann is None:
             problems.append(f"{aid}: missing Stage A export")
             continue
-        bad = rv.blinding_violations(ann)
+        bad = rv.annotation_mode_violations(ann) + rv.blinding_violations(ann)
         if bad:
             problems += [f"BLINDING {aid}: {b}" for b in bad]
             continue
@@ -431,7 +443,7 @@ def cmd_ingest(args):
         if ann is None:
             problems.append(f"{pid}: missing Stage B export")
             continue
-        bad = rv.blinding_violations(ann)
+        bad = rv.annotation_mode_violations(ann) + rv.blinding_violations(ann)
         if bad:
             problems += [f"BLINDING {pid}: {b}" for b in bad]
             continue
@@ -550,11 +562,41 @@ def cmd_ingest(args):
     store = rv.GT / "human_gt.jsonl"
     keep = [json.loads(l) for l in store.read_text().splitlines() if l.strip()] \
         if store.exists() else []
+
+    # RE-INGEST IS DESTRUCTIVE, AND IT USED TO BE SILENT.
+    # Replacing every record of this session is right when the session is being redone in
+    # full; it is a data-loss bug when the second run produces FEWER panels than the first
+    # -- which is exactly what a `--allow-problems` run after a clean one does. Measured on
+    # a sandbox session: 4 sealed panels -> 3, no warning, no trace of the missing one, and
+    # PROTOCOL sec.10 promises "nothing is written until it all passes". So: name the
+    # panels that would disappear and REFUSE, unless the operator says --reingest.
+    prior = [r for r in keep if r.get("session") == session]
+    prior_ids = {r.get("panel_item") for r in prior}
+    new_ids = {r.get("panel_item") for r in records}
+    lost = sorted(x for x in prior_ids - new_ids if x)
+    if lost:
+        msg = [f"RE-INGEST WOULD DESTROY {len(lost)} PANEL RECORD(S) already in "
+               f"{store.name}:"] + [f"    - {x}" for x in lost] + [
+            f"  prior: {len(prior)} records for {session}; this run produced {len(records)}.",
+            "  A panel that ingested cleanly before and does not now is a REGRESSION, not",
+            "  a correction -- most often a --allow-problems run over a session that had",
+            "  already passed, or a missing export directory."]
+        if not getattr(args, "reingest", False):
+            print("\n".join("  ! " + m for m in msg), file=sys.stderr)
+            raise SystemExit(
+                "\nrefusing to write. Nothing has been changed in human_gt.jsonl.\n"
+                "Re-run with --reingest if the loss is intended (e.g. the panels were "
+                "genuinely withdrawn), or fix the exports and re-run without it.")
+        print("\n".join("  !! " + m for m in msg), file=sys.stderr)
+        print("  !! --reingest given: writing anyway and DISCARDING the records above.",
+              file=sys.stderr)
+
     keep = [r for r in keep if r.get("session") != session] + records
     with open(store, "w") as f:
         for r in keep:
             f.write(json.dumps(r) + "\n")
-    print(f"[written] {store}  ({len(records)} this session, {len(keep)} total)")
+    print(f"[written] {store}  ({len(records)} this session, {len(keep)} total"
+          + (f", replacing {len(prior)} prior records for {session}" if prior else "") + ")")
 
     sealed += [gdir / "figure-derived-landmarks.csv", gdir / "panels_gt.jsonl"]
     tl = sdir / "timing" / "passA.jsonl"
@@ -597,11 +639,12 @@ def cmd_audit(args):
         j = r.get("jitter") or {}
         cen += j.get("central", [])
         dis += j.get("dispersion", [])
+        kk = j.get("k") or 1.0
         for c in j.get("capTopPx", []):
             if c == c:
                 capdist.append(c)
                 if c < ZOOM_FLOOR_PX:
-                    low.append((r["panel_item"], c))
+                    low.append((r["panel_item"], c, kk, c * kk, j.get("kSource")))
     L += ["## Zoom discipline / implied click jitter", "",
           "What a 1-image-pixel slip is worth on each channel. Compare with the synthetic",
           "human-click floor: 0.44% central / 4.15% dispersion median at 1 px.", "",
@@ -616,9 +659,21 @@ def cmd_audit(args):
         L += ["", f"Dispersion span in image px: median {statistics.median(capdist):.0f}, "
                   f"min {min(capdist):.0f} (floor for a <=1% read is {ZOOM_FLOOR_PX})."]
     if low:
-        L += ["", f"**{len(low)} landmark(s) below the zoom floor** -- these cannot support a",
-              "1% dispersion read at 1 px and should be re-picked at higher magnification:", ""]
-        L += [f"- `{p}` -- {c:.0f} px" for p, c in sorted(low, key=lambda t: t[1])[:20]]
+        # UNITS (PROTOCOL sec.7.2). The floor above is in IMAGE px; the rater's rule is in
+        # SCREEN px, and screen = k * image. Both columns are printed so the two are never
+        # confused again: act on the SCREEN column, which is the one the rule is about.
+        # Where k had to be assumed 1.0 (an export from before the tool recorded it), the
+        # screen span shown is a LOWER bound -- the 1:1 grating guarantees k >= 1.
+        hard = [x for x in low if x[3] < ZOOM_FLOOR_PX]
+        L += ["", f"**{len(low)} landmark(s) below the {ZOOM_FLOOR_PX}-IMAGE-px floor**, of which",
+              f"**{len(hard)} are also below {ZOOM_FLOOR_PX} SCREEN px** and must be re-picked at",
+              "higher magnification. The rest cleared the screen-pixel rule by zooming past 1:1;",
+              "they are listed because the image-pixel floor is deliberately conservative.", "",
+              "| landmark | image px | k | screen px | k source | action |",
+              "|---|---|---|---|---|---|"]
+        for p, c, kk, scr, ksrc in sorted(low, key=lambda t: t[3])[:20]:
+            L.append(f"| `{p}` | {c:.0f} | {kk:.2f}x | **{scr:.0f}** | {ksrc} | "
+                     + ("**RE-PICK**" if scr < ZOOM_FLOOR_PX else "ok on the screen rule") + " |")
 
     L += ["", "## Abstentions and flags", ""]
     amb = [(r["panel_item"], a) for r in recs for a in (r.get("ambiguities") or [])]
@@ -962,6 +1017,10 @@ def main():
     p.add_argument("--reader", default="GF-human")
     p.add_argument("--allow-problems", action="store_true",
                    help="ingest what is valid and only warn about the rest")
+    p.add_argument("--reingest", action="store_true",
+                   help="permit a re-ingest that DESTROYS panel records already in "
+                        "human_gt.jsonl. Without it, an ingest that would lose a panel "
+                        "names the panel and refuses.")
     p.set_defaults(fn=cmd_ingest)
     p = sub.add_parser("audit", help="zoom discipline, abstentions, fatigue")
     p.add_argument("--session")

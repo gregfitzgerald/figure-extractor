@@ -1140,7 +1140,7 @@
     <div id="digitizerModal">
         <div class="digitizer-box">
             <div class="digitizer-header">
-                <span class="dig-title">Digitize — <b id="digTitle"></b></span>
+                <span class="dig-title">Digitize — <b id="digTitle"></b> <span id="digZoom" title="screen pixels per image pixel; the annotation protocol requires at least 1.0x, and more for short error-bar caps" style="opacity:.7;font-weight:normal"></span></span>
                 <div class="dig-actions">
                     <button class="btn" id="digAxesBtn">1. Set axes</button>
                     <button class="btn" id="digPointsBtn">2. Add points</button>
@@ -1438,7 +1438,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (dig.calStep < 4) { dig.cal[slots[dig.calStep]] = { px, py }; dig.calStep++; }
             if (dig.calStep >= 4) dig.mode = 'points';
             updateDigHint();
-        } else { dig.points.push({ px, py, s: dig.activeSeries }); renderDigPoints(); }
+        } else {
+            // `k` = screen px per image px AT THE MOMENT OF THE CLICK. The zoom-floor rule
+            // is stated in screen pixels because hand jitter is ~1 screen pixel regardless
+            // of magnification; recording k per point is what lets the audit report the
+            // actual screen-pixel separation of a landmark instead of inferring it.
+            dig.points.push({ px, py, s: dig.activeSeries, k: dig.scale * dig.view.zoom });
+            renderDigPoints();
+        }
         digRender(); persistDig();
     };
     digCanvas.onmousedown = (e) => {
@@ -5558,6 +5565,11 @@ function digRender() {
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const k = dig.scale * dig.view.zoom;
+    // Live magnification readout. The 1:1 striped grating burned into every annotation
+    // crop is a workaround for a missing number; with the number on screen the rater can
+    // hit a magnification target directly instead of judging whether a grating aliases.
+    const zEl = document.getElementById('digZoom');
+    if (zEl) zEl.textContent = `${k.toFixed(2)}x`;
     ctx.setTransform(k, 0, 0, k, dig.view.panX, dig.view.panY);
     if (dig.crop) ctx.drawImage(dig.crop, 0, 0);
     ctx.setTransform(1, 0, 0, 1, 0, 0);  // markers in fixed screen size
@@ -5599,7 +5611,16 @@ function persistDig() {
     if (!dig.target) return;
     dig.target.digitization = {
         cal: dig.cal, vals: digVals(), points: dig.points,
-        series: dig.series, notes: document.getElementById('digNotes').value, updatedAt: nowISO()
+        series: dig.series, notes: document.getElementById('digNotes').value,
+        // EFFECTIVE MAGNIFICATION, exported so the zoom-floor audit can work in the unit
+        // the human rule is written in. The protocol's rule is "bar top to cap must span
+        // >= 100 SCREEN pixels"; the audit could only measure IMAGE pixels and had to
+        // assume k >= 1 from the 1:1 grating. With k recorded, screen span = k * image
+        // span is computed rather than assumed. `k` is the value in force when the view
+        // was last touched; per-point `k` is recorded on each point as it is clicked.
+        view: { zoom: dig.view.zoom, panX: dig.view.panX, panY: dig.view.panY },
+        scale: dig.scale, k: dig.scale * dig.view.zoom,
+        updatedAt: nowISO()
     };
     saveAnnotations();
 }
@@ -6262,14 +6283,43 @@ async function loadArticleAnnotations(name) {
         }
     }
     
-    // Then, check localStorage for any manual overrides/edits
+    // Then, check localStorage for any manual overrides/edits.
+    //
+    // STALE-WORK HAZARD. localStorage is keyed by ARTICLE NAME, and an annotation harness
+    // reuses names across rebuilds: rebuild a session, load it, and the browser serves the
+    // PREVIOUS run's boxes over the freshly written annotations.json without a word. The
+    // rater then annotates on top of work that is no longer the task, or -- worse -- exports
+    // it and it is ingested as this session's reading.
+    //
+    // Two controls, in order of strength:
+    //   1. `forceCleanLoad`: a session folder can ship `annotations.json` carrying
+    //      `"forceCleanLoad": true`, and the harness does. The file then WINS and the stale
+    //      cache for that article is discarded. This is the harness asserting "this is the
+    //      task", which is the only claim that can be trusted here.
+    //   2. Otherwise localStorage still wins -- that is the interactive behaviour the tool
+    //      needs -- but the override is now VISIBLE rather than silent.
+    let fileData = null;
+    if (article && article.annotationsFile) {
+        try { fileData = JSON.parse(await article.annotationsFile.text()); } catch (e) {}
+    }
     try {
         const data = JSON.parse(localStorage.getItem('figext_' + name));
-        if (data && data.figures && data.figures.length) {
-            // localStorage takes precedence if it has data
+        const hasCache = !!(data && data.figures && data.figures.length);
+        if (hasCache && fileData && fileData.forceCleanLoad) {
+            localStorage.removeItem('figext_' + name);
+            console.warn(`[clean load] discarded ${data.figures.length} cached figure(s) for `
+                + `"${name}": annotations.json declares forceCleanLoad`);
+            showToast(`Loaded a fresh copy of "${name}" — previous browser-cached work for `
+                + `this item was discarded because the session declares a clean load`);
+        } else if (hasCache) {
             state.figures = data.figures;
             state.nextFigureNum = data.nextFigureNum || state.figures.length + 1;
             console.log(`Loaded ${state.figures.length} figures from localStorage (overrides annotations.json)`);
+            if (fileData && fileData.figures && fileData.figures.length) {
+                showToast(`"${name}": showing ${data.figures.length} figure(s) from BROWSER `
+                    + `STORAGE, not the ${fileData.figures.length} in annotations.json. If this `
+                    + `item was rebuilt, this is stale work.`);
+            }
         }
     } catch (e) {}
 }
@@ -6703,7 +6753,17 @@ window.figureExtractor = {
         return res;
     },
     // Legacy XY-cut detector, kept for A/B comparison only. Returns bare boxes (no flags).
+    // BLINDING: this entry point was the hole in annotationMode. It bypassed the guard in
+    // `detectPanels`, and because it returns bare boxes it never writes `panelDetection`
+    // and never stamps `captionSource:'panel-split'` -- so boxes taken from it leave NO
+    // fingerprint at all and the ingest's after-the-fact blinding check cannot see them.
+    // An unguarded API that produces untraceable machine suggestions is strictly worse
+    // than the guarded one. It refuses in annotation mode, in the same shape detectPanels
+    // uses, so a caller gets a result object rather than a silent empty array.
     suggestSubfiguresLegacy: (figureId, expectedCount = 0) => {
+        if (settings.annotationMode) return { ok: false, panels: [], count: 0, method: 'none',
+            confidence: 0, flags: ['annotation-mode'], applied: false,
+            error: 'annotationMode is on -- automated panel detection is disabled' };
         const fig = state.figures.find(f => f.id === figureId);
         if (!fig) throw new Error(`Figure not found: ${figureId}`);
         return suggestSubfiguresLegacy(fig, expectedCount);

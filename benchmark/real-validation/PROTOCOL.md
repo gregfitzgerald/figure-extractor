@@ -59,9 +59,34 @@ dataset.
 2. **Stay online.** The tool pulls JSZip from a CDN; without it the Export buttons do
    nothing.
 
-3. **Settings** (gear icon): leave *"Auto-detect caption when drawing a figure"* **ON**.
-   The caption is *input* -- you are supposed to read it, and so is the machine. The DPI
-   setting is irrelevant here (pages are pre-rendered).
+3. **Settings** (gear icon). Two settings, and the first is not optional.
+
+   - **`Annotation mode` -> ON. REQUIRED.** It hides the `✨ Auto-panels` button, makes
+     `detectPanels` and `suggestSubfiguresLegacy` refuse to return anything, and stamps
+     `"annotationMode": true` into every file you export. **The ingest hard-rejects any
+     export without that stamp**, with the same severity as a detector fingerprint: the
+     session is not usable and has to be redone. The second rater is held to exactly the
+     same check, so a difference between the two of you can never be a difference in how
+     you were blinded.
+   - *Auto-detect caption when drawing a figure* -> **ON**. The caption is *input* -- you
+     are supposed to read it, and so is the machine.
+   - The DPI setting is irrelevant here (pages are pre-rendered).
+
+   **Verify it before you annotate anything**, once per browser profile. Draw a throwaway
+   figure box on any page, press **Export This Article**, open the JSON in a text editor
+   and confirm the top level contains:
+
+   ```json
+   "annotationMode": true
+   ```
+
+   If it says `false`, the checkbox is off. Turn it on, delete the throwaway figure, and
+   check again. Doing this once costs a minute; discovering it after a 20-item block costs
+   the block. The same check runs mechanically at ingest:
+
+   ```bash
+   python3 ingest_annotations.py ingest S01     # refuses on any export lacking the stamp
+   ```
 
 4. **Use the same browser profile, the same monitor, and the same display scaling for
    every session.** The tool keeps your work in that profile's `localStorage`. Changing
@@ -150,10 +175,21 @@ before that second ENTER). `b` logs a break, `q` quits and resumes later.
 
 The comparison is destroyed if you see the machine's answer first. Three rules:
 
-1. **Never press the `✨ Auto-panels` button.** Ever. It is in the Subfigures pane. Every
-   panel box must be one you drew. *This is checked automatically*: pressing it stamps a
-   `panelDetection` record into the export, and the ingest hard-rejects any session
-   carrying one. There is no way to un-press it -- you would have to redo the figure.
+1. **Never press the `✨ Auto-panels` button.** With `Annotation mode` ON (§1.3) the
+   button is not even shown, and the detector API refuses to return boxes, so this is
+   enforced rather than trusted. Every panel box must be one you drew.
+
+   Blinding is now checked **twice, in opposite directions**:
+
+   | check | what it proves | what fails it |
+   |---|---|---|
+   | `annotationMode: true` in the export | the detector **could not have run** | the Settings checkbox was off |
+   | no `panelDetection`, no `captionSource: 'panel-split'` | the detector **did not run** | Auto-panels was pressed |
+
+   The first is the one that matters: detecting a violation after the fact is strictly
+   worse than preventing it, and "we found no fingerprint" is a weaker claim than "the
+   export asserts it could not have happened". Both are hard rejections at ingest. There
+   is no way to un-press Auto-panels -- you would have to redo the figure.
 2. **Never open anything under `keys/`, `gt/`, or `benchmark/real/vision/`.** `keys/` maps
    the anonymous item ids back to articles and marks which items are repeats. `gt/` and
    `benchmark/real/vision/` hold previously read values.
@@ -164,6 +200,77 @@ The comparison is destroyed if you see the machine's answer first. Three rules:
 What you *are* free -- and expected -- to read: the figure, its caption, the legend, and
 the methods section of the paper. The machine gets the caption too. That is shared input,
 not a leak.
+
+---
+
+## 4b. Calibration round -- do this FIRST, before any scored session
+
+**This is your half of a two-rater round.** The second rater's protocol
+(`SECOND-RATER-PROTOCOL.md` §4) instructs him to do exactly the same three figures, on the
+same day, from an identical pair of zips. Both halves have to happen or neither is worth
+anything, so this section exists to make sure you do not skip yours.
+
+**Why.** Inter-rater studies fail far more often from **two people silently using different
+definitions** than from anybody being careless. Does the panel box include the axis labels?
+Is "the top of the bar" the top edge of the outline or the middle of it? Is the cap its
+centre line or its upper edge? Two raters who answer those differently produce a large,
+perfectly *reproducible* disagreement that looks like unreliability and is really a missing
+convention. It is bias, not noise, and bias does not average out. Settling it costs 40
+minutes; not settling it costs the study.
+
+**The three figures, and which stage each convention belongs to.** They come from papers
+already used for pilot work, are permanently DEV, and are built into `dan/calibration/` --
+a separate data tree the analysis cannot reach.
+
+| # | what it is | settles in **Stage A** | settles in **Stage B** |
+|---|---|---|---|
+| C1 | 2 tiles, grouped bar, SEM named in the caption -- the plain case | does the panel box include the y-axis and its tick labels | where exactly is the bar top; where exactly is the cap -- centre line or upper edge |
+| C2 | 6 tiles sharing an axis, SEM, significance glyphs genuinely over the caps (the figure that produced this project's asterisk-occlusion finding) | who owns a shared axis (§8.1) | asterisk vs cap (§8.5); what counts as occluded |
+| C3 | 5 visible tiles, caption names only 4 letters | what is a panel; do you split; how do you name an unlabelled tile (§8.6, §8.8) | -- nothing to digitise |
+
+**Read which column is which.** Panel boxes are Stage A and they are the cheap half -- a
+1 px slip on a 400 px box is 0.25%. **Every convention that moves a number is Stage B.** A
+round that stopped after Stage A would reconcile the boxes and none of the measurements,
+which is why both stages run before anybody compares anything.
+
+**Build both zips (you build them; the second rater only receives them):**
+
+```bash
+python3 prepare_dan_session.py calibrate             # -> DAN-C01-stageA.zip
+#   both raters do Stage A independently and return their projectA exports;
+#   unzip them into dan/calibration/sessions/C01/exports/passA/, one folder per item
+python3 prepare_dan_session.py calibrate --stage-b   # -> DAN-C01-stageB.zip
+```
+
+Stage B literally cannot be built before Stage A comes back: each rater's Stage B crops are
+re-rendered from **their own** panel boxes.
+
+**How to run your half:**
+
+1. **Stage A on all three figures**, exactly as §5 describes, with `Annotation mode` ON
+   (§1.3). Export, return the export. **Compare nothing yet.**
+2. **Stage B on the chart panels**, exactly as §6 and §7 describe -- coding form first,
+   landmarks second, zoom discipline as in §7.1-7.2. Export.
+3. **Only now**, each of you writes, separately, **one sentence per convention** in a plain
+   text file -- literally "I put the box edge at ..." / "I clicked the cap at ...". Six to
+   ten sentences, covering both columns of the table above.
+4. **Compare in a 20-minute call. Go through the sentences, not the numbers.** Where you
+   differ, pick one convention and record it in `SECOND-RATER-PROTOCOL.md` §13 with a date
+   and both sets of initials. That table overrides the corresponding rule in *both*
+   protocols for *both* raters from then on.
+5. **Do NOT compare your measured values on the calibration panels.** Reconcile
+   *definitions*, never *readings*. Agreeing "we should both have got about 21.4" trains you
+   toward each other on magnitudes, which is precisely the independence the second rater
+   exists to supply. Definitions are arbitrary choices that must be shared; magnitudes are
+   the measurement and must not be.
+6. Re-do any figure whose convention changed, so you both finish applying the agreed rules.
+   Then start the scored set -- **not on the same day**.
+
+**Nothing you do on these three figures is analysed.** Their only job is to surface a
+disagreement while it is still free to fix. The residual cost is real and is recorded as a
+caveat: calibrating conventions makes the two of you slightly more correlated, which
+slightly reduces the independence the analysis wants. It is the right trade, because an
+uncalibrated convention difference is bias and bias does not average out.
 
 ---
 
@@ -336,10 +443,41 @@ the vertical distance from bar top to cap should span **at least ~100 screen pix
 before you click. At that separation, one pixel of jitter is a 1% dispersion error; at 25
 pixels it is 4%.
 
-After ingest, run `python3 ingest_annotations.py audit --session S01`. It reports the
-implied 1-pixel jitter per channel and **names every landmark whose cap-to-top span fell
-below 100 px**. Re-pick those at higher magnification. Do not argue with it; that list is
-the measurement telling you it is not good enough yet.
+### 7.2 Screen pixels, image pixels, and which one the audit uses
+
+These are two different units and the protocol needs both, so here is the exact relation.
+
+Let `k` be the digitizer's **magnification**: screen pixels per image pixel. It is printed
+live in the digitizer header (`1.85x`, next to the panel name), and it is recorded in your
+export -- once per panel as `digitization.k`, and again on every individual point as the
+`k` in force when you clicked it.
+
+```
+screen span = k x image span
+```
+
+- **The rule you follow is in SCREEN pixels**, because your hand jitter is ~1 screen pixel
+  no matter how far you have zoomed. `>= 100 screen px` from bar top to cap.
+- **The audit's floor is in IMAGE pixels** (`ZOOM_FLOOR_PX = 100` in
+  `ingest_annotations.py`), because image pixels are what the stored geometry is in.
+
+The 1:1 grating (§7.1) guarantees `k >= 1`, so an image span of >= 100 px is *always* also
+a screen span of >= 100 px. The image-pixel floor is therefore **conservative**: it can
+flag a landmark you actually picked at adequate screen magnification, but it can never
+miss one you picked too small. That is the direction you want an audit to err in.
+
+The audit reports both:
+
+```bash
+python3 ingest_annotations.py audit --session S01
+```
+
+It prints the implied 1-pixel jitter per channel, and **names every landmark whose
+cap-to-top span fell below 100 IMAGE px**, with the recorded `k` and the implied screen
+span beside it. Re-pick anything whose **screen** span is under 100. A landmark below the
+image-pixel floor but comfortably above 100 screen px is fine and the audit says so --
+that is what recording `k` bought. Do not argue with the screen-span column; that number
+is the measurement telling you it is not good enough yet.
 
 ---
 
@@ -517,9 +655,26 @@ This validates everything, converts your pixels to data through the tool's own a
 writes the normalized ground-truth store, and **seals** the session with hashes and a UTC
 timestamp. It will refuse and tell you exactly what is wrong -- a form value outside the
 vocabulary, a click count that disagrees with your roster, a cap that is nowhere near its
-bar top, a detector fingerprint. Fix and re-run. Nothing is written until it all passes.
-(`--allow-problems` ingests the valid panels and warns about the rest; use it only when a
-panel genuinely cannot be fixed.)
+bar top, a missing `annotationMode` stamp, a detector fingerprint. Fix and re-run. Nothing
+is written until it all passes. (`--allow-problems` ingests the valid panels and warns about
+the rest; use it only when a panel genuinely cannot be fixed.)
+
+**Re-ingesting a session you have already ingested is destructive, and the ingest now says
+so.** It replaces every record for that session, which is what you want when you are redoing
+the session in full -- and is data loss when the second run produces *fewer* panels than the
+first, which is exactly what `--allow-problems` after a clean run does. The ingest compares
+the two sets, **names every panel that would disappear, and refuses**:
+
+```
+! RE-INGEST WOULD DESTROY 1 PANEL RECORD(S) already in human_gt.jsonl:
+!     - it04_9c1a_pB
+! prior: 4 records for S01; this run produced 3.
+refusing to write. Nothing has been changed in human_gt.jsonl.
+```
+
+A panel that ingested cleanly before and does not now is a **regression**, not a correction:
+find the missing export first. Only if the loss is genuinely intended -- the panel was
+withdrawn -- add `--reingest`, which writes anyway and prints what it discarded.
 
 Then:
 
@@ -643,51 +798,72 @@ is exactly the tolerance inside which no machine can be called wrong.
 
 ---
 
-## 12. Proposed tool change (not yet implemented -- **do not** edit `figure-extractor.html`)
+## 12. Tool support for this protocol -- what is implemented, and where
 
-Everything above works with the tool exactly as it is. Two changes would make the protocol
-safer and shorter, and are worth doing before this scales past a pilot. They are proposals
-for a separate, reviewed change:
+All three of the changes this section used to *propose* are now in
+`figure-extractor.html`. This section is the record of what they do and where to check
+them, not a wish list. `schemaVersion` stays **2**: every change is additive, and
+`figuresFromJSON` passes `digitization` through opaquely, so older exports still load.
 
-1. **An explicit annotation / blind mode.** A settings toggle `annotationMode` that, when
-   on, (a) hides or disables the `✨ Auto-panels` button and the
-   `window.figureExtractor.detectPanels` / `suggestSubfiguresLegacy` API entry points, and
-   (b) stamps `{"annotationMode": true}` into `buildAnnotations()`'s output.
+### 12.1 `annotationMode` -- blind mode (REQUIRED, §1.3)
 
-   *Why:* blinding is currently enforced **after the fact** -- the ingest detects that the
-   detector ran (`panelDetection != null`, `captionSource == 'panel-split'`) and throws the
-   figure away. Detecting a violation is strictly worse than preventing one: right now a
-   mis-click costs a redo. A positive `annotationMode` marker also converts blinding from
-   "we found no evidence it happened" into "the export asserts it could not have".
+A Settings toggle. When on:
 
-   *Cost:* one settings key, one `style.display`, one guard in `applyPanelResult`, one
-   field in two export sites (`buildAnnotations()` at line 6147 and the inline duplicate at
-   line 5906 -- both must change).
+| what it does | where |
+|---|---|
+| the setting exists and persists per browser profile | `figure-extractor.html:1300` (`settings`), `:1398` (checkbox state), `:1546` (`onchange`) |
+| the `✨ Auto-panels` button is not rendered | `:2894` -- `if (!locked && !settings.annotationMode)` in the Subfigures pane |
+| `detectPanels` refuses and returns `flags:['annotation-mode']` with no boxes | `:6745` |
+| `suggestSubfiguresLegacy` refuses identically | `:6763` -- it was the hole: it returns bare boxes, writes no `panelDetection` and stamps no `captionSource:'panel-split'`, so boxes taken from it left **no fingerprint at all** |
+| `"annotationMode": true` is stamped into the export | **both** export sites: `:5941` (the inline duplicate) and `:6184` (`buildAnnotations()`) |
 
-2. **Persist and export the digitizer's effective magnification.** `persistDig()` currently
-   stores `cal / vals / points / series / notes`. Add `view: {zoom, panX, panY}` and
-   `scale` (the crop-to-canvas fit factor), and ideally record per point the `k =
-   dig.scale * dig.view.zoom` in force when it was clicked.
+Enforcement is symmetric across the two raters: `rvcommon.annotation_mode_violations()`
+is the single implementation, called by `ingest_annotations.py` for Greg and by
+`prepare_dan_session.check_exports` for the second rater, with the same severity and the
+same message. An export without the stamp is rejected, not warned about.
 
-   *Why:* zoom is the single strongest determinant of click precision on the dispersion
-   channel, and it is currently **invisible in the artifact**. The 1:1 grating in §7.1 is a
-   workaround for a missing readout: it makes the rule *checkable by the human* but leaves
-   the audit inferring magnification from image-pixel distances plus an assumption. With
-   `k` exported, the audit could report the *actual* screen-pixel separation of every
-   landmark and the jitter estimate would stop being an assumption.
+### 12.2 Exported magnification -- the zoom floor in the unit the rule is written in
 
-   *Cost:* five keys in one object literal (line 5592). Additive; `schemaVersion` stays 2,
-   and `figuresFromJSON` passes `digitization` through opaquely so old files still load.
+`persistDig()` (`figure-extractor.html:~5592`) now stores, alongside
+`cal / vals / points / series / notes`:
 
-A third, smaller one: a **live magnification readout** in the digitizer header
-(`${(dig.scale * dig.view.zoom).toFixed(1)}x`) would let the rater hit a numeric zoom
-target directly instead of judging a grating.
+```jsonc
+"view":  { "zoom": 1.75, "panX": -412, "panY": -88 },
+"scale": 1.06,                 // the crop-to-canvas fit factor
+"k":     1.855                 // = scale * view.zoom, screen px per image px
+```
+
+and every point records the `k` in force **when it was clicked**
+(`dig.points.push({px, py, s, k})`).
+
+*Why it mattered:* §7.1's rule is stated in **screen** pixels and the audit could only
+measure **image** pixels, so it had to assume `k >= 1` from the grating and report a lower
+bound. With `k` in the artifact the audit computes `screen = k x image` and names the
+landmarks that genuinely fail the rule instead of the ones that merely look small. See
+§7.2 for the arithmetic and `ingest_annotations.py::jitter_report`.
+
+### 12.3 Live magnification readout
+
+The digitizer header prints `k` continuously (`1.85x`, next to the panel name;
+`figure-extractor.html::digRender`). The 1:1 grating was always a workaround for a missing
+number. Use the number: it lets you hit a magnification target directly rather than judging
+whether a grating has aliased.
+
+### 12.4 Stale-work guard on session rebuilds
+
+`localStorage` is keyed by article name, so a rebuilt session used to silently serve the
+*previous* run's boxes over the freshly written `annotations.json`. The harness now writes
+`"forceCleanLoad": true` into every session's `annotations.json`, and the tool discards the
+cached copy and tells you it did (`figure-extractor.html::loadArticleAnnotations`). If you
+ever see a toast saying your item is being served from **browser storage** rather than the
+session file, stop: that item was rebuilt and you are looking at stale work.
 
 ---
 
 ## 13. If you only remember five things
 
-1. Never press **Auto-panels**.
+1. **`Annotation mode` ON**, always. An export without the stamp is rejected, not warned
+   about -- and with it on, **Auto-panels** is not even shown.
 2. Fill the coding form **before** you pick landmarks.
 3. Zoom until the striped patch shows **separate lines**, and further still for short caps.
 4. Click each landmark slot **left to right**, matching the `marks[]` roster exactly.
@@ -699,6 +875,9 @@ target directly instead of judging a grating.
 
 ```bash
 cd /mnt/c/Users/gregs/figure-extractor/benchmark/real-validation
+
+python3 prepare_dan_session.py calibrate         # ONCE, first: the two-rater calibration
+python3 prepare_dan_session.py calibrate --stage-b   #   ... after both Stage A exports return
 
 python3 prepare_session.py plan                 # once, for the whole corpus
 python3 prepare_session.py status               # where everything stands

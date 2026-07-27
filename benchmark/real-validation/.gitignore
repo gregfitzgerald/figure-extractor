@@ -8,3 +8,7 @@ pred/
 out/
 split.json
 __pycache__/
+
+# The second rater's tree: page renders of paywalled PDFs, his session materials, his GT
+# store and his sealed key. Same rule as `gt/` -- derived from private data, never committed.
+dan/

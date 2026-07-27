@@ -517,6 +517,11 @@ def cmd_build_b(args):
             # so it leaks nothing from the detector.
             rv.write_json(projb / pid / "annotations.json", {
                 "schemaVersion": rv.SCHEMA_VERSION, "project": args.session, "article": pid,
+                # STALE-WORK GUARD (amendment A12). localStorage is keyed by article name
+                # and a rebuild reuses the name, so without this the browser serves the
+                # PREVIOUS build's boxes over this file and says nothing. The tool honours
+                # the flag by discarding its cache for this item and telling the rater.
+                "forceCleanLoad": True,
                 "exportedAt": rv.now_iso(),
                 "pages": [{"pageNum": 1, "width": canvas.width, "height": canvas.height}],
                 "figures": [{"id": "fig1", "label": pid, "pageNum": 1,
