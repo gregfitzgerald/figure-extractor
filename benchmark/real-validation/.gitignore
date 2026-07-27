@@ -1,0 +1,10 @@
+# Generated artifacts. Code, the plan, and the frozen synthetic comparators are
+# committed; everything derived from Greg's private dissertation data or from a
+# detector run is not (project convention: benchmark/README.md).
+coded/
+gt/
+repeat/
+pred/
+out/
+split.json
+__pycache__/

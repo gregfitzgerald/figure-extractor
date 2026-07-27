@@ -1,0 +1,106 @@
+{
+  "_comment": [
+    "FROZEN synthetic comparators for the real-figure transfer gap Delta = synthetic - real.",
+    "Sourced verbatim from the committed synthetic RESULTS. Do not edit to make a Delta look",
+    "better; if a synthetic tier is re-run, add a new dated block and keep this one.",
+    "'n' is the denominator the synthetic number was computed on -- needed for the",
+    "rule-of-three bound on any 0.0/1.0 entry."
+  ],
+  "frozenAt": "2026-07-27",
+  "sources": {
+    "panels": "benchmark/panels/RESULTS.md + benchmark/WHITE-PAPER-LOG.md sec.10d (final cascade, 41 figs / 159 panels)",
+    "classify": "benchmark/classify/RESULTS.md (summary_firstpass, n=80)",
+    "series": "benchmark/series/RESULTS.md (firstpass base 19 charts/495 marks; stress 4/229)",
+    "channels": "benchmark/RESULTS_geometry_floor.md + benchmark/real/RESULTS.md sec.3"
+  },
+
+  "panels": {
+    "n_figures": 41,
+    "n_panels": 159,
+    "iouMedian":            {"value": 1.000, "unit": "iou",  "higherBetter": true,  "maxDelta": 0.10, "threshold": 0.90},
+    "pct90":                {"value": 0.881, "unit": "prop", "higherBetter": true,  "maxDelta": 0.23, "threshold": 0.65, "n": 159},
+    "pct50":                {"value": 0.881, "unit": "prop", "higherBetter": true,  "maxDelta": null, "threshold": 0.90, "n": 159,
+                             "note": "lower bound: RESULTS reports >=0.9 at 88.1%; >=0.5 is at least that"},
+    "countAcc":             {"value": 0.951, "unit": "prop", "higherBetter": true,  "maxDelta": 0.10, "threshold": 0.85, "n": 41},
+    "labelAccLocalised":    {"value": 1.000, "unit": "prop", "higherBetter": true,  "maxDelta": 0.02, "threshold": 0.98, "n": 159},
+    "silentMislabel":       {"value": 0.000, "unit": "prop", "higherBetter": false, "maxDelta": 0.025, "threshold": 0.025, "n": 159, "zeroEvent": true},
+    "figExactAnswered":     {"value": 1.000, "unit": "prop", "higherBetter": true,  "maxDelta": 0.15, "threshold": 0.85, "n": 27},
+    "errorRateAnswered":    {"value": 0.000, "unit": "prop", "higherBetter": false, "maxDelta": 0.10, "threshold": 0.10, "n": 27, "zeroEvent": true},
+    "coverage":             {"value": 0.659, "unit": "prop", "higherBetter": true,  "maxDelta": 0.16, "threshold": 0.50, "n": 41},
+    "abstentionPrecision":  {"value": 0.88,  "unit": "prop", "higherBetter": true,  "maxDelta": null, "threshold": 0.60},
+    "abstentionRecall":     {"value": 0.94,  "unit": "prop", "higherBetter": true,  "maxDelta": null, "threshold": 0.50},
+    "netFiguresSaved":      {"value": 13,    "unit": "count","higherBetter": true,  "maxDelta": null, "threshold": 0.0001, "gate": true}
+  },
+
+  "classify": {
+    "n": 80,
+    "accuracy":          {"value": 1.000, "unit": "prop", "higherBetter": true,  "maxDelta": 0.10, "threshold": 0.90, "n": 80},
+    "macroF1":           {"value": 1.000, "unit": "prop", "higherBetter": true,  "maxDelta": null, "threshold": 0.85},
+    "priorityFlipRate":  {"value": 0.000, "unit": "prop", "higherBetter": false, "maxDelta": 0.05, "threshold": 0.05, "n": 80, "zeroEvent": true, "gate": true},
+    "ece":               {"value": 0.072, "unit": "abs",  "higherBetter": false, "maxDelta": null, "threshold": 0.15}
+  },
+
+  "series": {
+    "n_marks_base": 495, "n_marks_stress": 229, "n_series_base": 57,
+    "misassignSeriesBound": {"value": 0.000, "unit": "prop", "higherBetter": false, "maxDelta": 0.02, "threshold": 0.02, "n": 495, "zeroEvent": true,
+                             "stress": 0.048},
+    "misassignArmBound":    {"value": 0.000, "unit": "prop", "higherBetter": false, "maxDelta": 0.02, "threshold": 0.02, "n": 495, "zeroEvent": true,
+                             "stress": 0.048},
+    "misassignStructural":  {"value": 0.000, "unit": "prop", "higherBetter": false, "maxDelta": 0.05, "threshold": 0.05, "n": 495, "zeroEvent": true},
+    "meanARI":              {"value": 1.000, "unit": "abs",  "higherBetter": true,  "maxDelta": null, "threshold": 0.90, "stress": 0.930},
+    "armNameAccuracy":      {"value": 1.000, "unit": "prop", "higherBetter": true,  "maxDelta": 0.01, "threshold": 0.99, "n": 57, "gate": true},
+    "signFlipRate":         {"value": 0.000, "unit": "prop", "higherBetter": false, "maxDelta": 0.05, "threshold": 0.05, "n": 145, "zeroEvent": true, "gate": true}
+  },
+
+  "channels": {
+    "_comment": "human_floor = Greg's own 1px click jitter measured against R's exact descriptives.",
+    "centralMedianPct":     {"value": 0.44,  "unit": "pct", "higherBetter": false, "maxDelta": -0.6, "threshold": 1.0,
+                             "alt": {"cv_autoreader": 0.45, "vision_agent": 1.17, "real_pilot_n16": 0.47}},
+    "dispersionMedianPct":  {"value": 4.15,  "unit": "pct", "higherBetter": false, "maxDelta": null, "threshold": null,
+                             "alt": {"cv_autoreader": 8.89, "vision_agent": 8.20, "real_pilot_n16": 3.67},
+                             "note": "NOT an accuracy threshold on real figures -- see ANALYSIS-PLAN sec.1. Context only."},
+    "dispersionWorstPct":   {"value": 37.3,  "unit": "pct", "higherBetter": false, "maxDelta": null, "threshold": null,
+                             "alt": {"cv_autoreader": 21.5, "real_pilot_n16": 18.11}}
+  },
+
+  "goldenDiff": {
+    "_comment": "the 8-comparison real pilot, for reference; not a synthetic comparator",
+    "pilot": {"g_coded": 0.487, "g_ext": 0.475, "delta": -0.0125, "signFlips": 0, "nComparisons": 8,
+              "median_abs_dg": 0.017, "max_abs_dg": 0.078},
+    "thresholds": {"absDeltaG": 0.05, "relDeltaG": 0.10, "ciOverlap": 0.90,
+                   "tau2RatioLo": 0.80, "tau2RatioHi": 1.25, "i2AbsDiffPP": 10.0,
+                   "medianAbsDg": 0.05, "maxAbsDg": 0.30,
+                   "signFlipRate": 0.0, "weightRho": 0.95, "tostMargin": 0.10}
+  },
+
+  "dispersionAgreement": {
+    "_comment": "no synthetic comparator exists for these -- they are real-figure-only constructs",
+    "baBiasPct":        {"threshold": 5.0,  "gate": true},
+    "baLoAPct":         {"threshold": 25.0, "gate": true},
+    "grubbsRatioMG":    {"threshold": 1.5,  "gate": true, "target": 1.0},
+    "shortCapTertilePct": {"threshold": 10.0, "gate": true},
+    "midLongCapTertilePct": {"threshold": 5.0},
+    "oracleMedianPct":  {"threshold": 5.0},
+    "oracleP90Pct":     {"threshold": 15.0},
+    "rFloor":           {"threshold": 1.0, "note": "R_floor <= 1 is the ML-detector NO-GO condition"}
+  },
+
+  "detection": {
+    "_comment": "no synthetic detection benchmark exists; absolute thresholds only, Delta undefined",
+    "figureIouMedian":      {"threshold": 0.90},
+    "figureIouPct75":       {"threshold": 0.90},
+    "figureRecall":         {"threshold": 0.95},
+    "figurePrecision":      {"threshold": 0.90},
+    "spuriousPerPage":      {"threshold": 0.15, "higherBetter": false},
+    "captionAssocAccuracy": {"threshold": 0.95, "gate": true},
+    "captionLetterAccuracy":{"threshold": 0.95, "gate": true}
+  },
+
+  "extraction": {
+    "dispersionTypeAgreement":  {"threshold": 0.90},
+    "dispersionTypeFlagRecall": {"threshold": 0.80, "gate": true},
+    "centralMedianPct":         {"threshold": 1.0},
+    "centralP95Pct":            {"threshold": 5.0},
+    "centralWorstPct":          {"threshold": 10.0}
+  }
+}

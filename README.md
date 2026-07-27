@@ -62,9 +62,16 @@ is specified in [`benchmark/README.md`](benchmark/README.md) and not yet run.
 
 Open `figure-extractor.html` in any modern browser.
 
-> Some features (the folder picker, the File System Access API) require a real origin. If the
-> `file://` page misbehaves, serve the directory: `python3 -m http.server 8001` then open
-> <http://localhost:8001/figure-extractor.html>.
+> **Which origin you open it from changes the folder UI**, because the File System Access API is
+> unavailable on `file://`:
+> - **`file://`** -- you get **Select Project Folder** (the `webkitdirectory` picker). Simple, works
+>   offline, loads a project folder of page images.
+> - **`python3 -m http.server 8001`** then <http://localhost:8001/figure-extractor.html> -- you get
+>   the richer **Open Folder** file tree plus the **Render PDFs** batch picker, and recent projects
+>   are remembered. `Select Project Folder` is hidden in this mode.
+>
+> Both load projects; pick whichever suits the task. (Export needs a network connection -- JSZip
+> loads from a CDN.)
 
 **Load a paper** -- single-click a PDF in the browser pane, or drag a PDF onto the article pane.
 Pages render client-side via PDF.js at the PDF's **native resolution** by default (never upscaled --

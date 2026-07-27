@@ -400,6 +400,33 @@ grid seams cannot express a pinwheel -- a different algorithm, not a threshold);
 label conventions (A-C top-left, D bottom-right) are rejected by the consistency requirement; and two
 12px bold-sans glyphs (G, D) fail the runner-up margin, which was deliberately *not* loosened.
 
+## 10e. Known limitation to address later: one caption letter, several visual tiles
+
+Real journal captions frequently write "(A)" for something drawn as **several separate tiles** --
+present in **8 of the 14 Tier-1 real-validation figures**, and in **zero** of the 41 synthetic ones.
+This attacks the cascade's single biggest lever directly: the caption-count constraint (removing which
+drops exact-count from 95.1% to 9.1%). When the caption says 5 letters and the image shows 12 tiles,
+the hard constraint is *correct about arms and wrong about geometry*.
+
+**Decision taken for now: flag and escalate, do not silently reconcile.** Teaching the cascade that one
+letter may span k tiles would weaken the very constraint that makes everything else accurate, so the
+detector should detect the mismatch and abstain rather than guess a grouping. The Tier-1 human
+annotation will measure how often this actually bites, and that number decides whether it is worth
+building a letter-spans-tiles model.
+
+Related real-corpus gaps with no synthetic counterpart (all found by surveying 222 real figures):
+non-`[A-Z]` label systems (primes, `A-(a)`, `a.i`), caption formats (`A)`, `A,`, `Panel A`, letters
+buried in prose), positional-only captions ("left", "top row"), tables/blots/equations serving as
+panels, section-heading bands inside figures, and **non-bar central-tendency landmarks** (a mean line
+over a point cloud -- increasingly the modern default and outside the `bar-top -> mean` model the
+harness assumes).
+
+Conversely, strata the synthetic ladder tests that the real corpus does **not contain at all**:
+heatmaps and colourbars (0 of 222 figures), top-centre and bottom-right label placement (real papers
+use bottom-*left*), 14 of the 18 classified chart types, and near-absence of true non-guillotine
+layouts (1 verified instance vs 15% of the synthetic ladder). Those results must be labelled
+synthetic-only rather than presented as validated capability.
+
 ## 11. Evaluation-integrity practices worth reporting
 
 - **Leak-free tasks**: prompts carry the rubric and the allowed label sets but never the answers.

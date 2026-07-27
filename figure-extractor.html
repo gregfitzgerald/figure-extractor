@@ -1222,6 +1222,9 @@
             <label style="display:flex;align-items:center;gap:8px;margin:12px 0;">
                 <input type="checkbox" id="setAutoCaption" style="width:auto;margin:0;"> Auto-detect caption when drawing a figure
             </label>
+            <label style="display:flex;align-items:center;gap:8px;margin-top:8px;">
+                <input type="checkbox" id="setAnnotationMode" style="width:auto;margin:0;"> Annotation mode (disable auto-panel suggestions; for unbiased ground truth)
+            </label>
             <label style="display:flex;align-items:center;gap:8px;margin:12px 0;">
                 <input type="checkbox" id="setDarkMode" style="width:auto;margin:0;"> Dark mode
             </label>
@@ -1290,7 +1293,11 @@ const state = {
 };
 
 // User preferences (persisted).
-const settings = { dpi: 'original', autoCaption: true };
+// `annotationMode`: for producing UNBIASED human ground truth. It disables every automated
+// panel suggestion (the Auto-panels button and the detectPanels API) and stamps the flag into
+// the export, so a downstream study can PROVE the annotation was not anchored by machine output
+// rather than merely finding no fingerprint of it.
+const settings = { dpi: 'original', autoCaption: true, annotationMode: false };
 function loadSettings() {
     try { Object.assign(settings, JSON.parse(localStorage.getItem('figext_settings')) || {}); } catch (e) {}
 }
@@ -1388,6 +1395,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('settingsBtn').onclick = () => {
         document.getElementById('setDpi').value = settings.dpi;
         document.getElementById('setAutoCaption').checked = settings.autoCaption;
+        document.getElementById('setAnnotationMode').checked = !!settings.annotationMode;
         document.getElementById('setDarkMode').checked = document.documentElement.getAttribute('data-theme') === 'dark';
         toggleSettings(true);
     };
@@ -1528,6 +1536,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.getElementById('setDpi').onchange = (e) => { settings.dpi = e.target.value; saveSettings(); };
     document.getElementById('setAutoCaption').onchange = (e) => { settings.autoCaption = e.target.checked; saveSettings(); };
+    document.getElementById('setAnnotationMode').onchange = (e) => { settings.annotationMode = e.target.checked; saveSettings(); renderFiguresPane(); };
     document.getElementById('setDarkMode').onchange = (e) => { const t = e.target.checked ? 'dark' : 'light'; localStorage.setItem('figext_theme', t); applyTheme(t); };
 
     // Hold Shift to force-draw a new box even over the selected one.
@@ -2875,7 +2884,7 @@ function createFigureCard(fig) {
     fig.subfigures.forEach(sub => subList.appendChild(createSubfigureItem(sub, fig)));
     subPanel.appendChild(subList);
 
-    if (!locked) {
+    if (!locked && !settings.annotationMode) {   // annotation mode: no machine suggestions at all
         const autoBtn = document.createElement('button');
         autoBtn.className = 'caption-btn';
         autoBtn.style.cssText = 'margin-top:8px;width:100%;';
@@ -5908,6 +5917,7 @@ async function exportAllProjects() {
                 project: state.projectName,
                 article: article.name,
                 exportedAt: new Date().toISOString(),
+                annotationMode: !!settings.annotationMode,
                 pages: Object.keys(imgs).map(pn => ({ pageNum: +pn, width: imgs[pn].naturalWidth, height: imgs[pn].naturalHeight })),
                 figures: figuresToJSON(figures, dimFor)
             }, null, 2));
@@ -6150,6 +6160,7 @@ function buildAnnotations() {
         project: state.projectName,
         article: state.currentArticle,
         exportedAt: new Date().toISOString(),
+        annotationMode: !!settings.annotationMode,
         pages: state.pages.map(p => ({ pageNum: p.pageNum, width: p.img.naturalWidth, height: p.img.naturalHeight })),
         figures: figuresToJSON(state.figures)
     };
@@ -6678,6 +6689,10 @@ window.figureExtractor = {
     // letters, and writing it into the annotations is exactly the silent wrong answer this
     // API refuses to produce; `applied` reports truthfully what happened.
     detectPanels: (figureId, opts = {}) => {
+        // Annotation mode produces unbiased human GT: refuse to emit any machine suggestion.
+        if (settings.annotationMode) return { ok: false, panels: [], count: 0, method: 'none',
+            confidence: 0, flags: ['annotation-mode'], applied: false,
+            error: 'annotationMode is on -- automated panel detection is disabled' };
         const fig = state.figures.find(f => f.id === figureId);
         if (!fig) throw new Error(`Figure not found: ${figureId}`);
         const res = detectPanelsCore(fig, opts);
