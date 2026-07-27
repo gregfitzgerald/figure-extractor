@@ -49,6 +49,11 @@ bench/truth.json
 bench/floor.json
 # real-figure crops from published articles (copyright)
 benchmark/real/panels/
+# ...and anything derived from them that carries the pixels onward. The read report embeds
+# the panels as base64 JPEG, so the `*.png` rule below does not cover it. Regenerate with
+# `python3 overlay_reads.py && python3 make_read_report.py` -- the generators are committed.
+benchmark/real/out/overlays/
+benchmark/real/out/read-report.html
 # classification corpus: keep GT labels + code, drop regenerable synthetic renders
 benchmark/classify/corpus/*.png
 benchmark/classify/tasks/img/
