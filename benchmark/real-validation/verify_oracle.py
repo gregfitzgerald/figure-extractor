@@ -1,6 +1,17 @@
 #!/usr/bin/env python3
 """verify_oracle.py -- decide, MECHANICALLY, whether a coded value is a real oracle.
 
+SUPERSEDED -- DO NOT RUN. Use `verify_oracle_v2.py`.
+This is v1, retained only as provenance for the amendment trail. It undercounted the oracle
+stratum by construction, for two independent reasons (ANALYSIS-PLAN sec.1.4b):
+  * it searched the article's BODY TEXT only, but "reported in text and figure" also covers
+    the figure CAPTION and values printed INSIDE the figure (above a bar, in an inset table);
+  * it resolved PDFs through `benchmark/real/pdf_map.json`, which covers the 43 articles that
+    survived the content screen rather than the 171 with figure data -- so 104 of its 138
+    candidates came back NO_PDF and it called the answer on the 34 it could check.
+It returned 1 confirmed of 34 checkable. Running it now would write those weaker
+`oracleVerified` flags back over v2's.
+
 Why this exists
 ---------------
 A coded row whose `Data_Extraction_Method` reads "Reported in text/figure" or "Reported

@@ -125,8 +125,11 @@ ZOTERO_STORAGE = os.environ.get("ZOTERO_STORAGE", str(_ZHOME / "storage"))
 TESSERACT = os.environ.get("TESSERACT_EXE", "/mnt/c/Program Files/Tesseract-OCR/tesseract.exe")
 OCR_DPI = 400
 # Tesseract here is the Windows build invoked from WSL, so its file arguments must be
-# Windows paths on a drive WSL exposes. Scratch therefore lives under /mnt/c.
-OCR_SCRATCH = pathlib.Path("/mnt/c/Users/gregs/figure-extractor/.ocrtmp")
+# Windows paths on a drive WSL exposes -- scratch must therefore live under /mnt/c, not in
+# /tmp. Derived from this file's own location (which already satisfies that on the author's
+# machine) rather than hardcoded to one user's home, so a clone elsewhere still works.
+OCR_SCRATCH = pathlib.Path(os.environ.get(
+    "OCR_SCRATCH", str(HERE.parent.parent / ".ocrtmp")))
 
 # ---------------------------------------------------------------- ADJUDICATION LEDGER
 # The mechanical search PROPOSES; a recorded hand adjudication DISPOSES.

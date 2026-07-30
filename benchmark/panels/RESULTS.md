@@ -338,36 +338,64 @@ Stratified -- this is the deliverable:
 
 ---
 
-## 7. Reference: the cascade detector (snapshot)
+## 7. The cascade detector
 
-A parallel rewrite replaced `suggestSubfigures` with `detectPanelsCore` (caption constraint
--> XObject fast path -> structural pass -> label anchoring -> verification) while this tier
-was being built. Scored here with the same yardstick, at `--abstain-at 0.35` (its own gate),
-as a moving-target snapshot rather than a final number:
+A rewrite replaced `suggestSubfigures` with `detectPanelsCore` (caption constraint -> XObject
+fast path -> structural pass -> label anchoring -> verification). Both columns below are
+scored with the same yardstick over the same 41-figure corpus; the cascade at
+`--abstain-at 0.35` (its own gate). Reproduce with:
+
+```bash
+python3 score.py --run legacy_caption
+python3 score.py --run post_fix_ext --abstain-at 0.35
+```
 
 ```
                                  legacy (caption)     cascade
-  per-panel IoU median                 0.407           0.923
-  panels IoU >= 0.9                    10.1%           52.9%
-  exact panel count                    75.8%           66.7%
-  letter accuracy (localised)          87.5%           90.1%
-  whole figure exactly right           30.3%           51.5%
-  error rate on ANSWERED figures       66.7%            6.2%
-  abstention precision / recall     0.83 / 0.22     0.88 / 0.94
-  net figures saved by abstaining        +4             +13
+  per-panel IoU median                 0.398           1.000
+  panels IoU >= 0.9                     7.5%           88.1%
+  exact panel count                    80.5%           95.1%
+  letter accuracy (localised)          74.1%          100.0%
+  silent mislabels                      9.4%            0.0%
+  whole figure exactly right           22.0%           95.1%
+  exactly right, ANSWERED ONLY            --           100.0%  (27 figures)
+  coverage                             85.4%           65.9%
+  spurious boxes                          99               2
+  panels never matched                    30               7
 
-  by gutter    wide    1.000 medIoU / 100% >= .9      (legacy 0.734 / 40%)
-               medium  0.958 / 70%                    (legacy 0.556 / 11%)
-               tight   0.915 / 52%                    (legacy 0.373 /  0%)
-               flush   0.000 /  0%                    (legacy 0.000 /  0%)
-  by layout    guillotine     0.941 / 58%             (legacy 0.424 / 13%)
-               non-guillotine 0.107 / 35%             (legacy 0.299 /  0%)
+  medIoU / figures exactly right     cascade         legacy
+  by gutter    wide                 0.965 / 100%    0.622 /  29%
+               medium               1.000 / 100%    0.442 /  28%
+               tight                1.000 /  86%    0.373 /   0%
+               flush                0.997 /  86%    0.000 /  14%
+  by layout    guillotine           1.000 / 100%    0.409 /  26%
+               non-guillotine       0.925 /  67%    0.299 /   0%
 ```
 
-Tight gutters are solved; localisation on guillotine layouts is transformed; and the
-abstention channel is now real -- it catches 94 % of its own errors, so what it does answer
-is wrong 6 % of the time instead of 67 %. **Flush mosaics (0 %) and non-guillotine layouts
-(0 figures exactly right) are still open**, and are where the remaining work is.
+**Read the two headline numbers together.** "95.1% whole figure exactly right" counts an
+abstention as right whenever the answer it withheld would have been right, so it is a
+statement about the detector's *judgement*, not its throughput. The throughput number is
+coverage: it answers 27 of 41 figures and declines 14. On those 27 it is exactly right
+**100%** of the time -- right panel count, every box at IoU >= 0.5, no mislabelled letters --
+and letter accuracy is 100% with **zero silent mislabels**, which is the failure class that
+matters, because a box confidently labelled with the wrong letter attaches a number to the
+wrong experimental arm.
+
+So the honest summary is: *it declines a third of figures, and is not observed to be wrong on
+what it accepts.* For an extraction pipeline feeding a meta-analysis that is the right trade --
+an abstention costs a minute of human attention, a silent mislabel corrupts a study's weight.
+
+Tight gutters and flush mosaics both went from unusable to 86% exact, and guillotine layouts
+are perfect. **Non-guillotine layouts are the remaining weakness** -- 0.925 medIoU but only
+67% of figures exactly right, the one stratum still below the tight/flush pair. Section 3b
+explains why non-guillotine geometry resists a recursive cut. The residual localisation
+misses are spread across non-guillotine, tight and flush (each has panels under the IoU >= 0.5
+bar); the abstention gate is what keeps them out of the answered set.
+
+> Earlier revisions of this section reported a mid-development snapshot (medIoU 0.923, 51.5%
+> exact, flush and non-guillotine at 0%). That snapshot predated the label-anchoring and
+> verification repairs and understated the detector substantially; it is superseded by the
+> measured numbers above.
 
 ---
 

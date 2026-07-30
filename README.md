@@ -54,9 +54,36 @@ coincident, 0/8 sign flips.
 deliberately cluttered: 100% classification accuracy, no degradation on the cluttered tier. The
 bottleneck is localization and structure, not recognition.
 
-**Honest scope:** except where noted, these are synthetic charts. They *bound* accuracy and *locate*
-risk; they do not prove a trained model beats a capable agent on messy real figures. That experiment
-is specified in [`benchmark/README.md`](benchmark/README.md) and not yet run.
+**6. Splitting a multi-panel figure works, provided it is allowed to decline.** 41 seeded figures /
+159 panels, each with an exact pixel box and a letter ([`benchmark/panels/RESULTS.md`](benchmark/panels/RESULTS.md)):
+
+| | legacy XY-cut | cascade detector |
+|---|---|---|
+| per-panel IoU, median | 0.398 | **1.000** |
+| exact panel count | 80.5% | **95.1%** |
+| letter accuracy | 74.1% | **100%** |
+| **silent mislabels** | 9.4% | **0%** |
+| coverage (figures answered) | 85.4% | 65.9% |
+| exactly right, *answered only* | -- | **100%** (27 figures) |
+
+Read those last two rows together: it declines a third of figures and is not observed to be wrong on
+what it accepts. That is the right trade here -- an abstention costs a minute of attention, whereas a
+box confidently labelled with the wrong letter attaches a number to the wrong experimental arm.
+Non-guillotine layouts (67% exact) are the remaining weakness. **The caption is the load-bearing
+input:** withhold it from the same detector and exact-count collapses from 80.5% to 7.3%, with
+spurious boxes going 99 -> 305. Knowing how many panels to expect is worth more than any amount of
+pixel cleverness.
+
+**Honest scope.** Findings 1, 2, 3, 5 and 6 are measured on *synthetic* charts that R rendered from
+known data, so the ground truth is exact by construction. They *bound* accuracy and *locate* risk;
+they do not prove a trained model beats a capable agent on messy real figures. Finding 4 is the one
+real-figure result, and it is small: 6 panels, 3 articles, one reader, no repeat read.
+
+Two things are consequently **not** established. There is no measurement of a *human* reader in the
+loop -- every number above comes from exact pixels, simulated jitter, a CV reader or a vision model.
+And panel detection has never been scored on a real journal figure; the 95.1% is entirely synthetic.
+Both gaps are the subject of [`benchmark/real-validation/`](benchmark/real-validation/), a
+pre-registered human annotation study that is built and blinded but not yet run to completion.
 
 ## Quick start
 
@@ -144,9 +171,14 @@ benchmark/                    R-ground-truth extraction benchmark
   r/                          GT engine: R simulates data -> computes descriptives ->
                               renders the chart -> exports exact device pixels
   harness/                    Tool-comparison scorers (dispersion is a first-class channel)
-  real/                       Real-figure golden diff vs hand-coded values
+  real/                       Real-figure golden diff vs hand-coded values, plus
+                              overlay_reads.py / make_read_report.py, which draw the
+                              reader's actual picked pixels back onto each journal panel
   classify/                   Chart-type classification corpus (18 types, 12 R libraries)
+  panels/                     Multi-panel decomposition tier (41 figures, 159 panels)
   series/                     Series/group parsing tier (which mark belongs to which arm)
+  real-validation/            Pre-registered human annotation study: blinded session
+                              builder, ingest with structural blinding gates, analysis plan
   WHITE-PAPER-LOG.md          Running technical log of findings and caveats
 
 meta-analysis/                Evidence-synthesis pipeline (staged, human-gated, audited)
@@ -162,8 +194,23 @@ python3 scripts/test_browser.py       # end-to-end: synthetic PDF, drives the to
 python3 scripts/test_meta_layer.py    # provenance flags, dispersion guard, landmark-only export
 python3 scripts/test_series_layer.py  # series/arm structure, validation, human-gate preview
 python3 scripts/test_series_e2e.py    # end-to-end on real benchmark ground truth (6 arms)
+python3 scripts/test_panels.py        # 20 panel-detection cases + the annotationMode guards
 python3 scripts/test_ocr.py           # scanned-PDF OCR sidecar (skips without tesseract)
 ```
+
+The human-validation harness has its own suite (run from `benchmark/real-validation/`):
+
+```bash
+python3 prepare_session.py --selftest      # session planning, blinding, repeat scheduling
+python3 prepare_dan_session.py --selftest  # second-rater packaging, id/seed independence
+python3 test_prereq_gate.py                # the build gate on a mixed trailing session
+python3 test_end_to_end.py                 # plan -> annotate -> ingest -> intra-rater report
+python3 test_second_rater.py               # inter-rater subset, gates, mislabelled-ingest refusal
+```
+
+Four of the five run on a fresh clone. Only `test_end_to_end.py` needs real article PDFs, resolved
+via `benchmark/real/pdf_map.json` -- generated locally by `resolve_pdfs.py` against a Zotero library,
+and not redistributable -- so it exits with `need 4 resolvable PDFs` rather than skipping cleanly.
 
 Browser tests need PyMuPDF + Playwright and a server on `:8001`:
 

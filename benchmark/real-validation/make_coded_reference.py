@@ -34,21 +34,32 @@ import argparse
 import collections
 import json
 import math
+import os
 import pathlib
 import re
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = HERE / "coded"
-WORKBOOKS = pathlib.Path(
+
+# The hand-coded dissertation data lives in a separate, private repository. Resolution order
+# matches benchmark/real/inventory.py so the two agree: an explicit env var, then that repo
+# cloned as a SIBLING of this one, then the author's own absolute paths as a last resort.
+# (The absolute defaults used to be the only option, which made this script unrunnable by
+# anyone else and contradicted the README's promise of RODENT_CSV / HUMAN_CSV overrides.)
+_SIBLING = HERE.parent.parent.parent / "GSF-dissertation-meta-analysis" / "data" / "raw"
+WORKBOOKS = pathlib.Path(os.environ.get(
+    "RODENT_WORKBOOKS",
     "/mnt/c/Users/gregs/My Drive/thesis/meta-analysis/DISSERTATION/rodent/"
-    "RODENT_Processed_Extractions")
-CSV_FALLBACK = pathlib.Path(
-    "/mnt/c/Users/gregs/GSF-dissertation-meta-analysis/data/raw/rodent_data.csv")
+    "RODENT_Processed_Extractions"))
+CSV_FALLBACK = pathlib.Path(os.environ.get("RODENT_CSV")
+                            or (_SIBLING / "rodent_data.csv" if (_SIBLING / "rodent_data.csv").exists()
+                                else "/mnt/c/Users/gregs/GSF-dissertation-meta-analysis/"
+                                     "data/raw/rodent_data.csv"))
 
 FIG_RE = re.compile(r"^\s*fig(?:ure)?\.?\s*([0-9]+)\s*[-_ ]?\s*([A-Za-z])?", re.I)
 # Data_Extraction_Method strings that CLAIM the number is also stated in text/table.
-# "Claim" is the operative word -- see verify_oracle.py; this flag is a CANDIDATE marker
+# "Claim" is the operative word -- see verify_oracle_v2.py; this flag is a CANDIDATE marker
 # and never by itself admits a row to the accuracy analysis.
 ORACLE_CLAIM = ("text/figure", "text and figure", "text and figures",
                 "figure/table", "inset table", "open-access data")
@@ -212,7 +223,7 @@ def build(rows):
             "figureId": f"{art}_fig{fignum}" if fignum else None,
             "figureDerived": True,
             "oracleClaimed": any(k in str(dm or "").lower() for k in ORACLE_CLAIM),
-            "oracleVerified": None,       # filled ONLY by verify_oracle.py
+            "oracleVerified": None,       # filled ONLY by verify_oracle_v2.py
             "isOracle": False,            # never true until verification says so
             "direction": r.get("Direction"),
             "design": r.get("Between_Or_Within_Design"),
@@ -333,7 +344,7 @@ def main():
     (OUT / "coded_reference.json").write_text(json.dumps(
         {"source": src, "nRows": len(recs), "rows": recs}, indent=2, default=str))
     print(f"\n[written] {OUT/'coded_reference.json'}")
-    print("  NOTE: isOracle is FALSE for every row until verify_oracle.py confirms the "
+    print("  NOTE: isOracle is FALSE for every row until verify_oracle_v2.py confirms the "
           "value is actually printed in the paper's text. See ANALYSIS-PLAN sec.1.4b.")
 
 
