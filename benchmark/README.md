@@ -154,7 +154,7 @@ python3 benchmark/harness/crosscheck_js.py
 | tool | central median | dispersion median | dispersion worst |
 |---|---|---|---|
 | geometry_floor (exact pixels) | 0.00% | 0.00% | 0.00% |
-| human_floor (1px click jitter) | 0.44% | **4.03%** | **29.2%** |
+| human_floor (1px click jitter) | 0.44% | **3.89%** | **27.7%** |
 | cv_autoreader (bars) | 0.45% | **8.89%** | **21.5%** |
 | vision (1 genuine agent read) | 1.17% | **8.20%** | -- |
 

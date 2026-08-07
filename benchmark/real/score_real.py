@@ -114,6 +114,19 @@ def score_panel(task, vision):
 
 def main():
     task_files = sorted(TASKS.glob("*.json"))
+    # REFUSE before writing anything. `benchmark/real/tasks/` is swept up by the repo's
+    # blanket `tasks/` ignore rule, so on a fresh clone this directory is empty -- and the
+    # script used to run to completion over zero tasks, OVERWRITE out/summary.json with
+    # nulls and empty lists, and only then crash formatting a None. That silently destroys
+    # the committed evidence behind README finding #4 (central 0.47% / dispersion 3.67%),
+    # and unlike the panels and series tiers these tasks are NOT regenerable from anything
+    # public. Bail out with an explanation instead.
+    if not task_files:
+        raise SystemExit(
+            f"no panel tasks in {TASKS}\n"
+            "These are derived from copyrighted article figures and are not redistributed, "
+            "so they are absent from a fresh clone. Nothing was written; the committed "
+            "out/summary.json is intact. See benchmark/real/RESULTS.md for provenance.")
     all_fields, all_comps, scored, skipped = [], [], [], []
     for tf in task_files:
         task = json.loads(tf.read_text())

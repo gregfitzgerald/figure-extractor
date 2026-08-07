@@ -30,9 +30,9 @@ agent -- recovers **central tendency (bar means, box medians) to ~0.5%** and fai
 | tool | central median | dispersion median | dispersion worst |
 |---|---|---|---|
 | geometry floor (exact pixels) | 0.00% | 0.00% | 0.00% |
-| human click, 0.5 px jitter | 0.22% | 2.09% | 18.70% |
-| human click, 1.0 px jitter | 0.44% | 4.15% | 37.34% |
-| human click, 2.0 px jitter | 0.89% | 8.23% | 74.42% |
+| human click, 0.5 px jitter | 0.22% | 1.94% | 13.83% |
+| human click, 1.0 px jitter | 0.44% | 3.89% | 27.66% |
+| human click, 2.0 px jitter | 0.89% | 7.81% | 55.34% |
 | CV auto-reader (bars) | 0.45% | 8.89% | 21.45% |
 | vision agent (real read) | 1.17% | 8.20% | -- |
 
@@ -52,7 +52,7 @@ into the pooled estimate and its CI.
 ## 4. The human-in-the-loop claim (the paper's provocative core)
 
 The `human_floor` sweep simulates a *correct* human click carrying only realistic sub-pixel jitter.
-At 1 px it yields **4.15% median / 37.3% worst dispersion error** while central tendency stays at
+At 1 px it yields **3.89% median / 27.7% worst dispersion error** while central tendency stays at
 0.44%. This supports a strong claim: **human click imprecision is an irreducible error source on
 short marks**, so a sub-pixel deterministic reader can be *more precise than a human*, making "take
 the human out of the digitization loop" defensible.

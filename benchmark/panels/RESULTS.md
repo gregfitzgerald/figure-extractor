@@ -362,6 +362,8 @@ python3 score.py --run post_fix_ext --abstain-at 0.35
   coverage                             85.4%           65.9%
   spurious boxes                          99               2
   panels never matched                    30               7
+  abstention precision / recall     0.83 / 0.22     0.14 / 1.00
+  net figures saved by abstaining         +4             -10
 
   medIoU / figures exactly right     cascade         legacy
   by gutter    wide                 0.965 / 100%    0.622 /  29%
@@ -384,6 +386,16 @@ wrong experimental arm.
 So the honest summary is: *it declines a third of figures, and is not observed to be wrong on
 what it accepts.* For an extraction pipeline feeding a meta-analysis that is the right trade --
 an abstention costs a minute of human attention, a silent mislabel corrupts a study's weight.
+
+**But the abstention is badly over-cautious, and by this tier's own metric it loses.** Recall is
+1.00: it abstains on *every* figure it would have got wrong, which is the property you actually
+want. Precision is 0.14: of the 14 figures it declined, only 2 were genuinely wrong, so 12 were
+needless. Net figures saved = 2 caught - 12 wasted = **-10**. `ANALYSIS-PLAN.md` §4.3
+pre-registers `net figures saved > 0` as a hard gate, so **that gate currently fails**, and the
+committed `real-validation/synthetic_reference.json` still records the superseded 0.88 / 0.94 /
++13 -- a stale artifact that would have laundered these numbers into the pre-registration
+unchallenged. Retuning `--abstain-at`, or amending the gate, is an open decision; it is recorded
+here rather than quietly fixed because the gate was pre-registered.
 
 Tight gutters and flush mosaics both went from unusable to 86% exact, and guillotine layouts
 are perfect. **Non-guillotine layouts are the remaining weakness** -- 0.925 medIoU but only

@@ -2228,6 +2228,13 @@ function updateArticleBadge() {
 async function loadArticle(name) {
     const article = state.articles.find(a => a.name === name);
     if (!article) return;
+    // Pages stream into state.pages one at a time, so `pages.length > 0` becomes true on
+    // page 1 of N. An agent polling isReady().articleLoaded (the documented step) would
+    // start work while most of the article was still arriving and silently see only the
+    // pages that had landed. This flag makes "loaded" mean FINISHED; it is cleared in the
+    // finally below so a mid-load exception cannot strand the API as permanently not-ready.
+    state.loadingArticle = true;
+    try {
 
     // Update selection UI
     document.querySelectorAll('.article-item').forEach(el => {
@@ -2294,6 +2301,9 @@ async function loadArticle(name) {
     showLoading(false);
     renderAnnotations();
     renderFiguresPane();
+    } finally {
+        state.loadingArticle = false;
+    }
 }
 
 function loadImage(file) {
@@ -2721,6 +2731,18 @@ function renameArticle(newName) {
     newName = (newName || '').trim();
     if (!newName || newName === state.currentArticle) return;
     const art = state.articles.find(a => a.name === state.currentArticle);
+    // REFUSE to rename onto a name that already holds work. This used to overwrite the
+    // target article's entire annotation record with no confirm and a success toast -- and
+    // it destroyed an article the user was NOT looking at, so the loss was invisible until
+    // much later. Ctrl+Z then made it worse, because the rename reseeds history and the undo
+    // wrote an empty baseline over the survivor. Refusing is the only safe default: the work
+    // being protected is not on screen, so no dialog can describe what is about to be lost.
+    const clash = localStorage.getItem('figext_' + newName) !== null
+        || state.articles.some(a => a !== art && a.name === newName);
+    if (clash) {
+        showToast('"' + newName + '" already exists — rename refused so its work is not overwritten');
+        return;
+    }
     const oldData = localStorage.getItem('figext_' + state.currentArticle);
     if (oldData) { localStorage.setItem('figext_' + newName, oldData); localStorage.removeItem('figext_' + state.currentArticle); }
     if (art) art.name = newName;
@@ -5657,7 +5679,10 @@ function digitizationToCsv(dz) {
         const xy = [d.x == null ? '' : d.x, d.y == null ? '' : d.y];
         rows.push(multi ? [nameOf(p), ...xy] : xy);
     });
-    return rows.map(r => r.join(',')).join('\n');
+    // csvCell, not a bare join: series names are user-editable, and an arm label as ordinary
+    // as `EE, 21 d` split one row into four columns while every other CSV in the tool escaped
+    // correctly. A silently malformed CSV is worse than a missing one.
+    return rows.map(r => r.map(csvCell).join(',')).join('\n');
 }
 // Yield {label, digitization} for every figure/subfigure in a list that has traced data.
 function digitizedTargets(figures) {
@@ -5855,6 +5880,14 @@ function createSubfigureItem(sub, fig) {
 // Export
 async function exportAll() {
     if (!state.figures.length || !state.currentArticle) return;
+    // JSZip comes from a CDN. Blocked (offline, captive portal, corporate proxy) the export
+    // threw "JSZip is not a constructor" into the console, the spinner blinked, and the user
+    // got no file and no message -- at the exact moment the storage-full toast tells them to
+    // export to keep their work.
+    if (typeof JSZip === 'undefined') {
+        showToast('Export needs JSZip, which loads from a CDN — check your connection');
+        return;
+    }
     showLoading(true);
 
     try {
@@ -5923,6 +5956,10 @@ async function loadArticleImages(article) {
 
 // Batch-export every annotated article in the project into one ZIP (article subfolders).
 async function exportAllProjects() {
+    if (typeof JSZip === 'undefined') {
+        showToast('Export needs JSZip, which loads from a CDN — check your connection');
+        return;
+    }
     showLoading(true);
     try {
         const zip = new JSZip();
@@ -6069,9 +6106,13 @@ function authoritativeRows(articleName, figures) {
         const prov = {
             direction: e.direction != null ? e.direction : '', timepoint: e.timepoint || '', nSource: e.nSource || '',
             flags: (e.flags || []).join(';'),
-            figure_derived: e.figure_derived != null ? e.figure_derived : FIGURE_PROVENANCE.figure_derived,
-            Data_Source: e.Data_Source || FIGURE_PROVENANCE.Data_Source,
-            Data_Extraction_Method: e.Data_Extraction_Method || FIGURE_PROVENANCE.Data_Extraction_Method,
+            // NOT `e.figure_derived != null ? e.figure_derived : ...`. This function's
+            // contract, stated above, is that EVERY row it emits is figure-derived -- that is
+            // what makes it "authoritative". Deferring to a stored value let a caller-supplied
+            // or hand-edited `figure_derived: false` reach R, which is precisely the
+            // laundering the provenance flag exists to prevent. Belt and braces with the
+            // setExtraction fix: this is the last gate before the R hand-off.
+            ...FIGURE_PROVENANCE,
         };
         // Series label lookup: the characterization's series[] carries the legend text the model read.
         const seriesOf = t.characterization && (t.characterization.panels || [])[0] && (t.characterization.panels[0].series || []);
@@ -6469,9 +6510,23 @@ async function resetToDocling() {
         return;
     }
     
+    // CONFIRM FIRST. This is a plain toolbar button next to Export All, one click deep, and
+    // it is unrecoverable: it clears the stored record and reseeds history, so Ctrl+Z cannot
+    // bring the work back. It is also ENABLED for any folder project shipping an
+    // annotations.json -- which is exactly the shape of a real-validation session folder, so
+    // a blinded rater an hour into a sitting is one stray click from losing all of it.
+    const n = state.figures.length;
+    const nSub = state.figures.reduce((a, f) => a + ((f.subfigures || []).length), 0);
+    if (n && !confirm(
+        `Discard ${n} figure${n === 1 ? '' : 's'}` +
+        (nSub ? ` and ${nSub} panel${nSub === 1 ? '' : 's'}` : '') +
+        ` and reload from annotations.json?\n\nThis cannot be undone.`)) {
+        return;
+    }
+
     // Clear localStorage
     localStorage.removeItem('figext_' + state.currentArticle);
-    
+
     // Reload from annotations.json
     state.figures = [];
     state.nextFigureNum = 1;
@@ -6834,8 +6889,17 @@ window.figureExtractor = {
         const t = findTarget(figureId, subId);
         if (!t) throw new Error('target not found');
         extraction.producedAt = extraction.producedAt || nowISO();
-        // Stamp figure-derived provenance (persists in the stored object, survives edits).
-        Object.assign(extraction, { ...FIGURE_PROVENANCE, ...extraction });
+        // Stamp figure-derived provenance LAST, so it wins.
+        // This previously read `{ ...FIGURE_PROVENANCE, ...extraction }`, which spreads the
+        // CALLER last -- so a caller passing `figure_derived: false, Data_Source: 'text'`
+        // overwrote the stamp, and that laundered value flowed through authoritativeRows
+        // into the CSV handed to R. That defeats the tool's central provenance guarantee
+        // ("verified is not laundered"): a figure-read number could arrive in the analysis
+        // claiming to have been read from a table, and the figure-vs-text sensitivity
+        // analysis would then be computed over a corrupted split.
+        // `runExtraction` always had this right; `setExtraction` is the path SKILL.md points
+        // agents at, and it was the one with no test coverage.
+        Object.assign(extraction, { ...extraction, ...FIGURE_PROVENANCE });
         commit(() => { t.extraction = extraction; });
         return { success: true };
     },
@@ -6877,7 +6941,20 @@ window.figureExtractor = {
         // Multi-panel guard: refuse to extract an un-split multi-panel figure. Reading only
         // panels[0] would silently drop the other panels' data — split into subfigures first,
         // then extract each panel separately.
-        if ((Array.isArray(c.panels) && c.panels.length > 1) || (c.panelCount && c.panelCount > 1)) {
+        // It consults the TOOL'S OWN evidence as well as the model's self-report. Checking
+        // only `c.panels`/`c.panelCount` trusted the agent's declaration: a figure the tool
+        // had itself split into 2 subfigures would sail through if the agent declared
+        // `panelCount: 1`, and panel B's data was dropped silently -- exactly the failure
+        // this guard exists to prevent, defeated by the party it is meant to check.
+        // `t.subfigures` is the applied split, so it is evidence rather than assertion.
+        // ...and it honours the `multi-panel` flag, which CHAR_VOCAB.flags invites the agent
+        // to raise. Without it, an agent that correctly characterized a 4-panel figure, read
+        // one panel and honestly declared `multi-panel` got a silent single-panel extraction.
+        const drawnPanels = (t.subfigures || []).length;
+        const declaredMulti = ((c.flags) || []).includes('multi-panel')
+            || (((c.panels && c.panels[0]) || {}).flags || []).includes('multi-panel');
+        if ((Array.isArray(c.panels) && c.panels.length > 1) || (c.panelCount && c.panelCount > 1)
+            || drawnPanels > 1 || declaredMulti) {
             return { success: false, error: 'multi-panel figure: split into subfigures and extract each panel separately' };
         }
         const panel = (c.panels && c.panels[0]) || {};
@@ -6902,9 +6979,22 @@ window.figureExtractor = {
         // `direction` (+1/-1) is carried as a FIELD on the extraction — raw landmarks (means,
         // quartiles, points) are never mutated (you cannot negate a mean). R applies the sign at
         // escalc using this field. The tool computes no effect sizes.
+        // EVERY flag the tool raised must reach the CSV, not just the extractor's own. The
+        // header comment above LANDMARK_HEADER says "a guard that fires into a void is not a
+        // guard" -- and this was one: `flags` was seeded ONLY from EXTRACT.bars, so a
+        // characterization flagged `log-axis` or `multi-panel`, and a calibration that
+        // returned `log-axis-needs-human-review`, both arrived at R as a clean-looking row.
+        // The worst case is a panel the tool itself knows has a legend/plot-order
+        // contradiction being handed to escalc with an empty flags column.
+        const allFlags = [...new Set([
+            ...flags,
+            ...((c.flags) || []),
+            ...((panel.flags) || []),
+            ...(((t.digitization || {}).flags) || []),
+        ])];
         const extraction = { ...result, charType, dispersionType: dispersion, dataProvenance: provenance,
             priority: extractionPriority(charType, provenance),
-            direction, timepoint, nSource, flags,
+            direction, timepoint, nSource, flags: allFlags,
             ...FIGURE_PROVENANCE, producedAt: nowISO() };
         commit(() => { t.extraction = extraction; });
         return { success: true, extraction };
@@ -7046,9 +7136,15 @@ window.figureExtractor = {
     },
 
     // Check if ready (project and article loaded)
+    // `articleLoaded` means FINISHED loading, not "the first page arrived". Pages stream in
+    // one at a time, so the old `pages.length > 0` went true on page 1 of N and an agent
+    // following the documented poll would proceed against a partially-loaded article and
+    // silently miss the rest. `loading` is exposed so a caller can tell "not started" from
+    // "in progress" rather than inferring it from a count that is still climbing.
     isReady: () => ({
         projectLoaded: !!state.projectName,
-        articleLoaded: !!state.currentArticle && state.pages.length > 0,
+        articleLoaded: !!state.currentArticle && state.pages.length > 0 && !state.loadingArticle,
+        loading: !!state.loadingArticle,
         projectName: state.projectName,
         articleName: state.currentArticle,
         pageCount: state.pages.length,

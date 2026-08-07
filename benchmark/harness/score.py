@@ -25,7 +25,7 @@ Dispersion metric framing: a b% error in the error-cap -> ~2b% error in variance
 
 Run: python3 benchmark/harness/score.py [--tool geometry_floor|vision] [--engine py|js]
 """
-import argparse, json, pathlib, statistics, sys
+import argparse, json, pathlib, statistics, sys, zlib
 import numpy as np
 
 HERE = pathlib.Path(__file__).resolve().parent
@@ -108,7 +108,15 @@ def make_human_floor(sigma=1.0, seed=0):
     import random
 
     def tool(b):
-        rng = random.Random((hash(b["id"]) & 0xffffffff) ^ (seed * 2654435761 & 0xffffffff))
+        # crc32, NOT hash(). CPython salts str hashing per process (PYTHONHASHSEED), so
+        # `hash(b["id"])` gave a different jitter stream on every run -- which made this
+        # function, whose own docstring promises "seeded per chart for reproducibility",
+        # the one thing in the benchmark that could not be reproduced. Re-running the
+        # published table moved the dispersion-worst column by tens of percentage points
+        # while the medians stayed put, so the headline row nobody could reproduce was the
+        # WORST-case column. crc32 is stable across processes, machines and versions.
+        rng = random.Random((zlib.crc32(b["id"].encode()) & 0xffffffff)
+                            ^ (seed * 2654435761 & 0xffffffff))
 
         def jit(p):
             return {"px": p["px"] + rng.gauss(0, sigma), "py": p["py"] + rng.gauss(0, sigma)}

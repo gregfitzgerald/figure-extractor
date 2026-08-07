@@ -108,6 +108,40 @@ async def run(pdf_path):
         assert "effects" not in e and "correlation" not in e, f"tool computed an effect size: {e}"
         assert e["groups"][0]["mean"] == 10 and e["groups"][0]["errorHalf"] == 2, f"landmarks missing on extraction: {e}"
 
+        # ---- provenance CANNOT be laundered through setExtraction -------------
+        # `setExtraction` is the write path SKILL.md points agents at, and it had zero test
+        # coverage. It stamped provenance with the caller spread LAST, so a caller could
+        # assert `figure_derived:false, Data_Source:'text'` and that value flowed all the way
+        # into the CSV handed to R -- a figure-read number arriving in the analysis claiming
+        # to have come from a table, which silently corrupts the figure-vs-text sensitivity
+        # split. `runExtraction` always resisted this; only the documented path did not.
+        # On its OWN figure, so it cannot disturb the extraction the later assertions read.
+        fidL = (await ev("() => window.figureExtractor.addFigure(1, "
+                         "{x:60,y:520,width:200,height:120}, 'Figure L')"))["figureId"]
+        await ev(f"() => window.figureExtractor.setCharacterization('{fidL}', null, "
+                 "{panels:[{charType:'bar', dataProvenance:'primary', "
+                 "statistics:{dispersion:{present:true, type:'SD'}}, "
+                 "extractionPlan:{method:'bar-endpoints'}}]})")
+        laundered = await ev(
+            f"() => window.figureExtractor.setExtraction('{fidL}', null, "
+            "{groups:[{name:'ctrl',mean:10,errorHalf:2,n:8}], charType:'bar', "
+            " dispersionType:'SD', direction:1, "
+            " figure_derived:false, Data_Source:'text', "
+            " Data_Extraction_Method:'read-from-table'})")
+        assert laundered["success"], f"setExtraction failed: {laundered}"
+        stored = await ev(f"() => window.figureExtractor.getExtraction('{fidL}', null)")
+        assert stored["figure_derived"] is True, f"figure_derived laundered to {stored['figure_derived']!r}"
+        assert stored["Data_Source"] == "figure", f"Data_Source laundered to {stored['Data_Source']!r}"
+        assert stored["Data_Extraction_Method"] == "figure-extractor", \
+            f"Data_Extraction_Method laundered to {stored['Data_Extraction_Method']!r}"
+        rows_l = await ev("() => window.figureExtractor.getFigureDerivedRows()")
+        bad = [r for r in rows_l if r.get("figure_derived") is not True
+               or r.get("Data_Source") != "figure"]
+        assert not bad, f"laundered provenance reached the R hand-off: {bad[:2]}"
+        csv_l = await ev("() => window.figureExtractor.getFigureDerivedCsv()")
+        assert "read-from-table" not in csv_l, "laundered Data_Extraction_Method reached the CSV"
+        await ev(f"() => window.figureExtractor.deleteFigure('{fidL}')")
+
         # ---- multi-panel guard (separate figure) -----------------------------
         fid2 = (await ev(f"() => window.figureExtractor.addFigure(1, "
                          f"{{x:{round(100*S)},y:{round(100*S)},width:200,height:200}}, 'Figure 2')"))["figureId"]

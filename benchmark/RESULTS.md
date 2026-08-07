@@ -11,9 +11,9 @@ multi-panel), ggplot2 engine, verified GT pixels (detected ink vs R-GT: median 0
 | tool | central median | central worst | **dispersion median** | **dispersion worst** |
 |---|---|---|---|---|
 | geometry_floor (exact pixels) | 0.00 | 0.00 | **0.00** | **0.00** |
-| human_floor (0.5px click jitter) | 0.22 | 1.32 | **2.09** | **18.70** |
-| human_floor (1.0px click jitter) | 0.44 | 2.67 | **4.15** | **37.34** |
-| human_floor (2.0px click jitter) | 0.89 | 5.46 | **8.23** | **74.42** |
+| human_floor (0.5px click jitter) | 0.22 | 1.17 | **1.94** | **13.83** |
+| human_floor (1.0px click jitter) | 0.44 | 2.33 | **3.89** | **27.66** |
+| human_floor (2.0px click jitter) | 0.89 | 4.62 | **7.81** | **55.34** |
 | cv_autoreader (bars, n=10) | 0.45 | 1.05 | **8.89** | **21.45** |
 | vision (agent read, n=1) | 1.17 | 1.17 | **8.20** | **8.20** |
 

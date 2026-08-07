@@ -74,6 +74,7 @@ import hashlib
 import itertools
 import json
 import math
+import os
 import pathlib
 import random
 import re
@@ -81,12 +82,23 @@ import statistics
 import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
-GT_DIR = HERE / "gt"
-REPEAT_DIR = HERE / "repeat"
-PRED_DIR = HERE / "pred"
-CODED_DIR = HERE / "coded"
-OUT_DIR = HERE / "out"
-SYNTH_REF = HERE / "synthetic_reference.json"
+
+# DATA HONOURS $RV_DATA, exactly as rvcommon.DATA does. Every other script in this harness
+# reads and writes through rvcommon, so `ingest_annotations.py` writes ground truth to
+# $RV_DATA/gt. This module used to hardcode HERE/"gt", which meant that whenever RV_DATA
+# pointed somewhere else -- every test, every sandbox, any relocated data set -- the scorer
+# looked in a directory the ingest had never written to and reported "no ground truth in
+# gt/", i.e. it produced NOTHING rather than an error. The suite never caught it because
+# test_end_to_end.py calls `normalize_annotations()` on a path it opens itself and never
+# exercises `load_gt()`, so the seam between the two scripts was untested.
+# With RV_DATA unset both resolve to HERE, so the default in-repo workflow is unchanged.
+DATA = pathlib.Path(os.environ.get("RV_DATA") or HERE).resolve()
+GT_DIR = DATA / "gt"
+REPEAT_DIR = DATA / "repeat"
+PRED_DIR = DATA / "pred"
+CODED_DIR = DATA / "coded"
+OUT_DIR = DATA / "out"
+SYNTH_REF = HERE / "synthetic_reference.json"   # a committed comparator, not run data
 
 # shared affine, byte-verified against window.figureExtractor.calibrate
 sys.path.insert(0, str(HERE.parent / "harness"))

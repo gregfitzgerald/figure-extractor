@@ -310,6 +310,22 @@ def main():
                   and recs[0]["panels"][0]["chartType"] == "bar"
                   and len(recs[0]["panels"][0]["landmarks"]) == 2,
                   f"{recs[0]['nPanels'] if recs else 0} panels")
+
+            # THE SEAM ITSELF. The check above hands the scorer a path this test opened,
+            # so it never exercised `load_gt()` -- and load_gt used to read a hardcoded
+            # HERE/"gt" while the ingest writes to $RV_DATA/gt. Under RV_DATA the scorer
+            # therefore found NOTHING and said "no ground truth in gt/" instead of
+            # failing, so a whole analysis could silently produce nothing. Cross the seam
+            # the way the real pipeline does: point the scorer at this run's data and
+            # require it to find what the ingest just wrote.
+            import importlib
+            os.environ["RV_DATA"] = str(tmp)
+            importlib.reload(srv)
+            found = srv.load_gt()
+            check("the scorer's load_gt() honours RV_DATA and finds the ingested GT",
+                  bool(found), f"{len(found)} GT record(s) under {tmp}")
+            check("scorer GT_DIR tracks RV_DATA rather than the script directory",
+                  srv.GT_DIR == tmp / "gt", str(srv.GT_DIR))
         except ImportError:
             print("  SKIP  sibling scorer not present")
 
