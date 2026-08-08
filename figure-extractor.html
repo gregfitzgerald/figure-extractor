@@ -952,8 +952,8 @@
         :root[data-theme="dark"] .dig-num, :root[data-theme="dark"] .dig-notes { background: #12151b; color: #dde1e7; border-color: #2f3542; }
         :root[data-theme="dark"] .dig-points th { background: #1e222b; }
 
-        /* Help + Settings + Rename + Render-picker modals */
-        #helpModal, #settingsModal, #renameModal, #renderPickerModal {
+        /* Help + Settings + Rename + Render-picker + Confirm-extraction modals */
+        #helpModal, #settingsModal, #renameModal, #renderPickerModal, #digConfirmModal {
             display: none;
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -962,7 +962,13 @@
             align-items: center;
             justify-content: center;
         }
-        #helpModal.visible, #settingsModal.visible, #renameModal.visible, #renderPickerModal.visible { display: flex; }
+        #helpModal.visible, #settingsModal.visible, #renameModal.visible, #renderPickerModal.visible, #digConfirmModal.visible { display: flex; }
+        /* Confirm-extraction opens ON TOP of the digitizer (z 2100). */
+        #digConfirmModal { z-index: 2200; }
+        .dig-confirm-note { font-size: 12px; color: #777; margin-bottom: 14px; }
+        :root[data-theme="dark"] .dig-confirm-note { color: #9aa1ab; }
+        /* CDN-outage banner: PDF.js/JSZip failed to load, so core actions cannot work. */
+        #cdnBanner { background: #b3261e; color: #fff; padding: 8px 16px; font-size: 13px; text-align: center; }
         .render-picker-tools { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
         .render-picker-tools #rpCount { margin-left: auto; color: #888; font-size: 12px; }
         .render-picker-list { max-height: 340px; overflow-y: auto; border: 1px solid #eee; border-radius: 6px; padding: 4px; }
@@ -1147,6 +1153,7 @@
                     <button class="btn" id="digUndoBtn" title="Undo the last calibration or data point">Undo</button>
                     <button class="btn" id="digClearBtn">Clear</button>
                     <button class="btn" id="digCsvBtn">Copy CSV</button>
+                    <button class="btn" id="digConfirmBtn" title="Declare chart type + dispersion type and produce the figure-derived extraction (what the export's figure-derived-landmarks.csv is built from)">3. Confirm extraction</button>
                     <button class="btn btn-primary" id="digCloseBtn">Done</button>
                 </div>
             </div>
@@ -1182,6 +1189,37 @@
                     <div class="dig-points-wrap"><table id="digPoints" class="dig-points"></table></div>
                     <textarea id="digNotes" class="dig-notes" placeholder="Notes / rationale for this digitization"></textarea>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm-extraction: the human declarations (chart type, dispersion type, direction)
+         that turn a digitization into the figure-derived extraction the export CSV is built
+         from. The selects are populated from CHAR_VOCAB so this form cannot drift from the
+         vocabulary the validator enforces. -->
+    <div id="digConfirmModal">
+        <div class="pdf-modal-box help-box">
+            <h3>Confirm extraction — <span id="digConfirmTitle"></span></h3>
+            <p class="dig-confirm-note">These are declarations only a reader can make. Dispersion type
+                and direction come from the caption/methods text — the tool never guesses them, and
+                "unknown" is recorded as a flag, not replaced by a guess.</p>
+            <label for="dcChartType">Chart type</label>
+            <select id="dcChartType" class="modal-input"></select>
+            <label for="dcDispersion">Error bars show (per the caption; pick "unknown" if it does not say, "none" if there are no error bars)</label>
+            <select id="dcDispersion" class="modal-input"></select>
+            <label for="dcDirection">Direction of benefit for this outcome</label>
+            <select id="dcDirection" class="modal-input">
+                <option value="">not declared</option>
+                <option value="1">+1 — higher is better</option>
+                <option value="-1">-1 — lower is better</option>
+            </select>
+            <label for="dcN">n per group (optional)</label>
+            <input type="number" id="dcN" class="modal-input" min="1" step="1" placeholder="leave blank if not stated">
+            <label for="dcNSource">Where n was read from (optional)</label>
+            <input type="text" id="dcNSource" class="modal-input" placeholder="e.g. caption / methods / table 1">
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+                <button class="btn" id="dcCancel">Cancel</button>
+                <button class="btn btn-primary" id="dcSave">Confirm</button>
             </div>
         </div>
     </div>
@@ -1510,6 +1548,76 @@ document.addEventListener('DOMContentLoaded', () => {
     ['digX1', 'digX2', 'digY1', 'digY2', 'digLogX', 'digLogY'].forEach(id =>
         document.getElementById(id).onchange = () => { renderDigPoints(); persistDig(); });
     document.getElementById('digNotes').onchange = persistDig;
+
+    // Confirm-extraction: the UI path to `t.extraction`. Until this existed the landmarks CSV
+    // was reachable only through the API (setExtraction/runExtraction), so a human who
+    // calibrated and placed points got an export whose README described a file it never
+    // contained. This form collects ONLY the reader declarations, then routes through the
+    // SAME runExtraction as agents use, so every guard wired there (multi-panel refusal,
+    // dispersion guard, flags union, provenance stamp) fires identically for both callers.
+    const digConfirmModal = document.getElementById('digConfirmModal');
+    const dcType = document.getElementById('dcChartType');
+    const dcDisp = document.getElementById('dcDispersion');
+    // Options come from CHAR_VOCAB — a parallel hardcoded list would drift from the validator.
+    // Both default to a NON-answer: chart type and dispersion type are declarations, not guesses.
+    dcType.innerHTML = '<option value="">— choose —</option>'
+        + CHAR_VOCAB.charType.map(t => `<option>${t}</option>`).join('');
+    dcDisp.innerHTML = '<option value="">— choose —</option>'
+        + CHAR_VOCAB.dispersion.map(t => `<option>${t}</option>`).join('');
+    document.getElementById('digConfirmBtn').onclick = () => {
+        persistDig();
+        if (!digCalibration()) { showToast('Calibrate both axes first (4 reference points + their values)'); return; }
+        if (!dig.points.length) { showToast('Place data points before confirming'); return; }
+        // Prefill only from what was already DECLARED (a prior confirmation or an agent's
+        // characterization) — never from an inference.
+        const t = dig.target;
+        const panel = (t.characterization && (t.characterization.panels || [])[0]) || {};
+        dcType.value = panel.charType || '';
+        dcDisp.value = (panel.statistics && panel.statistics.dispersion && panel.statistics.dispersion.type) || '';
+        const e = t.extraction || {};
+        document.getElementById('dcDirection').value = e.direction != null ? String(e.direction) : '';
+        document.getElementById('dcN').value = e.n != null ? e.n : '';
+        document.getElementById('dcNSource').value = e.nSource || '';
+        document.getElementById('digConfirmTitle').textContent = t.label || 'figure';
+        digConfirmModal.classList.add('visible');
+    };
+    document.getElementById('dcCancel').onclick = () => digConfirmModal.classList.remove('visible');
+    digConfirmModal.onclick = (ev) => { if (ev.target.id === 'digConfirmModal') digConfirmModal.classList.remove('visible'); };
+    document.getElementById('dcSave').onclick = () => {
+        const charType = dcType.value, dispType = dcDisp.value;
+        if (!charType) { showToast('Chart type is required'); return; }
+        if (!dispType) { showToast('Dispersion type is required — pick "unknown" if the caption does not say'); return; }
+        const t = dig.target;
+        // Build on top of any existing characterization (an agent may have produced one): the
+        // human's declarations own panels[0]'s type/dispersion; everything else is preserved,
+        // including a multi-panel structure — which runExtraction will then rightly refuse.
+        const char = t.characterization ? JSON.parse(JSON.stringify(t.characterization)) : { panels: [{}] };
+        if (!Array.isArray(char.panels) || !char.panels.length) char.panels = [{}];
+        const p0 = char.panels[0];
+        p0.charType = charType;
+        p0.statistics = p0.statistics || {};
+        p0.statistics.dispersion = { present: dispType !== 'none', type: dispType };
+        // Whatever the chart type, what the digitizer produced IS points — route accordingly.
+        p0.extractionPlan = { ...(p0.extractionPlan || {}), method: 'digitize_points' };
+        if (!Array.isArray(p0.series) || !p0.series.length)
+            p0.series = dig.series.map((s, i) => ({ id: i, label: s.name, color: s.color }));
+        const flags = new Set(char.flags || []);
+        // "unknown" is an answer, not a gap: it must reach R's CSV as a flag, never become a guess.
+        if (dispType === 'unknown') flags.add('dispersion-type-uncertain');
+        char.flags = [...flags];
+        const set = window.figureExtractor.setCharacterization(dig.figId, dig.subId, char);
+        if (!set.success) { showToast('Invalid characterization: ' + set.errors[0]); return; }
+        const dirV = document.getElementById('dcDirection').value;
+        const nV = document.getElementById('dcN').value;
+        const res = window.figureExtractor.runExtraction(dig.figId, dig.subId, {
+            direction: dirV === '' ? null : +dirV,
+            n: nV === '' ? null : +nV,
+            nSource: document.getElementById('dcNSource').value.trim() || null,
+        });
+        if (!res.success) { showToast(res.error); return; }
+        digConfirmModal.classList.remove('visible');
+        showToast('Extraction confirmed — figure-derived-landmarks.csv will be in the export');
+    };
 
     // Metadata / rename
     const renameModal = document.getElementById('renameModal');
@@ -4647,9 +4755,40 @@ function anchorPlacementPlausible(boxes, anchors) {
 // accepted only when every box owns exactly one anchor and the anchored letters are exactly
 // the expected set -- then it either CONFIRMS the prior or CORRECTS it (and the correction
 // wins, flagged). Anything less is 'unverified': the prior is emitted but never as ok=true.
+// Fraction of panels that must carry an unambiguous glyph anchor before a PARTIAL naming is
+// allowed to count as verified. See the partial branch below for why partial is admitted.
+const LABEL_PARTIAL_MIN_FRAC = 0.6;
+
 function verifyPanelLetters(boxes, anchors, priorLetters) {
     const out = { letters: priorLetters.slice(), status: 'unverified' };
-    if (boxes.length < 2 || anchors.length !== boxes.length || priorLetters.length !== boxes.length) return out;
+    if (boxes.length < 2 || priorLetters.length !== boxes.length) return out;
+
+    // PARTIAL VERIFICATION. Requiring one anchor per panel is all-or-nothing, and on real
+    // raster figures that is what fails: measured over 13 real figures the glyph finder
+    // located anchors on 12, but was SHORT by one or more on 8 of them (Zhang2017 Fig 3: 5
+    // anchors for 7 panels). One missing glyph threw away the five correctly-read ones and
+    // dropped the whole figure to 'unverified' -- which is why `panel-labels-unverified`
+    // appears on 58 of 65 real-figure abstentions and is the binding constraint on answering.
+    //
+    // A partial reading is admitted only when it CORROBORATES and never when it argues: every
+    // anchor found must own a distinct box AND agree with the reading-order prior for that
+    // box. A single disagreement means the partition or the ordering is wrong, and partial
+    // evidence is far too weak to correct a naming on -- so any conflict stays 'unverified'.
+    // The threshold keeps one stray glyph on a 6-panel figure from vouching for the rest.
+    if (anchors.length !== boxes.length) {
+        const need = Math.max(2, Math.ceil(LABEL_PARTIAL_MIN_FRAC * boxes.length));
+        if (anchors.length < need) return out;
+        const own = assignAnchorsToBoxes(boxes, anchors);
+        const seen = new Array(boxes.length).fill(null);
+        for (let ai = 0; ai < anchors.length; ai++) {
+            const bi = own[ai];
+            if (bi < 0 || seen[bi]) return out;              // unassigned or two on one box
+            if (anchors[ai].letter !== priorLetters[bi]) return out;   // argues -> not evidence
+            seen[bi] = anchors[ai];
+        }
+        return { letters: priorLetters.slice(), status: 'partial' };
+    }
+    if (anchors.length !== boxes.length) return out;
     const owner = assignAnchorsToBoxes(boxes, anchors);
     const per = new Array(boxes.length).fill(null);
     for (let ai = 0; ai < anchors.length; ai++) {
@@ -5392,6 +5531,7 @@ function detectPanelsCore(fig, opts = {}) {
         named = { letters: prior.slice(), status: 'unverified' };
     }
     if (named.status === 'corrected') res.flags.push('label-order-mismatch');
+    else if (named.status === 'partial') res.flags.push('panel-labels-partial');
     else if (named.status === 'unverified' && boxesA.length >= 2) res.flags.push('panel-labels-unverified');
     // A forced merge that the anchors do not vouch for is a count disagreement, not a fix.
     if (merged && named.status === 'unverified' && !res.flags.includes('panel-count-mismatch'))
@@ -5416,6 +5556,9 @@ function detectPanelsCore(fig, opts = {}) {
     else { conf = 0.2; res.flags.push('single-panel'); }
     for (const [flag, pen] of [['overlapping-panels', 0.25], ['ink-orphaned', 0.15], ['sliver-panel', 0.1],
                                ['label-order-mismatch', 0.05], ['panel-labels-unverified', 0.15], ['weak-gutter', 0.1],
+                               // Partial anchoring corroborates but does not fully vouch, so it
+                               // costs less than 'unverified' and more than nothing.
+                               ['panel-labels-partial', 0.06],
                                ['boundary-repaired', 0.12], ['label-placement-implausible', 0.15]])
         if (res.flags.includes(flag)) conf -= pen;
     res.confidence = Math.max(0.05, Math.min(0.98, +conf.toFixed(2)));
@@ -5437,7 +5580,7 @@ function detectPanelsCore(fig, opts = {}) {
     // the reported boxes) on a result that is then handed to a human rather than trusted.
     const CRITICAL = ['panel-count-mismatch', 'overlapping-panels',
                       'low-confidence', 'no-caption-letters', 'no-page',
-                      'panel-labels-unverified', 'label-placement-implausible',
+                      'panel-labels-unverified', 'panel-labels-partial', 'label-placement-implausible',
                       'boundary-repaired'];
     if (!res.lettersVerified) CRITICAL.push('non-guillotine-layout', 'label-order-mismatch');
     res.ok = !res.flags.some(f => CRITICAL.includes(f));
@@ -5469,7 +5612,7 @@ function applyPanelResult(fig, res) {
 
 // ========== Chart digitizer (extract numeric data from a chart image) ==========
 const DIG_PALETTE = ['#dc2626', '#1a73e8', '#f59e0b', '#34a853', '#9333ea', '#0891b2', '#db2777'];
-const dig = { target: null, crop: null, scale: 1, mode: 'axes', calStep: 0,
+const dig = { target: null, figId: null, subId: null, crop: null, scale: 1, mode: 'axes', calStep: 0,
     cal: { x1: null, x2: null, y1: null, y2: null }, points: [],
     series: [{ name: 'series 1', color: DIG_PALETTE[0] }], activeSeries: 0,
     traceColor: null, traceTol: 40, traceStep: 1, _cropData: null, _cropDataFor: null,
@@ -5660,6 +5803,14 @@ function verifyCalibration(c, v) {
     const xLog = v.logX || spans2decades(v.x1, v.x2);
     const yLog = v.logY || spans2decades(v.y1, v.y2);
     if (xLog || yLog) flags.push('log-axis-needs-human-review');
+    // Lever-arm guard: reference points a few px apart pass the round-trip check perfectly
+    // (it re-predicts the refs from their OWN pixels), yet 1 px of click jitter scales to
+    // (axis span / ref span) data units — with 1 px refs spanning 100 units, 1 px moved a
+    // value by 100. Point-picking jitter is the benchmark's dominant error source, so a
+    // short baseline multiplies exactly the error that matters. ~20 image px is below any
+    // plausible distance between two distinct printed tick labels.
+    const span = (a, b) => (a && b) ? Math.hypot(b.px - a.px, b.py - a.py) : Infinity;
+    if (span(c.x1, c.x2) < 20 || span(c.y1, c.y2) < 20) flags.push('calibration-short-baseline');
     return { ok, maxError, flags };
 }
 function digToData(p, calib) {
@@ -5721,8 +5872,14 @@ function updateDigHint() {
 }
 function persistDig() {
     if (!dig.target) return;
+    // Store the calibration-check flags exactly as the API path (setDigitization) does:
+    // runExtraction unions t.digitization.flags into the extraction, and without this the
+    // UI-produced record had no flags field, so log-axis/short-baseline warnings raised on
+    // an interactive session silently never reached the exported CSV.
+    const calib = computeCalibration(dig.cal, digVals());
     dig.target.digitization = {
         cal: dig.cal, vals: digVals(), points: dig.points,
+        flags: calib ? verifyCalibration(dig.cal, digVals()).flags : [],
         series: dig.series, notes: document.getElementById('digNotes').value,
         // EFFECTIVE MAGNIFICATION, exported so the zoom-floor audit can work in the unit
         // the human rule is written in. The protocol's rule is "bar top to cap must span
@@ -5811,11 +5968,15 @@ function openDigitizer(target, cropCanvas) {
 function digitizeFigure(fig) {
     const page = state.pages.find(p => p.pageNum === fig.pageNum);
     if (!page) return;
+    // Confirm-extraction routes through the figureExtractor API, which addresses targets by
+    // (figureId, subId) rather than object identity — record the address here.
+    dig.figId = fig.id; dig.subId = null;
     openDigitizer(fig, cropImage(page.img, fig.bounds));
 }
 function digitizeSubfigure(fig, sub) {
     const page = state.pages.find(p => p.pageNum === fig.pageNum);
     if (!page) return;
+    dig.figId = fig.id; dig.subId = sub.id;
     openDigitizer(sub, cropImage(page.img, {
         x: fig.bounds.x + sub.bounds.x, y: fig.bounds.y + sub.bounds.y,
         width: sub.bounds.width, height: sub.bounds.height
@@ -6004,10 +6165,11 @@ async function exportAll() {
 
         const manifest = buildManifest([{ name: state.currentArticle, figures: state.figures }]);
         zip.file('manifest.json', JSON.stringify(manifest, null, 2));
-        zip.file('README.md', buildReadme(manifest, false));
         // Figure-derived output: calibrated landmarks + dispersion TYPE + provenance (R does effect sizes).
+        // Computed before the README so the README can state truthfully whether the CSV is present.
         const lmRows = authoritativeRows(state.currentArticle, state.figures);
         if (lmRows.length) zip.file('figure-derived-landmarks.csv', landmarksCsv(lmRows));
+        zip.file('README.md', buildReadme(manifest, false, lmRows.length > 0));
 
         const zipBlob = await zip.generateAsync({ type: 'blob' });
         const a = document.createElement('a');
@@ -6049,9 +6211,18 @@ async function exportAllProjects() {
         const manifestArticles = [];
 
         for (const article of state.articles) {
-            let saved = null;
-            try { saved = JSON.parse(localStorage.getItem('figext_' + article.name)); } catch (e) {}
-            const figures = saved && saved.figures ? saved.figures : [];
+            // The OPEN article's truth is state.figures (what single-article export uses).
+            // localStorage can be stale for it precisely when saving failed (quota) — the
+            // moment the storage-full toast tells the user to export to keep their work —
+            // and reading it here silently shipped the pre-failure snapshot.
+            let figures;
+            if (article.name === state.currentArticle) {
+                figures = state.figures;
+            } else {
+                let saved = null;
+                try { saved = JSON.parse(localStorage.getItem('figext_' + article.name)); } catch (e) {}
+                figures = saved && saved.figures ? saved.figures : [];
+            }
             if (!figures.length) continue;
             manifestArticles.push({ name: article.name, figures });
 
@@ -6096,10 +6267,11 @@ async function exportAllProjects() {
         zip.file('figures.csv', csvFromRows(csvRows));  // project-wide flat table
         const manifest = buildManifest(manifestArticles);
         zip.file('manifest.json', JSON.stringify(manifest, null, 2));
-        zip.file('README.md', buildReadme(manifest, true));
         // Figure-derived output (project-wide): landmarks + dispersion TYPE + provenance (R does effect sizes).
+        // Computed before the README so the README can state truthfully whether the CSV is present.
         const allLm = manifestArticles.flatMap(a => authoritativeRows(a.name, a.figures));
         if (allLm.length) zip.file('figure-derived-landmarks.csv', landmarksCsv(allLm));
+        zip.file('README.md', buildReadme(manifest, true, allLm.length > 0));
         const blob = await zip.generateAsync({ type: 'blob' });
         const a = document.createElement('a');
         a.href = URL.createObjectURL(blob);
@@ -6215,7 +6387,9 @@ function authoritativeRows(articleName, figures) {
         else if (e.method === 'forest-rows') (e.rows || []).forEach(r => push({ landmarkKind: 'forest-row', group: r.label, groupId: r.groupId ?? '', seriesId: r.seriesId ?? '', estimate: r.estimate, ciLo: r.ciLo, ciHi: r.ciHi }));
         // p.s is the digitizer's series index -- preserved all the way through runExtraction and,
         // until this fix, DROPPED here, so a two-colour scatter exported as one undifferentiated cloud.
-        else if (Array.isArray(e.points)) e.points.forEach(p => push({ landmarkKind: 'point', x: p.x, y: p.y, seriesId: p.s ?? '' }));
+        // dispersionType/n are panel-level for a point cloud; repeating them per row keeps the
+        // reader's declared answers visible in the CSV R receives instead of only in annotations.json.
+        else if (Array.isArray(e.points)) e.points.forEach(p => push({ landmarkKind: 'point', x: p.x, y: p.y, seriesId: p.s ?? '', dispersionType: e.dispersionType || '', n: e.n ?? '' }));
     };
     for (const f of figures) { walk(f.label, f); for (const s of (f.subfigures || [])) walk(s.label, s); }
     return rows;
@@ -6345,8 +6519,10 @@ function buildManifest(articles) {
         articles: per, totals
     };
 }
-// Human-readable README.md describing the bundle layout + summary.
-function buildReadme(manifest, isProject) {
+// Human-readable README.md describing the bundle layout + summary. `hasLandmarks` says whether
+// figure-derived-landmarks.csv is actually IN this archive — the README must never describe a
+// file the ZIP does not contain (the CSV only exists once an extraction has been confirmed).
+function buildReadme(manifest, isProject, hasLandmarks) {
     const t = manifest.totals, L = [];
     L.push(`# ${isProject ? 'Project' : 'Article'} figure export`, '');
     L.push(`Generated by **figure-extractor** on ${manifest.exportedAt}.`);
@@ -6357,7 +6533,8 @@ function buildReadme(manifest, isProject) {
     L.push(`- \`${p}*.png\` — cropped figure and subfigure images`);
     L.push(`- \`${p}digitized/*.csv\` — extracted chart data (one file per digitized panel)`);
     L.push('- `figures.csv` — flat table of every figure/subfigure' + (isProject ? ' across all articles' : ''));
-    L.push('- `figure-derived-landmarks.csv` — the figure-derived output: calibrated landmarks (bar tops + error-cap half-widths, box quartiles, forest estimate+CI, points) + dispersion TYPE + provenance flags. Feed this to R (escalc/metafor) for effect sizes; the tool computes no effect sizes itself.');
+    if (hasLandmarks) L.push('- `figure-derived-landmarks.csv` — the figure-derived output: calibrated landmarks (bar tops + error-cap half-widths, box quartiles, forest estimate+CI, points) + dispersion TYPE + provenance flags. Feed this to R (escalc/metafor) for effect sizes; the tool computes no effect sizes itself.');
+    else L.push('- there is NO `figure-derived-landmarks.csv` in this export: no extraction has been confirmed yet. Digitize a panel and use “3. Confirm extraction” in the digitizer (or the API’s runExtraction/setExtraction), then export again.');
     L.push('- `manifest.json` — machine-readable summary of this export');
     L.push('', '## Summary', '');
     L.push(`- Render DPI: ${manifest.renderDpi || (isProject ? 'varies by article' : 'n/a')}`);
@@ -7055,7 +7232,9 @@ window.figureExtractor = {
         else if (method === 'digitize_points' || method === 'auto_trace') {
             const dz = t.digitization; const cal = dz && computeCalibration(dz.cal, dz.vals);
             const pts = cal ? (dz.points || []).map(p => ({ ...cal.toData(p), s: p.s || 0 })) : [];
-            result = { method, points: pts };  // authoritative: the digitized {x,y} points; R computes r
+            // A point cloud has one n for the whole panel (no per-group cells to hang it on),
+            // so it rides on the extraction and authoritativeRows repeats it per row.
+            result = { method, points: pts, n: landmarks.n ?? null };  // authoritative: the digitized {x,y} points; R computes r
         } else { return { success: false, error: 'no extraction method for ' + charType }; }
         // `direction` (+1/-1) is carried as a FIELD on the extraction — raw landmarks (means,
         // quartiles, points) are never mutated (you cannot negate a mean). R applies the sign at
