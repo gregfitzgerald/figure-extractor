@@ -91,24 +91,54 @@ figureExtractor.getAnnotationsJSON()
 await figureExtractor.export()
 ```
 
+<!-- BEGIN GENERATED: figureExtractor API reference (scripts/gen_api_docs.py -- do not edit by hand) -->
 ## Full API Reference
 
-| Method | Description |
-|--------|-------------|
-| `isReady()` | Check if project/article loaded |
-| `getState()` | Full current state |
-| `listArticles()` | List articles in loaded project |
-| `loadArticle(name)` | Load article by name |
-| `addFigure(page, bounds, label?)` | Add figure annotation |
-| `addSubfigure(figId, bounds, label?)` | Add subfigure to figure |
-| `updateFigureLabel(figId, label)` | Update figure label |
-| `deleteFigure(figId)` | Delete a figure |
-| `getPageDimensions(page)` | Get page size info |
-| `getPageAsBase64(page)` | Get page as PNG base64 |
-| `getFigureAsBase64(figId)` | Get cropped figure as base64 |
-| `getAnnotationsJSON()` | Get annotations without download |
-| `export()` | Download figures + JSON |
-| `clearAnnotations()` | Clear all annotations |
+36 methods on `window.figureExtractor`, in source order. Descriptions come
+from the source comments in `figure-extractor.html`; regenerate this block
+with `python3 scripts/gen_api_docs.py --write` after the source changes
+(`scripts/test_api_docs.py` fails when it drifts from the runtime surface).
+
+- `getState()` -- Get current state. Returns `{projectName, currentArticle, articles, figures, pageCount}`.
+- `listArticles()` -- List available articles (after project is loaded).
+- `loadArticle(articleName)` (async) -- Load an article by name (project must be loaded first via UI or loadProjectFromPath). Returns `{success, pages, article}`.
+- `addFigure(pageNum, bounds, label=null)` -- Add a figure annotation -- bounds: {x, y, width, height} in NATURAL image pixels (page pixels at render DPI). Returns `{success, figureId, label}`.
+- `addSubfigure(figureId, bounds, label=null)` -- Add a subfigure to an existing figure -- bounds: {x, y, width, height} in NATURAL pixels, relative to the figure's top-left. Returns `{success, subfigureId, label}`.
+- `updateFigureLabel(figureId, newLabel)` -- Update figure label. Returns `{success}`.
+- `deleteFigure(figureId)` -- Delete a figure. Returns `{success}`.
+- `detectPanels(figureId, opts={})` -- Detect subfigure panels for a figure. Returns a RESULT OBJECT, never a bare array. Returns `{ok, panels, count, method, confidence, flags, applied, error}`.
+- `suggestSubfiguresLegacy(figureId, expectedCount=0)` -- Legacy XY-cut detector, kept for A/B comparison only. Returns bare boxes (no flags). Returns `{ok, panels, count, method, confidence, flags, applied, error}`.
+- `getPageAsBase64(pageNum)` -- Get a page as base64 PNG (for vision model analysis).
+- `getFigureAsBase64(figureId)` -- Get figure crop as base64 PNG.
+- `getSubfigureAsBase64(figureId, subId)` -- Get a subfigure crop as a base64 PNG (the unit a vision model characterizes).
+- `setCharacterization(figureId, subId, characterization)` -- Attach a characterization to a figure (subId=null) or subfigure. Validated against the controlled vocabulary; returns {success, errors?}. Returns `{success, errors} | {success}`.
+- `getCharacterization(figureId, subId)` -- Read back the stored characterization for a figure (subId=null) or subfigure; null if none.
+- `setExtraction(figureId, subId, extraction)` -- Store an interpreted extraction object on a figure/subfigure; figure-derived provenance is stamped last so a caller cannot overwrite it. Returns `{success}`.
+- `getExtraction(figureId, subId)` -- Read back the stored extraction for a figure/subfigure; null if none.
+- `calibrate(cal, vals, points)` -- Pure pixel->data via the affine calibration (no storage). points/[refs] carry {px,py}.
+- `setDigitization(figureId, subId, dig)` -- Store an agent-supplied digitization (calibration + pixel points), returning the data values. Returns `{success, error} | {success, dataPoints, calibrationFlags}`.
+- `runExtraction(figureId, subId, landmarks={})` -- Interpret landmarks into a stored `extraction` object, routed by the characterization's method. `landmarks` are in DATA units (convert pixels first with `calibrate`). Returns `{success, error} | {success, extraction}`.
+- `suggestExtractionMethod(figureId, subId)` -- Per-panel extraction method(s) implied by the stored characterization (routing table).
+- `extractionPriority(charType, dataProvenance)` -- Extraction priority per panel ('high'|'medium'|'low'|'none') -- prioritises the study's own primary data (bar/line/histogram/scatter/box) over derived summaries (forest/funnel).
+- `suggestExtractionPriority(figureId, subId)` -- Per-panel extraction priority from the stored characterization (see extractionPriority).
+- `charVocab()` -- Expose the vocab + conversion + extraction helpers so an agent/skill can validate, convert, and interpret calibrated landmarks locally.
+- `extract` -- The EXTRACT namespace -- interprets calibrated DATA-unit landmarks per method; the landmarks are authoritative, R derives variances.
+  - `extract.bars(groups, dispersionType)` -- bar-endpoints: groups=[{name, mean, errorHalf, n}] where errorHalf = |cap - mean| in DATA units. dispersionType decides SD vs SE vs half-CI. If the dispersion type is not a known variance-bearing type, we REFUSE to emit sd/se (a wrong SD/SEM/CI reweights the study by ~sqrt(n)) and force a `dispersion-type-uncertain` flag into the result. Returns `{method, groups, flags}`.
+  - `extract.boxes(groups)` -- box-landmarks: groups=[{name, median, q1, q3, min, max, n}]. q1/q3/min/max are retained as AUTHORITATIVE landmarks; mean/SD (Wan/Hozo) are the NON-AUTHORITATIVE preview. Returns `{method, groups}`.
+  - `extract.forest(rows, scale='linear')` -- forest-rows: rows=[{label, estimate, ciLo, ciHi}]; scale 'linear' (MD/SMD) or 'ratio' (OR/RR/HR). Returns `{method, rows, scale}`.
+- `verifyCalibration(cal, vals)` -- Verify a calibration before trusting numbers: round-trip residual (hard: 'calibration-roundtrip-error') + nonlinear-axis check (flags 'log-axis-needs-human-review' for review).
+- `setTraceExclusions(rects)` -- Auto-trace must not read the legend (a swatch of the traced colour injects phantom points and drags the column average). Set the regions to skip, in CROP pixels: [{x0,y0,x1,y1}, ...]. Returns `{success, count}`.
+- `getTraceDiagnostics()` -- Diagnostics from the last auto-trace run, plus the count of active exclusion regions. Returns `{...digAutoTraceLast, exclusions}`.
+- `validateSeries(figureId, subId)` -- Deterministic series-structure checks -- four of the review triggers are pure arithmetic, so they run without a model. Returns { ok, flags[], problems[] } for the B4 human gate. Returns `{ok, flags, problems}`.
+- `previewAssignment(figureId, subId)` -- B4 HUMAN-GATE ARTIFACT. The benchmark measured a danger asymmetry: swapping two legend labels leaves every STRUCTURAL metric perfect (mis-assignment 0.000, ARI 1.000, zero ill-formed arms). Returns `{ok, error} | {ok, affirmations, bindings, reviewFlags, problems, structure, rows}`.
+- `getFigureDerivedRows()` -- The tool's quantitative output: DATA-unit landmarks + dispersion TYPE + provenance (figure_derived/Data_Source/Data_Extraction_Method) + direction/timepoint/nSource -- NO yi/vi.
+- `getFigureDerivedCsv()` -- getFigureDerivedRows() serialized as the landmarks CSV handed to R.
+- `getPageDimensions(pageNum)` -- Get page dimensions (for calculating annotation coordinates). Returns `{displayWidth, displayHeight, naturalWidth, naturalHeight, scale}`.
+- `export()` (async) -- Export all figures and annotations (triggers downloads). Returns `{success, figureCount}`.
+- `getAnnotationsJSON()` -- Get annotations as JSON (without triggering download).
+- `clearAnnotations()` -- Clear all annotations for current article. Returns `{success}`.
+- `isReady()` -- Check if ready (project and article loaded). Returns `{projectLoaded, articleLoaded, loading, projectName, articleName, pageCount, figureCount}`.
+<!-- END GENERATED: figureExtractor API reference -->
 
 ## Coordinate System
 
@@ -156,8 +186,10 @@ Schema v2:
 `bounds` are natural px (subfigure bounds are relative to the parent figure). `boundsNorm` are
 fractions of the page (figures) or figure (subfigures) for resolution-independent scoring.
 Captions are auto-detected from the PDF text layer on `addFigure`; `captionSource` is
-`textlayer` | `ocr` | `manual` | `''` (`ocr` when the text came from `pdf-to-pages.py`'s
-scanned-page OCR fallback, and carries slightly lower confidence).
+`textlayer` | `ocr` | `manual` | `panel-split` | `''` (`ocr` when the text came from
+`pdf-to-pages.py`'s scanned-page OCR fallback, and carries slightly lower confidence;
+`panel-split` when a verified `detectPanels` split routed the matching per-panel caption
+segment onto the subfigure it created).
 
 ## Workflow for AI Figure Extraction
 

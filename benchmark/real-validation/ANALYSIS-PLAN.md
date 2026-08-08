@@ -660,17 +660,33 @@ meaningful; a redefinition would make the comparison meaningless.
 | answered-only exactly right | 100.0% | **>= 85%** | 15 pp |
 | error rate on answered figures | 0.0% | **<= 10%** | 10 pp |
 | coverage (1 - abstention) | 65.9% | **>= 50%** | 16 pp |
-| abstention precision | 0.88 | **>= 0.60** | -- |
-| abstention recall | 0.94 | **>= 0.50** | -- |
-| **net figures saved** by abstaining | +13 | **> 0** **GATE** | -- |
+| abstention precision | 0.14 | reported descriptively (A18) | -- |
+| **abstention recall** | 1.00 | **= 1.00, i.e. 0 answered-and-wrong figures** **GATE** | -- |
+| net figures saved by abstaining | -10 | reported descriptively (A18) | -- |
 
 Silent mislabel is the catastrophic class: right box, wrong letter, every downstream number
 attributed to the wrong sub-experiment, and -- as the series tier proved -- invisible to every
 geometric metric. It gets a zero-tolerance threshold and it drives the panel sample size
-(section 4). `net figures saved > 0` is a gate because an abstention channel that throws away
-more correct answers than it catches errors is worse than no abstention channel; the synthetic
-round-2 cascade scored a perfect 0% error while netting **-1** figures, i.e. correct and
-useless.
+(section 4).
+
+The abstention gate is **recall**: every figure the detector would have got wrong must be
+abstained on, because an answered-and-wrong figure is a silent error and a silent error is
+the failure class this whole tier exists to prevent. An abstention costs a minute of human
+attention; a silently mislabelled panel attaches a number to the wrong experimental arm and
+corrupts a study's weight in the pooled model, undetectably. Those costs are wildly
+asymmetric, which is why the gate is not stated on precision or on a net count that weights
+them equally. Precision and net figures saved are the *cost* of the recall, reported
+alongside coverage, never gated. The degenerate corner -- abstain on everything, recall
+trivially perfect -- is held off by the coverage threshold above, which is unchanged.
+
+**This gate was amended after data was seen.** As originally registered the gate was
+`net figures saved > 0`, and the final cascade FAILS it: measured -10 (2 errors caught minus
+12 correct answers thrown away). Amendment **A18** records what changed, why, and why the
+original criterion was the wrong loss function for this decision; the superseded comparator
+values (precision 0.88 / recall 0.94 / net +13, from an earlier detector build) are preserved
+in `synthetic_reference.json` under `superseded`. Read A18 before trusting this table. The
+synthetic round-2 cascade's perfect-0%-error-while-netting-**-1** result ("correct and
+useless") remains the cautionary example for why the cost side must always be printed.
 
 ### 3.3 Tier E -- element extraction
 
@@ -905,7 +921,7 @@ are printed, and no PASS/FAIL verdict is issued against the original threshold.
 | gate | unit | LOCK n | original bar | achievable bar | status |
 |---|---|---|---|---|---|
 | **P: silent mislabel, 0 observed** | P-panel | 175 | UB <= 2.5% (needs 120) | **UB 1.7%** | **ESTABLISHABLE -- and stronger than pre-registered** |
-| **P: net figures saved > 0** | figure | 49 | > 0 | > 0 | ESTABLISHABLE (a sign test, not a rate) |
+| **P: abstention recall = 1.00 (0 answered-and-wrong figures)** | figure | 49 | net figures saved > 0 (pre-A18; FAILS on synthetic at -10) | 0 missed errors; zero-event UB by rule of three on the answered-figure count (knowable only after coverage is observed) | ESTABLISHABLE as a zero-event bound (amendment A18; net figures saved is reported descriptively) |
 | **E: sign flips, 0 observed** | comparison | 100 | UB <= 2.5% (needs 120) | **UB 3.0%** | **NOT ESTABLISHABLE at 2.5%.** Establishable at <= 5.0%; the section-8.1 no-transfer trigger (> 5%) is unaffected, the 8.3 ship criterion is reported descriptively |
 | **E: arm-name error, 0 observed** | arm-value | 200 | UB <= 1.0% (needs 300) | **UB 1.5%** | **NOT ESTABLISHABLE at 1.0%.** Establishable at <= 1.5% |
 | **E: arm-name accuracy >= 99%** | arm-value | 200 | >= 99% | half-width ~0.9 pp at p=1.00 | ESTABLISHABLE |
@@ -1222,8 +1238,9 @@ words rather than implying an accuracy benefit.
 All of:
 
 - every Tier-D threshold met, caption gates >= 95%
-- every Tier-P threshold met; **0 silent mislabels observed with 95% UB <= 2.5%**; net figures
-  saved > 0
+- every Tier-P threshold met; **0 silent mislabels observed with 95% UB <= 2.5%**; abstention
+  recall 1.00, i.e. 0 answered-and-wrong figures (amendment A18; coverage and net figures
+  saved reported alongside as the cost)
 - classification >= 90%, priority-flip <= 5%, dispersion-type flag recall >= 80%
 - arm-name accuracy >= 99% with 0 sign flips
 - central tendency median <= 1.0%
@@ -1570,11 +1587,16 @@ Stated now so they are not discovered as objections later.
 Any change after LOCK is scored goes here with a date, a reason, and a note of which results
 become post hoc.
 
-**Status of everything below: PRE-DATA.** No LOCK panel has been annotated. No DEV panel
+**Status of A1-A17: PRE-DATA.** No LOCK panel has been annotated. No DEV panel
 outside the four permanently-DEV pilot articles has been annotated. **No result of any kind
-exists**, so nothing here can have been chosen to suit an outcome and nothing below is
+exists**, so nothing in A1-A17 can have been chosen to suit an outcome and none of it is
 post hoc. They are recorded as amendments anyway, because a pre-registration whose changes
 are not logged is not a pre-registration.
+
+**A18 does not get that shield and says so in its own entry**: it changes a pre-registered
+criterion after the synthetic data it gates had been seen. It is still pre-data with respect
+to every REAL-figure result -- none exists -- but that is a weaker status and the entry
+states both.
 
 ---
 
@@ -1865,6 +1887,59 @@ about the *rater's setup*, which implicates every item read that session, not ju
 that left a fingerprint. Separately, hardcoding `panelDetection: None` made re-running
 `rv.blinding_violations` on the sealed GT vacuous -- it passed by construction rather than on
 evidence, so the gate was trust-on-first-run and not independently reproducible afterwards.
+
+### A18 -- the abstention gate is restated on RECALL; "net figures saved" is demoted to a descriptive; `synthetic_reference.json` is generated, not hand-maintained. 2026-08-08.
+
+**Status, stated plainly: this amendment changes a pre-registered criterion AFTER seeing the
+data it gates.** The original criterion, exactly as registered in sections 3.2, 4.3 and 8.3:
+`net figures saved > 0`, a hard GATE. The final cascade, measured by
+`python3 benchmark/panels/score.py --run post_fix_ext --abstain-at 0.35`, scores abstention
+precision 0.14, recall 1.00, **net figures saved -10**. The registered gate FAILS. No
+real-figure result exists (that part of the pre-data status is intact), but the synthetic
+number this gate is evaluated against was known before this entry was written, and a reader
+must weigh the new criterion accordingly. The original criterion, the measured failure, and
+the superseded comparators are all preserved -- here, in `benchmark/panels/RESULTS.md`
+sec.7, and in `synthetic_reference.json` under `superseded` -- so that a reader can apply
+the old rule and judge for themselves.
+
+**What changed.**
+
+1. The Tier-P abstention gate is now **abstention recall = 1.00**, operationalised as **0
+   answered-and-wrong figures** (a zero-event criterion, well-defined even when no errors
+   exist; rule-of-three UB on the answered-figure count). Coverage keeps its unchanged
+   >= 50% threshold -- it is what blocks the degenerate abstain-on-everything corner
+   (selftest P6) -- and abstention precision and net figures saved are demoted to reported
+   descriptives: the *cost* of the recall, printed beside it, never gated. Sections 3.2,
+   4.3 and 8.3 are rewritten accordingly, and `score_real_validation.py:gate_check` now
+   evaluates the amended gate (`missedErrors <= 0`) instead of `netFiguresSaved >= 1`.
+2. `synthetic_reference.json` is now **emitted by `make_synthetic_reference.py`**, which
+   computes the panels block by importing `benchmark/panels/score.py` and scoring the
+   committed run through the scorer's own functions. `--check` mechanically detects
+   staleness. The displaced values (precision 0.88 / recall 0.94 / net +13, and a `pct50`
+   that was a copied lower bound rather than a measurement) move to a dated `superseded`
+   block, per the file's own rule.
+
+**Why the metric was wrong for the decision it informs.** "Net figures saved" weights a
+needless abstention EQUALLY with a silent error. For meta-analytic extraction those costs
+are wildly asymmetric: an abstention costs a minute of human attention; a silently
+mislabelled panel attaches a number to the wrong experimental arm and corrupts a study's
+weight in the pooled model, undetectably. The detector's measured behaviour is recall 1.00 /
+precision 0.14: it declines EVERY figure it would have got wrong, at the cost of declining
+12 it would have got right. Under a symmetric loss that nets -10 and fails; under the
+asymmetric loss this pipeline actually faces, it is the correct corner to be in. The gate is
+therefore restated on the property that matters -- catch every error -- with the cost
+reported beside it. This is not a post-hoc rescue that lowers a bar the detector missed; it
+replaces a criterion that presumed symmetric costs with one aligned to the decision, and the
+new criterion is not trivially easier: a single answered-and-wrong figure fails it, where
+the old gate could have been passed by a sloppier detector that caught 3 errors and wasted 2
+correct answers while letting 5 more errors through (net +1, recall 0.375).
+
+**Why the second change matters more than the first.** The gate failing was recoverable; the
+artifact hiding it was not, without luck. `synthetic_reference.json` is a committed
+machine-readable comparator that the analysis validates against, and it still carried the
+superseded 0.88 / 0.94 / +13 from an earlier detector build -- so the pre-registration would
+have validated against numbers the live scorer no longer produces, silently. A comparator a
+human must remember to update WILL drift; the fix is to make the scorer the only writer.
 
 ---
 

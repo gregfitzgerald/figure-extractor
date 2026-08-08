@@ -1064,6 +1064,7 @@ def abstention(figs):
         "errorRateAnswered": n_w / (n_r + n_w) if (n_r + n_w) else NA,
         "precision": a_w / (a_w + a_r) if (a_w + a_r) else NA,
         "recall": a_w / (a_w + n_w) if (a_w + n_w) else NA,
+        "missedErrors": n_w,            # answered-and-wrong: the class the A18 gate counts
         "net": a_w - a_r,
     }
 
@@ -1705,7 +1706,16 @@ def gate_check(real, synth):
     p = real.get("panels") or {}
     add("P: silent-mislabel rate", p.get("silentMislabel"), "<=", 0.025,
         f"0 observed required; UB(n) = {f(rule_of_three(p.get('nPanels') or 0), '{:.3f}')}")
-    add("P: net figures saved", p.get("netFiguresSaved"), ">=", 1)
+    # Amendment A18: the abstention gate is 0 missed errors (abstention recall = 1.00),
+    # not "net figures saved > 0". A silent error and a needless abstention do not cost the
+    # same, so a net count is the wrong loss function for this decision. Coverage keeps its
+    # sec.3.2 threshold and is reported as the cost; net figures saved stays in the report
+    # as a descriptive.
+    add("P: abstention recall = 1.00 (0 missed errors)",
+        (p.get("abstention") or {}).get("missedErrors"), "<=", 0,
+        f"answered-and-wrong figures; coverage {f((p.get('abstention') or {}).get('coverage'), '{:.1%}')} "
+        f"and net figures saved {f((p.get('abstention') or {}).get('net'), '{:+d}')} are the "
+        "reported cost, not gated (amendment A18)")
     c = real.get("classify") or {}
     add("E: priority-flip rate", c.get("priorityFlipRate"), "<=", 0.05)
     add("E: dispersion-type flag recall", c.get("dispTypeFlagRecall"), ">=", 0.80)

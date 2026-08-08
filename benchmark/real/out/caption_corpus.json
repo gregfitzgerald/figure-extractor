@@ -1,0 +1,1151 @@
+{
+ "schemaVersion": 1,
+ "note": "worklistLetters has UNRECORDED provenance -- unvalidated comparator, never an accuracy denominator. See module docstring.",
+ "forms": [
+  {
+   "id": "form_noun_marker",
+   "source": "Baraldi2013 F1",
+   "caption": "Figure 1. Novel object recognition at 2 months of age (A), 5 months of age (B), and 12 months of age (C). Data are mean +/- SEM.",
+   "expect": [
+    "a",
+    "b",
+    "c"
+   ],
+   "why": "markers follow a noun, not clause punctuation, so the `placed` test refuses the first one and no run ever anchors"
+  },
+  {
+   "id": "form_no_open_paren",
+   "source": "Morgan2018 F7",
+   "caption": "Figure 7. Latency to platform in A), Y mice B), M mice, and C) O mice.",
+   "expect": null,
+   "status": "open",
+   "why": "KNOWN OPEN. Closing paren only; the scanner requires a balanced (X). Recognising bare `A)` markers risks colliding with outline numbering and reference lists, and this shape is 4 of 71 real captions -- not worth the false-positive risk without a corroborating signal from the figure geometry. Abstains today, which is safe."
+  },
+  {
+   "id": "form_prose_enumeration",
+   "source": "Harburger2007b F3",
+   "caption": "Figure 3. Performance for young (A and E), middle-aged (B and F), and aged (C and G) mice.",
+   "expect": null,
+   "why": "GENUINELY AMBIGUOUS in reading order -- a,e then b,f is not ascending. Must stay null; recovering this would require guessing the panel layout"
+  },
+  {
+   "id": "form_bare_letters",
+   "source": "Gattas2022 F4",
+   "caption": "Figure 4. a, Task schematic. ai, Trial timeline. aii, Response window. b, Accuracy across sessions.",
+   "expect": null,
+   "why": "bare markers with roman sub-indices; 'ai'/'aii' are not single letters and the run a,a,a,b does not ascend"
+  },
+  {
+   "id": "form_hierarchical",
+   "source": "Lee2024 F2",
+   "caption": "Figure 2. (A-a) Baseline. (A-b) After training. (B) Control group. (C-a) Probe trial.",
+   "expect": null,
+   "why": "hierarchical labels; (A-a) is not a range and the top-level run repeats"
+  },
+  {
+   "id": "form_primes",
+   "source": "Chrusch2023 F2",
+   "caption": "Figure 2. (A) Sham condition. (A') Magnified view. (B) Lesion condition. (B') Magnified view.",
+   "expect": null,
+   "why": "primes make the run non-increasing -> ambiguous -> null"
+  },
+  {
+   "id": "ctrl_canonical",
+   "source": "synthetic",
+   "caption": "Figure 1. (A) Control group. (B) Running group. (C) Enriched group.",
+   "expect": [
+    "a",
+    "b",
+    "c"
+   ],
+   "why": "canonical form -- must never break"
+  },
+  {
+   "id": "ctrl_range",
+   "source": "synthetic",
+   "caption": "Figure 2A-D shows the behavioural battery.",
+   "expect": [
+    "a",
+    "b",
+    "c",
+    "d"
+   ],
+   "why": "range welded to the figure number"
+  },
+  {
+   "id": "ctrl_group",
+   "source": "synthetic",
+   "caption": "Figure 3. (A) Baseline. (B,C) Both training phases. (D) Probe.",
+   "expect": [
+    "a",
+    "b",
+    "c",
+    "d"
+   ],
+   "why": "grouped marker"
+  },
+  {
+   "id": "ctrl_citation_poison",
+   "source": "synthetic",
+   "caption": "Figure 4. As reported previously (A) and in related work (B), performance improved. See Smith et al. (2019) for details.",
+   "expect": null,
+   "why": "citation-shaped; must NOT be read as panels. A silent error here is the worst outcome available to this function"
+  }
+ ],
+ "real": [
+  {
+   "id": "Zhang2017_F3",
+   "source": "worklist",
+   "caption": "Figure 3. Behavioral performance tests: (a) total distance traveled in EE-reared and SE-reared mice (*P < 0.05), (b) contextual fear conditioning (*P < 0.05), (c) EE enhanced delay tone-dependent fear conditioning (*P < 0.05), (d) escape latency in the removed platform trial (*P < 0.05), (e) escape distance in the removed platform trial (*P < 0.05), (f) time spent in the platform quadrant in the removed platform trial (*P < 0.05), and (g) times crossing the platform in the removed platform trial (*P < 0.05). EE: enriched environment; SE: standard environment. indicates activated microglia/macrophages. As shown in Figure 7(a)\u2013(c), the number of CD68+ cells in the hippocampus in EE-reared mice was significantly lower than that in the SE-reared mice (SE vs EE: 67 \u00b1 7 vs 38 \u00b1 4, *P < 0.05).",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G"
+   ],
+   "worklistLetterCount": 7,
+   "tiles": 7,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Lee2024_F2",
+   "source": "worklist",
+   "caption": "Figure 2. Result of anxiety-like and memory behavior test. (A-a) Total duration (%) of central zone entries of the open-field test (A-b) Number of rearing (B) Latency time (sec) to the dark box in passive avoidance test (C-a) Total time spent in eight-arm radial maze test for the session (C-b) Result of spatial working memory function in eight-arm radial maze test. Data are expressed as mean \u00b1 S.E.M. S.E.M: Standard error of the mean *significantly different from Ad-CON. Ad-CON = Adult control; Ad-EE = Adult environmental enrichment; Ad-CR = Adult calorie restriction.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 5,
+   "letterTileMismatch": true,
+   "tier": 1
+  },
+  {
+   "id": "Smith2018_F3",
+   "source": "worklist",
+   "caption": "FIGURE 3 | (A) Group-housed mice spent signi\ufb01cantly more time investigating the moved object in the novel object location task than pair-housed mice. Two-way RM-ANOVA, main effect of trial (p = 0.517), main effect of housing (p = 0.134), trial by housing interaction (p = 0.093), effect of subjects (p = 0.172). \u2217p = 0.032 Welch\u2019s test Bonferroni corrected. (B) Group-housed and pair-housed mice spent similar percentages of time investigating a novel object. Unpaired Welch\u2019s test, p = 0.326. (C) Total object investigation time (s) did not differ by trial or housing condition. Two-way RM-ANOVA, main effect of trial (p = 0.080), main effect of housing (p = 0.625), trial by housing interaction (p = 0.862), effect of subjects (p < 0.0001). (D) Speed decreased over trials but did not differ by housing condition. Two-way RM-ANOVA, main effect of trial (p < 0.0001), main effect of housing (p = 0.619), trial by housing interaction (p = 0.836), effect of subjects (p = 0.0004). Each point represents one mouse. Average \u00b1 SEM is shown.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Gattas2022_F4",
+   "source": "worklist",
+   "caption": "Fig. 4 PD task\u2014enhanced cognitive \ufb02exibility with OC and CC training exceeds EH effects. a Schematic representation of the pairwise visual discrimination (PD) experiment. ai-ii Stimulus-reward association learning. ai Original association: animal receives reward upon contact with the S+ stimulus. aii Reversal of association: previously learned S\u2212stimuli become S+ stimuli and are associated with reward. b Mean session number to reach criterion (performance of 80% accuracy on two successive sessions) in the reversal phase per group (group effect p < 0.001), with the OC (p < 0.001) and CC (p < 0.001) groups requiring signi\ufb01cantly fewer sessions compared to the SH group. ci Group percent accuracy on the \ufb01rst \ufb01ve reversal sessions, with a main effect of session (p = 0.003) and an effect of group on the \ufb01fth session (p < 0.001), with the OC group performing signi\ufb01cantly higher than the SH group on session \ufb01ve. cii Mean accuracy across the \ufb01rst \ufb01ve reversal sessions for each group, with a group main effect (p = 0.034). Post hoc independent samples t-test did not reveal group pairwise differences. \u2666\u2666p < 0.01, \u2666\u2666\u2666p < 0.001 indicate a signi\ufb01cant difference between groups (two-tailed independ",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 5,
+   "letterTileMismatch": true,
+   "tier": 1
+  },
+  {
+   "id": "Gobeske2009_F2",
+   "source": "worklist",
+   "caption": "Figure 2. Transgenic regulation of BMP signaling mirrors the effects of exercise on SGZ niche cell lineage properties. (A) Schematic of the experimental design. All 4 groups of animals (N = 8 per group) received CldU for 2 days. One group of wild type animals was exposed to elective exercise for 8 days while the other groups were maintained in standard housing. On the last 2 days all 4 groups of animals received IdU. Coronal sections through the dentate gyrus were then immunostained for DCX (green), CldU (pink), IdU (blue), and Sox2 (red: panels B\u2013E) or GFAP (red: panels F\u2013I). Panels B\u2013E and F\u2013I show representative merged images for all sets of four labels. Individual channels comprising merged images are shown in Figure S2. (B,F) Wild type, standard housing; (C,G) Wild type, running; (D,H) NSE-noggin. (E,I) NSE-BMP4. (J\u2013M) Unbiased stereological sampling and quantification per 40X field of cells labeled for (J) CldU; (K) (IdU); (L) Sox2; (M) DCX. Analyses of double labeling are shown in Figure 3. Analysis of coronal sections labeled for nestin is presented in Figure S3. * Differs from wild type na\u0131\u00a8ve group at p,0.001 or from other groups as indicated at p,0.01 by Bonferroni/Dunn",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L",
+    "M"
+   ],
+   "worklistLetterCount": 13,
+   "tiles": 13,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Bonaccorsi2013_F2",
+   "source": "worklist",
+   "caption": "Figure 2: (a) c-Fos expression in subregions of dHPC for EE (open columns) and SC (filled columns) mice subjected to recall probe tests at 1, 10, 20, 30, and 50 days. DG: two-way ANOVA post hoc analysis Holm-Sidak method, SC versus EE, \ud835\udc43= 0.968; HC-SC versus HC-EE, \ud835\udc43= 0.503; SC versus HC-SC and EE versus HC-EE \ud835\udc43< 0.05 for all retention intervals. Statistical differences for factor day were found between 1 and 20 days, 1 and 30 days, and 50 days versus 20 and 30 days, all \ud835\udc43< 0.05. dCA1: two-way ANOVA post hoc analysis Holm-Sidak method, SC versus EE, \ud835\udc43= 0.242; HC-SC versus HC-EE \ud835\udc43= 0.979. Statistical difference factor day were found between 1 and 10, 20 and 30 days, all \ud835\udc43< 0.05. \u25fcStatistical significance between EE and HC-EE; \u25fbstatistical significance between SC and HC-SC; \u2218statistical significance for factor day; error bars = s.e.m. (b) Representative panel of c-Fos protein expression in DG for EE and SC animals, for all recall probe tests; scale bar 100 \ud835\udf07m.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 14,
+   "letterTileMismatch": true,
+   "tier": 1
+  },
+  {
+   "id": "Clemenson2015_F3",
+   "source": "worklist",
+   "caption": "FIGURE 3. (A) Freezing data of CON (n = 16) and EE (n = 16) animals during a 24-h discrimination trial, with a post-exposure to CtxtA. (B) Freezing data of CON (n = 12) and EE (n = 12) groups during a 24-h discrimination trial between CtxA and CtxC. (C) Operant chamber pictures of different context setups: CtxA, CtxA\u2032, CtxB, and CtxC. (D) EDD procedure. The \u201cx\u201d represents the box that is substituted for the subsequent post-exposures. (E) Box \u201cB\u201d (CON n = 12, EE n = 12); Box \u201cNo Post-exp\u201d (CON n = 12, EE n = 12); Box \u201cC\u201d (CON n = 12, EE n = 12); Boxes \u2018A and B\u2019 (CON n = 12, EE n = 12). All data are presented as mean \u00b1 SEM, *P < 0.05.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 5,
+   "tiles": 12,
+   "letterTileMismatch": true,
+   "tier": 1
+  },
+  {
+   "id": "Lyst2012_F7",
+   "source": "worklist",
+   "caption": "Figure 7. T-maze performance on days 1\u20137 of training and day 8 (probe). Chance performance of 0.5 is depicted by the dotted line. doi:10.1371/journal.pone.0047640.g007 PLOS ONE | www.plosone.org 6 October 2012 | Volume 7 | Issue 10 | e47640",
+   "worklistLetters": [],
+   "worklistLetterCount": 0,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Morgan2018_F7",
+   "source": "worklist",
+   "caption": "Figure 7. Preference index of recognition memory over the lifespan in A), Y mice B), M mice, and C) O mice (*p < 0.05, **p < 0.01, N = 11-17mice/group).   3.6.2 Barnes maze The Barnes maze investigated spatial learning, memory, and cognitive flexibility over the lifespan. Mice were assessed on their capacity to learn the location of an escape box over four days of training and the latency to locate the box was taken as a measure of spatial learning. Curiously, Y exercise mice showed longer latencies to the escape box compared to control mice on training days 1, 3 and 4 (p = 0.017, p = 0.011 and p < 0.001) (Figure 8A) however this was largely explained by increased latencies for female mice to locate the escape box on days 2, 3, and 4 (p = 0.026, p = 0.006, and p = 0.0003). There were no differences in training day latencies evident in M mice, but exercise mice displayed increased latencies on day 2 in O mice (p < 0.001)(Figure 8B-C).",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Chrusch2023_F2",
+   "source": "worklist",
+   "caption": "Figure 2. Cell survival in the hippocampus of WT and ZnT3 KO mice exposed to SH or EE (n = 23). Representative photomicrographs of BrdU-immunopositive cells (red) in the granule cell layer of a (A) WT and (A\u2019) ZnT3 KO mouse housed in EE. (B) EE exposure signi\ufb01cantly increased the survival of proliferating cells in WT mice but had no effect on ZnT3 KO mice. (C) Confocal microscopic images showing cells expressing the mature neuronal marker NeuN (green), with a BrdU-positive cell in the same plane ((C\u2019), red). (C\u201d) The channels are merged to show co-localisation. (D) Exposure to EE increased the percentage of BrdU-positive cells co-expressing NeuN in both WT and ZnT3 KO mice. Error bars represent \u00b1 standard error of the mean. * indicates p < 0.001. Given the signi\ufb01cant decrease in cell survival in the ZnT3 KO-EE group, we next examined the neuronal phenotype of the surviving cells (Figure 2C\u2013C\u201d)). There was no signi\ufb01cant interaction between genotype and housing condition [F(1, 19) = 0.29, p = 0.596]. While there was no signi\ufb01cant effect of genotype for neuronal phenotype [F(1, 19) = 0.01, p = 0.910], there was a signi\ufb01cant effect of housing condition [F(1, 19) = 92.45, p < 0.001] (Su",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 7,
+   "letterTileMismatch": true,
+   "tier": 1
+  },
+  {
+   "id": "Baraldi2013_F1",
+   "source": "worklist",
+   "caption": "Fig. 1. Evaluation of spatial memory of enriched environment rearing (black symbols) and standard environment rearing (blank symbols) C57Bl/6 mice at 2 months of age (A), 5 months of age (B), 11 months of age (C) and 17 months of age (D). In each test, animals were submitted once a day to the equipment for 5 consecutive days. The latency (s) each one took to \ufb01nd the escape box was registered. A measure of learning and consolidat- ing spatial memory is observed when there is difference among the 1st and other days of observation. Symbols and vertical bars are means \u00b1 standard-errors.*: P b 0.05; a: P b 0.01; b: P b 0.01 against 1st day observation of both groups; c: P b 0.01 against 1st day of observation in the C-2 group. 300 A 200 100 0 1 2 3 4 5 0",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Harburger2007b_F3",
+   "source": "worklist",
+   "caption": "Figure 3. Performance in the spatial probe trials as illustrated for young (A and E), middle-aged (B and F), and aged (C and G) mice. Each point represents the mean \u0003 SEM for each group during one test session. The bars in D and H are means (\u0003 SEM) of all five sessions and illustrate differences among enrichment treatment groups of the same age in quadrant time and platform crossings, respectively. * \u0001 significantly different from same-age controls, \u0005 \u0001 significantly different from same-age toy group, \u0003 \u0001 significantly different from same-age wheel group (p \u0004 .05).",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"
+   ],
+   "worklistLetterCount": 8,
+   "tiles": 8,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Nawaz2018_F1",
+   "source": "worklist",
+   "caption": "Fig. 1. E\ufb00ects of environmental enrichment before and after subjecting to re- straint stress on short term memory retention. Values are means \u00b1 SD (n = 6). Data was analyzed by three-way ANOVA using repeated measure design. Signi\ufb01cant di\ufb00erences by Bonferroni post hoc test: **p < 0.01 and *p < 0.05 from respective control animals; +p < 0.05 from stressed animals.",
+   "worklistLetters": [],
+   "worklistLetterCount": 0,
+   "tiles": 1,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Ederer2022_F2",
+   "source": "worklist",
+   "caption": "Figure 2. Effect of running and isolation on cognitive functions in male mice in the Barnes maze test. Isolated runners and group-housed mice were each compared to the same group of isolated controls. Running decreased (A) primary latency and increased (B) the cognitive score during the training period. (C) Isolation increased primary latency and decreased (D) the cognitive score. (E) Search strategies differed between isolated runners, isolated controls, and group-housed mice. (F) The probe trial, (G) the retention test, and (H) the reversal test were signi\ufb01cantly different with respect to the primary latency after VWR. Cognitive score and primary latency are shown as mean per day \u00b1 SEM, mixed ANOVA. All other parameters are shown as mean \u00b1 SEM, t-test. The success rate in \ufb01nding the target hole is presented as % and was tested with Fisher\u2019s exact test. * p \u22640.05, ** p \u22640.01, *** p \u22640.001.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"
+   ],
+   "worklistLetterCount": 8,
+   "tiles": 8,
+   "letterTileMismatch": false,
+   "tier": 1
+  },
+  {
+   "id": "Morgan2018_F8",
+   "source": "worklist",
+   "caption": "Figure 8. The Barnes maze over four days of training for C57BL/6 mice in A) Y mice, B) M mice, and C) O mice (* = p < 0.05, ** p < 0.01, N = 11-17mice/group).  Following 4 days of training, a probe trial was conducted on day 5 where the position of the training day escape box was rotated clockwise 90 degrees. Latencies to locate the training day escape box location and the new escape box locations were recorded to quantify spatial retention memory and cognitive flexibility respectively. Compared to control mice, exercise mice Y and O mice displayed increased latencies to locate both the original box location and the new box location (Table 4). There were no differences between the sexes at any age to identify the old or the new locations of the escape box in the probe trial. 13",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Gobeske2009_F6",
+   "source": "worklist",
+   "caption": "Figure 6. Constitutively high levels of BMP signaling block the effects of exercise. (A\u2013I) Groups of 2 month old NSE-BMP4 mice and age- matched WT controls (N = 16 per group) received CldU for 2 days. Half of each group was exposed to elective exercise for the last 8 days of the 10-day trial, while the other half was maintained in standard housing. On the final 2 days, all animals received IdU. Coronal sections through the dentate gyrus were then immunostained for DCX (green), CldU (pink), IdU (blue), and GFAP (red). Panels A\u2013D show representative merged images for all four labels; (A) Wild type, standard housing; (B) Wild type, running; (C) NSE-BMP4, standard housing; (D) NSE-BMP4, running. (E\u2013I) Unbiased sampling and quantification of cells labeled for (E) CldU; (F) (IdU); (G) DCX; (H)CldU + DCX; (I) IdU + DCX per 40X field. (J\u2013K) Other groups of NSE-BMP4 mice were housed with running wheels for 0, 4, 7, 10 or 14 days and were analyzed for (J) hippocampus-dependent Y-maze performance and (K) hippocampal levels of BMP4, noggin and PCNA proteins. Exercise failed to alter either behavior or levels of any of the proteins in the NSE-BMP4 animals. * Differs from wild type na\u0131\u00a8ve group",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K"
+   ],
+   "worklistLetterCount": 11,
+   "tiles": 11,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Gobeske2009_F8",
+   "source": "worklist",
+   "caption": "Figure 8. Noggin infusion reproduces effects of exercise and the NSE-noggin phenotype. (A\u2013I) Two month old wild type mice were implanted with Alzet minipumps delivering noggin, AraC, noggin + AraC, or vehicle intraventricularly (n = 10 per group) following the experimental paradigm in Figure 7A. Coronal sections through the dentate gyrus were then immunostained for DCX (green), CldU (pink), IdU (blue), and GFAP (red). Panels A\u2013D show representative merged images for all four labels. (A) Saline; (B) Noggin; (C) Noggin + AraC; (D) AraC (E\u2013H) (E\u2013I) Unbiased sampling and quantification of cells labeled for (E) CldU; (F) (IdU); (G) DCX; (H) CldU + DCX; (I) IdU + DCX. (J\u2013L) Noggin infusion into wild type mice improved scores on hippocampus-dependent behavioral tests in a manner focused on the DG and dependent upon ongoing cell proliferation. (J) Y- maze scores. (K) NOR scores. (L) Latency by day on Morris water maze testing. Analyses of hippocampus-independent behavioral changes and of coronal sections labeled for nestin are provided in Figures S12 and S13. * Differs from saline infusion control at p,0.01 by Bonferroni/Dunn pair-wise comparison. **Significant main effect by multiple ANOV",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J",
+    "K",
+    "L"
+   ],
+   "worklistLetterCount": 12,
+   "tiles": 12,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Gobeske2009_F1",
+   "source": "worklist",
+   "caption": "Figure 1. Elective exercise decreases BMP4 and increases noggin expression in the hippocampus. Separate groups of C57Bl/6 mice were exposed to running wheels for 0, 2, 4, 7, 10 or 14 days (n = 8 per exposure group). (A) Performance on a Y-maze task of hippocampus-dependent cognition shows a duration-response curve with exercise-induced improvements beginning after 7 days of running exposure. (B) qRT-PCR analyses show decreases in levels of BMP4 mRNA and increases in noggin mRNA in the hippocampus preceding the onset of improvements in Y-maze performance. (C) Examples of Western blots for noggin, BMP4 and PCNA protein in the hippocampus after increasing durations of exposure to elective exercise. (D) Quantification of the Western analyses of hippocampal BMP4, noggin and PCNA shows a duration-dependent relationship, with the onset of changes in BMP4 and noggin levels preceding those for the cell proliferative marker, PCNA. * Differs from control (day 0) group at p,0.01 doi:10.1371/journal.pone.0007506.g001 decreased production of BMP4 and increased levels of the BMP inhibitor, noggin, in advance of gains in cell proliferation and Y- maze performance. The complementary changes in leve",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Gobeske2009_F4",
+   "source": "worklist",
+   "caption": "Figure 4. BMP signaling regulates cognitive performance on hippocampus-dependent behavioral and memory tasks. Wild type, NSE- noggin, and NSE-BMP4 mice (n = 10 per group per experiment) were tested on a series of learning and memory tasks to measure baseline levels of hippocampal cognitive performance, processing and recall. (A) Performance on a Y-maze test measuring spontaneous alternation as a hippocampus- dependent exploration strategy shows significant gains in NSE-noggin mice and significant deficits in NSE-BMP4 mice relative to wild type controls. (B) NSE-noggin mice have significantly improved object memory on the novel object recognition test after multiple delay periods, and (C) significantly better spatial memory on the novel location recognition test relative to wild type animals. NSE-BMP4 mice are impaired on all tests, never significantly exceeding chance levels of performance. (D) Fear conditioning tests for hippocampus-independent cued memory and hippocampus-dependent contextual memory show that the cognitive phenotypes and the effects of BMP signaling are specific to the hippocampus. All mice perform equally on the cued memory test, while the percentage of time free",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 5,
+   "letterTileMismatch": true,
+   "tier": 2
+  },
+  {
+   "id": "Gobeske2009_F7",
+   "source": "worklist",
+   "caption": "Figure 7. Improved cognitive abilities of NSE-noggin mice require cell proliferation. (A) Two month old NSE-Noggin mice were implanted with an Alzet minipump delivering cytosine arabinoside (AraC) or vehicle intraventricularly (n = 10 per group) for 15 days. A Y- maze test performed on day 3 during a pilot experiment and tests in non-operated mice were used to establish baseline behavior. NOR testing was performed on day 6 and CldU was administered from days 6\u20138. Thereafter the animals were habituated to the Morris water maze (MWM), and MWM testing was performed on days 11\u201315. IdU was administered on days 14 and 15, and a Y-maze test was performed on day 15 prior to sacrifice/perfusion of the animals. (B\u2013G) Coronal sections through the dentate gyrus were then immunostained for DCX (green), CldU (pink), IdU (blue), and Sox2 (red). Panels B\u2013C show representative merged images for all four labels. (B) Saline infusion; (C) AraC infusion. (D\u2013G) Unbiased stereological sampling and quantification of cells labeled for (D) CldU; (E) (IdU); (F) DCX; (G) Sox2, per 40X field. (H\u2013J) AraC infusion impaired hippocampus-dependent cognitive abilities of NSE- noggin mice. (H) Latency by day on Morri",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H",
+    "I",
+    "J"
+   ],
+   "worklistLetterCount": 10,
+   "tiles": 10,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Lyst2012_F8",
+   "source": "worklist",
+   "caption": "Figure 8. Novel Object Recognition task. Displacement index (D2) values for the two cage types and time delays (top left panel) and level of object observation between the delays and cage conditions (top right panel) The same information is shown for female data only in the bottom right and bottom left panels respectively. doi:10.1371/journal.pone.0047640.g008 for the traditional basic cage type, without affecting the comparison to research conducted on animals housed in a basic cage type. Behaviour Focusing on behavioural differences between mothers housed in either basic or enriched cages, we detected only an effect of cage type in feeding and drinking behaviour. We used a comprehensive and established ethogram [24] covering all key behaviours (maternal and non-maternal), thus, it is unlikely we missed any behaviours for which females in the two cage types might differ. Females in basic cages spent significantly more time performing feeding and drinking than females in enriched cages in a situation where they had just rejoined their litters and were expected to show nursing behaviour. Interestingly, there is no difference in maternal behaviour, which suggests that increased feedi",
+   "worklistLetters": [],
+   "worklistLetterCount": 0,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Chandler2020_F3",
+   "source": "worklist",
+   "caption": "Fig. 3. Juvenile mice show enhanced cognitive response to environmental enrichment. (A) Graphical representation of the number of successes to reach the platform across 12 trials. (B) Graphical representation of the mean latency to \ufb01nd the platform across 12 trials. (C) Graphical representation of time spent swimming in the target zone during the probe trial. (D) Graphical representation of time spent swimming in the non- target zones during the probe trial. (E) Graphical representation of percentage of unsuccessful trials. Bars depict group means and error bars represent \u00b1 SEM, data points signify values for each individual. *Depicts statistical signi\ufb01cance from standard controls.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 5,
+   "tiles": 5,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Chandler2020_F4",
+   "source": "worklist",
+   "caption": "Fig. 4. Environmental enrichment increases stem cell potential in juveniles but not adult mice. (A) Graphical representation of neurosphere size in arbitrary units. (B) Representative images of neurospheres taken at 10\u0001. (C) Graphical representation of Sox2 Density in DG. (D) Graphical representation of Ki67 Density in DG. (E) Representative image of Sox2 tiled in DG at 20\u0001. Scale bar = 100 lm. Bars depict group means and error bars represent \u00b1 SEM, data points signify values for each individual. *Depicts statistical signi\ufb01cance from standard controls; #Depicts main e\ufb00ect of age.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 5,
+   "tiles": 13,
+   "letterTileMismatch": true,
+   "tier": 2
+  },
+  {
+   "id": "Bonaccorsi2013_F1",
+   "source": "worklist",
+   "caption": "Figure 1: (a) Performances of SC (\ud835\udc5b= 24) and EE (\ud835\udc5b= 24) mice in the MWM. There is a significant learning effect (two-way RM ANOVA, \ud835\udc43= 0.016), and a housing condition \u00d7 day interaction (two-way RM ANOVA post hoc analysis Holm-Sidak method, for day 4, \ud835\udc43= 0.005; for day 5, \ud835\udc43= 0.001). \u2217= statistical significance; error bars = s.e.m. (b) Evaluation of spatial memory for SC (1 day \ud835\udc5b= 5; 10 days \ud835\udc5b= 5; 20 days \ud835\udc5b= 5; 30 \ud835\udc5b= 5, 50 \ud835\udc5b= 4) and EE (1 day \ud835\udc5b= 5; 10 days \ud835\udc5b= 5; 20 days \ud835\udc5b= 5; 30 \ud835\udc5b= 5; 50 \ud835\udc5b= 4) mice. Time spent in the target zone (\ud835\udc47), where the platform was placed, versus other equivalent zones (\ud835\udc42), for recall probe tests. One-way ANOVA, post hoc analysis Holm-Sidak method, 1 day probe test: in SC group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.044; in EE group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.036; 10 days probe test: in SC group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.037; in EE group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.043; 20 days probe test: in SC group, \ud835\udc47versus \ud835\udc42, \ud835\udc43< 0.01; in EE group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.048; 30 days probe test: in SC group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.025; in EE group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.048; 50 days probe test: in SC group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.070; in EE group, \ud835\udc47versus \ud835\udc42, \ud835\udc43= 0.226. \u2217= statistical significance; error bars = s.e.m.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 6,
+   "letterTileMismatch": true,
+   "tier": 2
+  },
+  {
+   "id": "Bonaccorsi2013_F3",
+   "source": "worklist",
+   "caption": "Figure 3: (a) c-Fos protein expression in aCC and IL. aCC: two-way ANOVA post hoc analysis Holm-Sidak method, HC-SC versus HC-EE \ud835\udc43= 0.384; statistical significance for EE versus HC-EE at 10, 20, 30, and 50 days, and for SC versus HC-SC at 30 and 50 days, all \ud835\udc43values < 0.05. Statistical difference between EE and SC at 1 day, \ud835\udc43= 0.376; at 10 and 20 days, \ud835\udc43< 0.01; at 30 days, \ud835\udc43= 0.899; at 50 days, \ud835\udc43= 0.383. Statistical difference within EE group were found between 10 and 20 days, and 1 day versus 10, 20, 30, and 50 days, all \ud835\udc43< 0.05. Statistical difference within SC group were found between 1 and 30 days, and 10 day versus 30 and 50 days, all \ud835\udc43< 0.05. IL: two-way ANOVA post hoc analysis Holm-Sidak method, HC-SC versus HC-EE, \ud835\udc43= 0.451; statistical significance for EE versus HC-EE at 10, 20, 30, and 50 days, and for SC versus HC-SC at 30 and 50 days, all \ud835\udc43values < 0.05. Statistical differences between EE and SC at 1 day, \ud835\udc43= 0.300; at 10 and 20 days, \ud835\udc43< 0.01; at 30 days, \ud835\udc43= 0.084; at 50 days, \ud835\udc43= 0.055. Statistical differences within EE group were found between 10 and 20 days, and 1 day versus 10, 20, 30, and 50 days, all \ud835\udc43< 0.05. Statistical difference within SC group were found between",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 14,
+   "letterTileMismatch": true,
+   "tier": 2
+  },
+  {
+   "id": "Clemenson2015_F4",
+   "source": "worklist",
+   "caption": "FIGURE 4. (A) Experimental timeline for irradiation experiment (IRR). (B) BrdU and (C) DCX quantification of SHAM CON, SHAM EE, IRR CON, and IRR EE groups. (D) Representative confocal images. Blue, dapi; Red, BrdU; Green, DCX. (E) Freezing data of SHAM CON (n = 12), SHAM EE (n = 12), IRR CON (n = 12), and IRR EE (n = 12) during a 24-h discrimination trial. (F) Freezing data of Figure 4e presented using a discrimination index. All data are presented as mean \u00b1 SEM, *P < 0.05, **P < 0.01, ****P < 0.0001.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "worklistLetterCount": 6,
+   "tiles": 9,
+   "letterTileMismatch": true,
+   "tier": 2
+  },
+  {
+   "id": "Clemenson2015_F2",
+   "source": "worklist",
+   "caption": "FIGURE 2. (A) Schematic outlining three different shock trials. (B) Freezing data for 5-s (CON n = 8, EE n = 8), 15-s (CON n = 8, EE n = 8), and 25-s (CON n = 8, EE n = 8) shocks of both CON and EE groups during a 24-h discrimination trial. (C) Experience-dependent discrimination (EDD) procedure. (D) Experimental timeline used to RUN and EE groups. (E) Freezing data of CON (n = 16), EE (n = 16), and RUN (n = 12) groups during a 24-h discrimination trial. (F) BrdU quantification of CON, EE, and RUN groups. All data are presented as mean \u00b1 SEM, *P < 0.05, ***P < 0.001 ****P < 0.0001.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "worklistLetterCount": 6,
+   "tiles": 6,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Miu2006_F6",
+   "source": "worklist",
+   "caption": "Fig. 6. Tone fear conditioning performance. (A) Short-term memory of tone fear conditioning. (B) Short-term memory of context fear conditioning. (C) Long-term memory of tone fear conditioning. (D) Long-term memory of context fear conditioning. CCX increased the time spent in the center of the \ufb01eld, which is usually taken as a fear-related index [7]. Previous studies showed that CCX increased the basal testosterone secretion of the right testis and the serum follicle-stimulating hormone con- centration in adult left hemiorchidectomized rats [2]. Such an involvement of CC in an asymmetrical pituitary-independent control of testicular steroidogenesis might be a candidate mech- anism for the alteration of fear-related behaviors associated with CCX. The alteration of opiate pathways following CCX might also contribute to these behavioral modi\ufb01cations [9]. In the present study, housing had signi\ufb01cant effects on the fre- quency of rearing and teeth-chattering, that is, EE increased the frequency of rearing and IE reduced the frequency of teeth- chattering. Rearing is typically interpreted as a sign of emotion- ality, whereas teeth-chattering denotes habituation because it increases toward",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Miu2006_F5",
+   "source": "worklist",
+   "caption": "Fig. 5. Morris water maze performance. (A) Latencies to locate the hidden platform during training. (B) Time spent in the target quadrant during the probe trial. (C) Frequency of crossings of each of the quadrants of the maze during the probe trial. *p < 0.01 signi\ufb01cantly different from CCX groups (ANOVA post hoc Scheff\u00b4e contrast). \u2020p < 0.01 signi\ufb01cantly different from the control group in the same housing condition (t test).",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Hullinger2015_F4",
+   "source": "worklist",
+   "caption": "Fig. 4. Environmental enrichment results in LTP expression through a mechanism dependent on mGluR5 signaling and subsequent activation of the ERK and mTOR signaling pathways. (A) Rats exposed to 4 months of EE express LTP using a subthreshold 0.5 TBS, whereas SE and SC groups do not. (B) No difference in input/output curves was observed between groups. (C) No differences in paired pulse facilitation were observed between groups. (D) The application of DHPG results in LTP expression in SE animals to levels similar to those observed in EE. (E) Application of the mGluR5 antagonist MPEP, but not the mGluR1 antagonist LY367385, inhibits LTP in EE animals. (F) MPEP does not diminish the synaptic",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F",
+    "G",
+    "H"
+   ],
+   "worklistLetterCount": 8,
+   "tiles": 8,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Hullinger2015_F3",
+   "source": "worklist",
+   "caption": "Fig. 3. After 4 months of enrichment, EE animals display superior learning and memory compared to SE and SC groups. (A) EE and SE animals swim significantly shorter distances than SC groups during the hidden platform phase of MWM. (B) EE rats display significantly more platform crossings during the probe trial than SE and SC groups. (EE, n = 6; SE, n = 6; SC, n = 4) (C) EE animals outperform both SE and SC groups in NOR. (EE, n = 12; SE, n = 12; SC, n = 8).",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Hullinger2015_F2",
+   "source": "worklist",
+   "caption": "Fig. 2. 1 month of social and environmental enrichment enhances learning and memory. (A) SE and EE groups perform equally well in the hidden platform training phase of the MWM, and both groups perform significantly better than SC rats on days 2 and 4 of training. (B) EE and SE groups perform significantly better than SC animals in NOR. (EE, n = 6; SE, n = 6; SC, n = 4).",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Liu2009_F2",
+   "source": "worklist",
+   "caption": "Figure 2. Effects of moderate treadmill running (A) or voluntary wheel running (B) on 24 h testing latencies of PA performance Data are presented as median \u00b1 quartile. It was noticed that treadmill running, but not voluntary wheel running, increased PA testing retention latency (\u2217P < 0.05, Mann\u2013Whitney U test; n = 9\u201313 for each group).",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 4,
+   "letterTileMismatch": true,
+   "tier": 2
+  },
+  {
+   "id": "Melani2017_F2",
+   "source": "worklist",
+   "caption": "Fig. 2. A 3-min sample phase is not su\ufb03cient to allow formation of a long-term memory, while a 15-min session is. (A) Exploration time of novel (New) and familiar (Old) objects did not di\ufb00er when learning session was 3 min for both groups, while they did when learning session was 15 min (***). (B) Analysis of the discrimination indexes reveals only a main e\ufb00ect of learning duration (***), indicating a similar phenotype for SC and EE mice. *** denotes p < 0.001. Data are reported as mean \u00b1 s.e.m.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Lambert2005_F1",
+   "source": "worklist",
+   "caption": "Fig. 1. (A) Mean (\u00a7SEM) working memory errors made during ses- sions 2\u201314 of testing. EX mice made signiWcantly fewer errors than controls (*p < .05) or AC mice (+p < .05). (B) Mean (\u00a7SEM) working memory errors made during each trial of sessions 2\u201314. EX mice made signiWcantly fewer errors than controls or AC mice during Trial 3 (p < .05).",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Laurence2015_F5",
+   "source": "worklist",
+   "caption": "Fig 5. Operant Box Task. A) When given 15 min in the novel, levered scenario, both groups made multiple entries into the food chute, suggesting knowledge of reward location. B) Stage progression for the Exercise group; each rat is indicated as a dot for each session. C) Stage progression for the Control group; each rat is indicated as a square for each session. D) Across sessions, the Exercise group procured significantly more reward as compared to Control group. E) When comparing only rats who reached the exploitation stage for three consecutive sessions (n = 6 Exercise, n = 3 Control), the Exercise exploiters achieved more lever presses, and therefore more reward, per session. Data are shown as mean \u00b1 SEM; for each group in panels A-D, n = 8.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 5,
+   "tiles": 5,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Frick2003_F1",
+   "source": "worklist",
+   "caption": "Figure 1 Environmental enrichment reduced age-related impair- ments in acquisition of the spatial task in middle-aged enriched males relative to middle-aged social control males. Swim time (A), swim distance (B), and corridor ratio (C) were recorded during each block of four spatial trials. Each point represents the mean \u00b1 SEM of each group for four trials. Middle-aged social control males exhibited significantly slower swim times, longer swim distances, and less time in the corridor than adult social control males. In contrast, middle-aged enriched males and adult social control males did not differ in any measure. Open square represents adult social control males; open circle, middle-aged social control males; closed circle, middle-aged enriched males. Group means are shown in Table 2.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Mansk2023_F1",
+   "source": "worklist",
+   "caption": "Fig. 1. Social recognition memory differs between mouse strains. (a) Swiss (white bars) and C57BL/6 (black bars) mice were trained for social memory and then tested 24 h and ten days later. Social recognition indexes for social memory tested (b) 24 h and (c) 10 days, *P < 0.05 compared to 0.5. (d) Social investigation time in seconds during training. *P < 0.05. (e) Swiss mice were exposed to three different conditions: SRM (Social Recognition Memory; circle), STET (Social Training with Empty Test; triangle), and NST (Nonsocial Training; square). The test session was performed ten days after training. (f) Exploration time in seconds during training (white bars) and test (gray bars), *P < 0.05 indicates a difference between test sessions; @P < 0.05 indicates a difference within group STET; #P < 0.05 indicates NST differs from SRM and STET. Bars represent mean \u00b1 S.D. n by the inset number in each bar or the parenthetical number below each group.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "worklistLetterCount": 6,
+   "tiles": 6,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Nawaz2018_F2",
+   "source": "worklist",
+   "caption": "Fig. 2. E\ufb00ect of environmental enrichment before and after subjecting to re- straint stress on long term memory retention. Values are means \u00b1 SD (n = 6). Data was analyzed by three-way ANOVA using repeated measure design. Signi\ufb01cant di\ufb00erences by Bonferroni post hoc test: **p < 0.01 and *p < 0.05 from respective control animals; ++p < 0.01 from stressed animals kept in standard environment.",
+   "worklistLetters": [],
+   "worklistLetterCount": 0,
+   "tiles": 1,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Lee2024_F5",
+   "source": "worklist",
+   "caption": "Figure 5. Effects of EE and CR on immunoreactivity of hippocampus CA1 region. (A) Photomicrographs of NeuN, Iba-1, GFAP on the hippocampus CA1 region. (B) The number of NeuN positive cells on CA1 region. (C) The % area of Iba-1, GFAP positive cells on CA1 region. Data are expressed as mean \u00b1 S.E.M. S.E.M: Standard error of the mean *significantly different from Ad-CON. Ad-CON = Adult control; Ad-EE = Adult environmental enrichment; Ad-CR = Adult calorie restriction; NeuN = Neuronal nuclear antigen; Iba-1 = Ionized calcium- binding adapter molecule 1; GFAP = Glial fibrillary acidic protein. (Scale bar = 20 \u03bcm).",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 12,
+   "letterTileMismatch": true,
+   "tier": 2
+  },
+  {
+   "id": "MoraGallegos2015_F4",
+   "source": "worklist",
+   "caption": "Fig. 4. (A) Total arms entries (TA), (B) visits to reinforced arms (RA), (C) mean of working memory errors (WME), (D) mean of reference memory errors (RME) and (E) indicator of \ufb01nalization of the test (IFT = (300 s/ time of completion of the test) \u00031) on trial \ufb01ve of the radial maze test. (Laviola, Hannan, Macri, Solinas, & Jaber, 2008; Nithianantharajah & Hannan, 2006; Simpson & Kelly, 2011). The present study, there- fore, compared young rats with mature adult conspeci\ufb01cs on vari- ous aspects of performance on the open \ufb01eld and radial maze tests, and on HPC and VS neurochemistry. We found, in general, that young and mature adult rats differed in the behavioral and cognitive learning strategies they used. For instance, in the OFT, young rats were more active than mature adult animals irrespective of housing conditions, which is in line with \ufb01ndings showing that young rodents spent more time exploring a novel environment and displayed higher levels of novelty-induced locomotor activity and exploratory behavior than adult conspeci\ufb01cs (Adriani, Chiarotti, & Laviola, 1998; Segovia et al., 2009). Interest- ingly, locomotor behavior was unaffected by repeated experience in mature adult",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 5,
+   "tiles": 5,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Chrusch2023_F4",
+   "source": "worklist",
+   "caption": "Figure 4. Spatial learning and memory in WT and ZnT3 KO mice exposed to SH or EE (n = 39). (A) EE exposure increases the investigation ratio of a novel object for WT mice, but not for ZnT3 KO mice, in the spatial object recognition task. (B) Escape latencies in the Morris Water task across the three testing days reveal that the performance of WT mice in the EE housing condition is signi\ufb01cantly better than ZnT3 KO-EE, as well as that of WT or ZnT3 KO mice in SH. Error bars represent \u00b1 standard error of the mean. * p < 0.010.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Chandler2020_F2",
+   "source": "worklist",
+   "caption": "Fig. 2. Environmental enrichment decreases anxiety-like behaviour in Open Field but not Elevated Plus Maze. (A) Graphical representation of time spent in center zone of open \ufb01eld (5 min). (B) Graphical representation of the number of entries into the center zone of open \ufb01eld (5 min). (C) Graphical representation of the distance travelled in the center zone over the total distance travelled in the open \ufb01eld (5 min). (D) Graphical representation of time spent in the open arms of the elevated plus maze. (E) Graphical representation of the total distance travelled in the elevated plus maze. (F) Graphical representation of the percentage of distance travelled in the open arms relative to the total distance travelled in the elevated plus maze. Bars depict group means and error bars represent \u00b1 SEM, data points signify values for each individual. *Depicts statistical signi\ufb01cance from respective standard controls; #Depicts statistical di\ufb00erence from both p35 groups.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "worklistLetterCount": 6,
+   "tiles": 6,
+   "letterTileMismatch": false,
+   "tier": 2
+  },
+  {
+   "id": "Miu2006_F3",
+   "source": "worklist",
+   "caption": "Fig. 3. Open-\ufb01eld and spontaneous alternation in the T-maze performance. (A) Time spent in the central ring of the open-\ufb01eld at the beginning of the observation. *p < 0.05 signi\ufb01cantly different from control groups. (B) Frequencies of rearing in the open-\ufb01eld. *p < 0.05 signi\ufb01cantly different from EE groups. (C) Frequencies of teeth-chattering in the open-\ufb01eld. *p < 0.05 signi\ufb01cantly different from IE groups. (D) Douglas scores of spontaneous alternation. *p < 0.05 signi\ufb01cantly different from CCX groups. All p\u2019s are from ANOVA post hoc Scheff\u00b4e contrasts. (Table 1). The post hoc Scheff\u00b4e contrasts showed that the rats with CCX spent signi\ufb01cantly longer time in the center of the \ufb01eld than the control rats (mean difference = 6.33, p < 0.05). The rats housed in EE displayed signi\ufb01cantly more rearing than those from SE (mean difference = 4.61, p < 0.05) and more teeth- chattering than those from IE (mean difference = 1.9, p < 0.05). We also ran independent-samples Student\u2019s t tests to compare the groups across variables. The rats with CCX from SE had sig- ni\ufb01cantly longer center times than the control animals from SE (t[11] = 2.29, p < 0.05) and EE (t[12] = 2.27, p < 0.05). The rats wi",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Leger2012a_F3",
+   "source": "worklist",
+   "caption": "Figure 3. Effect of EC on object recognition memory tested with 2 h-ISI. A. Data are the mean exploration time (6 SEM) of the novel object during the test session in SC (n = 11) and EC (n = 9) groups. Exploration time of the novel object was significantly higher than the chance level (10 seconds) in the two groups (univariate t-test: 1 denotes P,0.05 for SC mice and EC mice), suggesting that all mice discriminated the novel object. Neither the percentage of entries, nor the percentage of time spent in the arm containing the novel object were different from the chance level (50%) in both groups. B. The time spent to reach the criterion (20 seconds of total exploration of the objects) did not differ between groups during the presentation session. By contrast, during the test session, the time spent to reach the criterion was significantly higher in EC mice than in SC ones (ANOVA with repeated measurements followed by a SNK multiple range test: ** denotes P,0.01, significantly different from SC group). The time spent to reach the criterion was significantly different between two sessions in EC group (ANOVA: # denotes P,0.05, significantly different from the presentation session). C. T",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 5,
+   "letterTileMismatch": true,
+   "tier": 3
+  },
+  {
+   "id": "Leger2012a_F4",
+   "source": "worklist",
+   "caption": "Figure 4. Effect of EC on object recognition memory tested with 24 h-ISI. A. Data are the mean exploration time (6 SEM) of the novel object during the test session in SC (n = 10) and EC (n = 10) groups. Only EC mice discriminated the novel object compared to the chance level (10 seconds) (univariate t-test: 111 denotes P,0.001). Moreover, the time spent to explore the novel object was significantly higher in EC mice compared to SC ones (ANOVA: *** denotes P,0.001). The percentage of entries and the percentage of time spent in the arm containing the novel object were significantly different from the chance level (50%) in EC group only (univariate t-test: 1 denotes P,0.05). A significant difference of the percentage of time spent in the arm containing the novel object was observed between groups (ANOVA: * denotes P,0.05). B. The time spent to reach the criterion did not differ between groups during the presentation session but was significantly higher in EC mice during the test session (ANOVA with repeated measurements followed by a SNK multiple range test: ** denotes P,0.01, significantly different from SC group). EC mice spent significantly more time reaching the criterion during t",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 5,
+   "letterTileMismatch": true,
+   "tier": 3
+  },
+  {
+   "id": "Chrusch2023_F1",
+   "source": "worklist",
+   "caption": "Figure 1. Cell proliferation in the hippocampus of WT and ZnT3 KO mice exposed to SH or EE (n = 24). Representative photomicrographs of DAPI (blue) and BrdU-immunopositive cells (red) in the subgranular zone of a (A) WT and (A\u2019) ZnT3 KO mouse housed in EE. (B) The levels of cell proliferation seen in WT and ZnT3 KO mice placed in the SH condition did not differ. However, while WT mice in EE showed a signi\ufb01cant increase in cell proliferation, the level of proliferation in ZnT3 KO-EE mice was signi\ufb01cantly lower and was no different from levels in WT and ZnT3 KO mice in the SH condition. Error bars represent \u00b1 standard error of the mean. * indicates p < 0.001.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 3,
+   "letterTileMismatch": true,
+   "tier": 3
+  },
+  {
+   "id": "Chrusch2023_F3",
+   "source": "worklist",
+   "caption": "Figure 3. Cell death and granule cell layer volume in WT and ZnT3 KO mice exposed to SH or EE (n = 23). (A) A representative photomicrograph of cresyl violet-stained sections of the granule cell layer reveals pyknotic nuclei that are characteristic of dying cells (arrow). (B) The level of cell death did not differ between WT and ZnT3 KO mice in SH. EE signi\ufb01cantly decreased cell death in WT mice but had no effect in ZnT3 KO mice. (C) There were no differences in granule cell layer volume between WT and ZnT3 KO mice in the SH condition. Granule cell layer volume is signi\ufb01cantly increased in WT but not in ZnT3 KO mice exposed to EE. Error bars represent \u00b1 standard error of the mean. * indicates p < 0.001.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Chrusch2023_F5",
+   "source": "worklist",
+   "caption": "Figure 5. Measurements of mature BDNF (mBDNF) in the hippocampus of WT and ZnT3 KO mice. (A) The amounts of mBDNF measured in the hippocampus of WT and ZnT3 KO mice in SH did not differ. EE signi\ufb01cantly increased mBDNF in the hippocampus of WT mice but not in ZnT3 KO mice (n = 32). (B) Effect of bath application of 10\u00b5M ZnCl on mBDNF levels in the hippocampus of WT and ZnT3 KO mice. Exogenously applied Zn signi\ufb01cantly increased the level of mBDNF in the hippocampus of both WT and ZnT3 KO mice (n = 29). Error bars represent \u00b1 standard error of the mean. * indicates p < 0.050.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Gobeske2009_F3",
+   "source": "worklist",
+   "caption": "Figure 3. Exercise and inhibition of BMP signaling promote proliferation of multiple SGZ progenitor subtypes. (A\u2013D) Unbiased stereological sampling of coronal sections through the hippocampus and quantification of cells co-labeled with (A) CldU and Dcx, (B) IdU and Dcx, (C) CldU and Sox2, and (D) IdU and Sox2. (E) Table detailing the early/late progenitor identity of cells dividing at different points in time for different genotypes and exposure to running. The number in pink on the top is the number of CldU labeled cells per field, the blue number on the top is the number of IdU labeled cells, the number in red on the left is the number of Sox2 labeled cells, and the number in green on the left is the number of DCX labeled cells. Black numbers indicate cells marked for division which are also labeled as a given progenitor subtype. Percentages indicate the fraction of dividing cells within a given lineage species for each group of mice. * Differs from wild type naive group at p,0.01. The marked reductions in the number of proliferative Sox2-labeled and Dcx-labeled cells in the NSE- BMP4 mice indicates that BMP signaling acts on both early and later populations of precursors. The in",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 5,
+   "tiles": 5,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Gobeske2009_F5",
+   "source": "worklist",
+   "caption": "Figure 5. BMP signaling regulates multiple aspects of hippocampus-dependent cognitive performance on the water maze test. Mice were trained on a water maze task requiring daily adjustment to a new target location. (A) All groups performed equally on four trials during a single day when the platform was visible. (B) With a hidden platform, all groups performed equally on the first trial. However thereafter NSE-noggin mice were greatly improved and NSE-BMP4 mice were impaired in the time to find the hidden platform. (C) Daily averages of 4 trials per day for the time required to find a platform hidden each day in a new location. Noggin transgenic mice show superior adaptation to the novel platform location each day between the primer and training trials, and show improved reference learning across the 4 daily trials. BMP4 transgenic mice perform significantly worse than wild type on both measures. (D) The daily average distance swam to reach the platform mirrored the time to reach the platform within each group, indicating equal swimming velocities for all mice. * Differs from wild type at p,0.01 by Bonferroni/Dunn pair-wise comparison. **Significant main effect by multiple ANOVA for",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Clemenson2015_F1",
+   "source": "worklist",
+   "caption": "FIGURE 1. Housing conditions used: (A) CON cage, (B) RUN cage, and (C) EE cage, (D) Pre-exposure FC procedure. (E) Freezing data between CON (n = 10) and RUN (n = 12) during a 30-min discrimination trial. (F) Freezing data between CON (n = 9) and EE (n = 10) during a 30- min discrimination trial. All data are presented as mean \u00b1 SEM, *P < 0.05.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "worklistLetterCount": 6,
+   "tiles": 6,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Madronal2010_F4",
+   "source": "worklist",
+   "caption": "Figure 4. Quantitative analysis of the instrumental conditioning test (a fixed-interval schedule, 30 s) carried out with the four experimental groups. (A) Following a training period (3\u20137 days) of shaping to the Skinner box, using a fixed-ratio (1:1) schedule, animals (n = 10 per group) were presented with the fixed-interval (FI30s) schedule in which they could obtain a food pellet by pressing the lever just after each 30- second period. The graph illustrates a cumulative record from a representative animal per group collected from the 9th training session. The x axis indicates session duration (s), whilst the y axis indicates lever presses (responses). The angled bars under the cumulative traces indicate reinforcements. (B) Animal performance during the FI30s schedule was determined with the illustrated performance index (PI) equation (Gottlieb et al. 2006). In this equation, Ry represents lever presses during the second part of the 30-second period and Rx represent presses during the first part (see diagram). The equation was designed to penalize lever presses during the first part, as well as.1 lever press during the second part. (C) Performance indexes (PIs) for the four experi",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Zhang2017_F6",
+   "source": "worklist",
+   "caption": "Figure 6. Expression of inflammatory cytokines and growth factors within the hippocampus measured by ELISA. (a) The expression of BDNF protein from hippocampus was higher in the EE group mice than in the SE group mice (*P < 0.05) and (b) there was a trend of decrease in the expressions of TNF-\u03b1 in the EE and SE groups, as well as IL-1\u03b2, but no significant difference was noted. ELISA: enzyme-linked immunosorbent assay; BDNF: brain-derived neurotrophic factor; TNF-\u03b1: tumor necrosis factor-\u03b1; EE: enriched environment; SE: standard environment.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Doulames2014_F2",
+   "source": "worklist",
+   "caption": "Figure 2. Environmental enrichment and social interaction impact performance in the NOR test. Mice were subjected to the NOR test prior to (Baseline) and following maintenance for 1 month in groups (S) or individually (I) in a standard (SE) or enriched environment (EE). Panel A presents the mean % (\u00b1SEM) total time mice spent interacting with objects. Panel B presents the mean % (\u00b1SEM) of total time spent interacting with the novel and familiar objects 5 min after the acclimation period. Panel C presents the mean % (\u00b1SEM) of total time spent interacting with the novel and familiar objects 24 h after acclimation. Panel D presents the mean time of (interaction with the novel object) \u2212(interaction with the familiar object) at 5 min and 24 h after acclimation. Panel E presents the difference between the mean % (\u00b1 SEM) total time devoted to the novel object at 5 min and 24 h after acclimation. the novel object (Figure 2D), and compared the per- centage of time devoted to the novel object for all co- horts at 5 min and 24 h after acclimation (Figure 2E). Mice maintained in the EE in groups or in isolated de- voted statistically identical periods of time to the novel object at 5 min and 2",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 5,
+   "tiles": 5,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Yamada2018_F10",
+   "source": "worklist",
+   "caption": "Figure10. LackofeffectsofEEoncognitivememoryinT1KOmice.A,Time(inseconds)spentexploringtheobject1and2duringthefamiliarizationsessioninWT(STD)mice(t (23.19) 0.1348, p 0.8939),T1KO(STD)mice(t (23.58) 0.1907,p 0.8504),WT(EE)mice(t (22.53) 0.4133,p 0.6833),T1KO(EE)mice(t (25.95) 0.0677,p 0.9466),andchABC(EE)mice(t (21.99) 0.631, p 0.5345).DatawereanalyzedbyWelch\u2019sttestandareshownasmean SD(WT(STD),n 13mice;T1KO(STD),n 14mice;WT(EE),n 13mice;T1KO(EE),n 14mice;chABC(EE),n 12mice).B,Time(inseconds)spentexploringthe(sameandnovel)objectsduringtheNORTinWT(STD)mice(t (15.91) 2.2840,p 0.0036),T1KO(STD)mice(t (16.77) 2.9229,p 0.0095), WT (EE) mice (t (15.68) 4.6170, p 0.0003), T1KO (EE) mice (t (22.16) 2.0779, p 0.0451), and chABC (EE) mice (t (21.67) 1.008, p 0.3265). Data were analyzed by Welch\u2019s t test and are shown as mean SD (WT (STD), n 13 mice; T1KO (STD), n 14 mice; WT (EE), n 13 mice; T1KO (EE), n 14 mice; chABC (EE), n 12 mice). C, Using the same dataset, the discrimination indices(timespentwiththenovelobject\u0005timespentwiththesameobject)/(totaltimeexploringbothobjects)arecalculated(F(4,61) 9.7108,p 0.0001).Discriminationindicesof0indicate equalexplorationofbothobjects.Thecentralrectangle",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 11,
+   "letterTileMismatch": true,
+   "tier": 3
+  },
+  {
+   "id": "Leger2015_F4",
+   "source": "worklist",
+   "caption": "Figure 4. EC duration differentially improved memory based on aversive stimulus and object recognition memory (24 h-ISI) compared with SC. (A) Effect of EC duration (24 h (n = 12 per group), 1 week (n = 12 per group), 3 weeks (n = 12 SC; n = 10 EC) or 5 weeks (n = 12 SC; n = 11 EC)) on passive avoidance performance. Data represent the boxplot of the ratio test/acquisition latencies measured in the passive avoidance test. A signi\ufb01cantly higher ratio was found for the 3-week EC compared with SC duration (Mann\u2013 Whitney U test: *P < 0.05). (B) Effect of EC duration (24 h [n = 12 SC; n = 10 EC], 1 week [n = 11 SC; n = 7 EC], 3 weeks [n = 10 SC; n = 10 EC], 5 weeks [n = 11 SC; n = 12 EC], 6 weeks [n = 10 SC; n = 12 EC] and 3 weeks of EC followed by 3 weeks of SC [n = 12]) on object recognition performance in Y maze. Data are the mean (\u00b1SEM) exploration time of the novel object during the test session. Only EC mice signi\ufb01cantly discriminated the novel object compared with chance level (10 s) (univariate t-test: \u00a7P < 0.05; \u00a7\u00a7P < 0.01; \u00a7\u00a7\u00a7P < 0.001). EC mice presented higher exploration time of the novel object compared with SC ones, from 1 week of exposure (Bonferroni/Dunn test, *P < 0.01;",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 4,
+   "letterTileMismatch": true,
+   "tier": 3
+  },
+  {
+   "id": "Kazlauckas2011_F4",
+   "source": "worklist",
+   "caption": "Fig. 4. Effect of environmental enrichment in the inhibitory avoidance task in mice tested 1.5 h (A) and 24 h (B) after the training session. Results are presented as dots and dash represents median (interquartile range) values. Differences between groups were analyzed by Kruskal Wallis followed by Dunn's multiple comparison tests. LE\u2013ST (n=8); LE\u2013EE (n=8); HE\u2013ST (n=10); HE\u2013EE (n=9). ** Pb0.001 between groups. (ST): standard and (EE): enriched. (Pb0.001) but not at the 1.5 h after training. LE\u2013EE had signi\ufb01cantly higher step-down latency compared to LE\u2013ST both 1.5 h and 24 h after training (Pb0.001, Fig. 4A and B). The performance of HE under standard and enriched conditions was not different as revealed by similar latencies to step-down in the test session. Thus, these results indicate that environmental enrichment promotes an improvement in performance of inhibitory avoidance task especially in LE mice. 3.5. Hippocampal BDNF immunocontent BDNF levels increased in LE and HE groups after environmental enrichment [F (1, 18)=5.56; Pb0.05], and also both HE groups",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Meshi2006_F3",
+   "source": "worklist",
+   "caption": "Figure 3 Behavioral effects of enrichment and hippocampal X-irradiation. (a) Enriched mice showed a signi\ufb01cantly reduced latency to feed in the novelty-suppressed feeding test (F1,50 \u00bc 5.236, P \u00bc 0.026). There was no effect of irradiation (F1,50 \u00bc 0.013, P \u00bc 0.908) and no interaction between housing and irradiation treatment (F1,50 \u00bc 0.002, P \u00bc 0.963). (b) There was no effect of enrichment or irradiation on home-cage food consumption during the 5-min period immediately after the novelty- suppressed feeding protocol (Supplementary Data and Methods). (c) The groups performed similarly in the visible platform phase of the Morris water maze. In the hidden platform phase, enriched mice used a more direct route to the platform (F1,60 \u00bc 16.395, P o 0.001; note that groups did not differ on the \ufb01rst trial of day 1). There were no effects of irradiation (F1,60 \u00bc 0.005, P \u00bc 0.944) and no signi\ufb01cant interactions. (d) On day 5 of the Morris water maze, enriched mice used a more direct route to the platform (F1,60 \u00bc 7.401, P \u00bc 0.009). There was no effect of irradiation (F1,60 \u00bc 0.032, P \u00bc 0.858) and no signi\ufb01cant interaction (F1,60 \u00bc 0.530, P \u00bc 0.470). (e) Enriched mice spent a larger proportio",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "worklistLetterCount": 6,
+   "tiles": 6,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "SampedroPiquero2018_F3",
+   "source": "worklist",
+   "caption": "Fig.3. (a) Behavioral performance in the 5-CSRTT task (mean + SEM; n=23). EEt group showed a few number of perseverative responses when compared to TR group (*p < 0.05). (b) Behavioural performance in the 4-RAWM (mean + SEM; n=23). Both WM and RM errors were reduced in EEt group (*p < 0.05) suggesting a more accurate performance.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Bouet2011_F3",
+   "source": "worklist",
+   "caption": "Fig. 3. EE enhanced spatial memory performances in adult but not in aged mice assessed by Morris water maze. (A) Effect of housing condition (standard/enriched) in adult and aged mice on the swimming distance (cm) and latency (s) before reaching the visible platform during the cued trail in the Morris water maze (mean \u0003 SD; *p < 0.05, **p < 0.01 and ***p < 0.001). (B) Effect of housing condition (standard/enriched) in adult and aged mice on the swimming distance (cm) before reaching the submerged platform during learning in Morris water maze (mean \u0003 SD; *p < 0.05, **p < 0.01 and ***p < 0.001). (B) Effect of housing condition (standard/enriched) in adult and aged mice on the time spent (s) in the target quadrant during learning the probe trial of the Morris water maze test (mean \u0003 SD; *p < 0.05, **p < 0.01 and ***p < 0.001).",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Jaimes2020_F2",
+   "source": "worklist",
+   "caption": "Figure 2. Social recognition memory (SRM) is enhanced by the exposition 956",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C",
+    "D"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 4,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Aykan2024_F2",
+   "source": "worklist",
+   "caption": "Fig. 2. Object recognition memory performance in the NORT. (A) The per\u00ad centage of time spent exploring each identical object (A1 and A2) during the familiarization session. (B) The percentage of time spent exploring the familiar (A) and the novel object (B) during the test session. (C) Test session perfor\u00ad mance as assessed with an object discrimination index [Tn / (Tn + Tf)]. Error bars depict SEM. *p < .05.",
+   "worklistLetters": [
+    "A",
+    "B",
+    "C"
+   ],
+   "worklistLetterCount": 3,
+   "tiles": 3,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Aykan2024_F5",
+   "source": "worklist",
+   "caption": "Fig. 5. Spatial memory performance in the MWM. (A) Escape latency scores across the four training days. (B) Overall time spent in the target quadrant vs. the average of other quadrants during the probe trial. Error bars depict SEM. *p < .05.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "GarciaCapdevila2009_F1",
+   "source": "worklist",
+   "caption": "Fig. 1. Mean (\u00b1S.E.M.) discrimination index (x + S.E.M.) for 24-h (A) and 72-h (B) retention sessions. Different from zero: *, p < 0.05; **, p < 0.01.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Cavalcante2020_F1",
+   "source": "worklist",
+   "caption": "Fig. 1. A- Schematic representation of the experimental design. Animals were submitted to the behavioral task, composed by 4 moments intercalated for 24 h each. After 150 s of the habituation in the chamber, six sequential 0.3 mA footshock (2 s each and 28 s of interval each) were applied during conditioning session and submitted to three 300 s exposure sessions in the same chamber (24 h of interval each). EE2: Short-term Enriched environment; EE4: Long-term Enriched en- vironment. B- E\ufb00ects of EE2 and EE4 on the aversive memory extinction. The time-course e\ufb00ect of enriched environment interferes di\ufb00erently on the extinction of aversive memory, being two weeks of exposure with EE su\ufb03cient to cause improvement in coping during aversive situations, favoring the extinction of conditioned fear memory. Analysis of the e\ufb00ectiveness of conditioning in each group: habituation x Session 1; Paired t-test. Data are expressed as mean \u00b1 S.E.M. n = 12/group. *p < 0.05 when compared to the \ufb01rst session within the same group; #p < 0.05 when compared to the Habituation. Two-way ANOVA with repeated measures followed by Tukey\u2019s post-test. CTL: Control, EE2: Enriched environment for 2 weeks, EE4: Enri",
+   "worklistLetters": [
+    "B",
+    "C",
+    "D",
+    "E"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 2,
+   "letterTileMismatch": true,
+   "tier": 3
+  },
+  {
+   "id": "Veyrac2009_F3",
+   "source": "worklist",
+   "caption": "Figure 3 Effects of olfactory enrichment on olfactory memory duration. Exploration time (a) and number of visits (b) of the novel odorant during recall expressed as an index of preference for novel odor. Preference for novel odor was significant for the OEN group only (one sample t-test for difference from 50%, **po0.005). Stand, standard housing conditions; OEN, olfactory enrichment/novelty; OES, olfactory enrichment/stable; OEN-Lab, OEN treated with labetalol. Stand, n \u00bc 21; OEN, n \u00bc 20; OES, n \u00bc 15; OEN-Lab, n \u00bc 16.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Harburger2007a_F2",
+   "source": "worklist",
+   "caption": "Fig. 2. During the probe trials, aged enriched males had signi\ufb01cantly more quad- rant time (A) and platform crossings (B) than aged control males. Enrichment did not affect either measure in young or middle-aged males. Each point represents the mean (\u00b1S.E.M.) for each Group during one test session.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Bechara2013_F2",
+   "source": "worklist",
+   "caption": "Fig. 2. Exercised and enriched rats preferentially explore novel object. Data",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Lach2016_F1",
+   "source": "worklist",
+   "caption": "Fig. 1. Effects of enriched environment in the fear extinction facilitation. Animals were ex- posed to enriched environment during 14 days before the experiments begun until the end of the protocol. A 1.5 mA footshock was applied during 1 s at the 3rd minute of the conditioning session (day 14) and submitted to three 9 min exposure sessions in the con- ditioning chamber (24 h of interval each) (A) Experimental outline adopted for graph pre- sented on chart B. (B) Graphical representation of freezing time expressed in percentage for both SE-rats and EE-rats. SE = standard environment; EE = enriched environment. Data are expressed as mean + S.E.M. n = 10/group. *p b 0.05 when compared to the \ufb01rst session within the same group.",
+   "worklistLetters": [
+    "A",
+    "B"
+   ],
+   "worklistLetterCount": 2,
+   "tiles": 2,
+   "letterTileMismatch": false,
+   "tier": 3
+  },
+  {
+   "id": "Esselun2021_F3",
+   "source": "worklist",
+   "caption": "Fig. 3 a Oxygen consumption of mitochondria isolated from the brain adjusted to protein. Activity of OXPHOS complexes were assessed via addition of several substrates, inhibitors or uncou- plers. Which substance was added in which stage of the experiment is marked with \u201c + \u201d; n = 12. b Basal MMP levels were measured as R123 fluorescence after incubation of DBC samples. c MMP levels after 0.5 mM SNP-induced nitrosative stress. d Basal ATP concen- tration measured in \u00b5M per mg protein in the DBC samples. Meas- ured signal stems from bioluminescence reaction of luciferin and ATP. e ATP levels after SNP-induced nitrosative stress. DBCs have been incubated for 3 h prior to measurement. f Citrate synthase activ- ity as an indicator of mitochondrial content. Amount of protein was measured via BCA method. Displayed are means \u00b1 SEM. Statistical significance was tested via one-way ANOVA with Dunnett\u2019s post hoc test using oldCon as reference for statistical comparisons. Each group in C-F consisted of 12\u201315 female NMRI mice. Parameters for the sta- tistical tests can be found in the supplementary Table S2",
+   "worklistLetters": [
+    "C",
+    "D",
+    "E",
+    "F"
+   ],
+   "worklistLetterCount": 4,
+   "tiles": 6,
+   "letterTileMismatch": true,
+   "tier": 3
+  }
+ ]
+}

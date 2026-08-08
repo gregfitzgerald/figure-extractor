@@ -3311,7 +3311,17 @@ function panelMarkerLetters(inner) {
 // Split a figure caption on its OWN panel markers into per-letter segments.
 // Returns { preamble, panels: {letter: text}, letters: [ordered] } or null when the caption
 // names no unambiguous panel run.
-function splitPanelCaption(text) {
+// A parenthesised token that is SHAPED like a panel marker but carries decoration: a prime
+// (A'), a sub-index (A1, Ai), or a hierarchical child (A-a, which panelMarkerLetters refuses
+// as a range because the case differs). Such a caption labels more tiles than its bare
+// letters do. The scanner used to `continue` past these, silently -- so "(A) Sham. (A')
+// Magnified. (B) Lesion. (B') Magnified." read as TWO panels instead of four, and the
+// detector then enforced that wrong count as a hard constraint. Undercounting panels
+// silently is the worst failure available here: it drops an arm's data without a flag.
+// Recognising the shape lets the caption declare itself ambiguous and abstain instead.
+const PANEL_DECORATED = /^[A-Za-z]\s*(?:['’ʹ`]+|\d{1,2}|(?:i{1,3}|iv|v|vi{1,3}|ix|x)|[-–—]\s*[A-Za-z0-9]{1,3})$/;
+
+function splitPanelCaption(text, relaxed = false) {
     if (!text) return null;
     // "Figure 2A-F shows ..." -- a range welded to the figure number, with no per-panel text.
     const bare = /^\s*(?:supplementary\s+|extended\s+data\s+)?fig(?:ure)?s?\.?\s*\d+\s*([A-Za-z])\s*[-–—]\s*([A-Za-z])\b/i.exec(text);
@@ -3327,30 +3337,75 @@ function splitPanelCaption(text) {
     let next = null;   // the letter that would continue the run accepted so far
     while ((m = re.exec(text))) {
         const letters = panelMarkerLetters(m[1]);
-        if (!letters) continue;
+        if (!letters) {
+            // Decorated sibling of a marker we already accepted -> the caption enumerates more
+            // tiles than its bare letters. Declare ambiguity rather than quietly undercounting.
+            if (markers.length && PANEL_DECORATED.test(m[1].trim())) return null;
+            continue;
+        }
         const pre = text.slice(0, m.index);
         // Starts the caption / follows the "Figure N" lead-in / follows clause punctuation,
         // or continues a run already anchored by one of those ("(a) Foo (b) Bar" needs no
         // punctuation). A citation's letters can do neither: they sit mid-clause after
         // "in"/"and", and with the first one refused there is no run for the rest to join.
-        const placed = /^\s*$/.test(pre) || m.index <= leadEnd || /[.,;:!?]\s*$/.test(pre) || /\n\s*$/.test(pre);
+        const placed = /^\s*$/.test(pre) || m.index <= leadEnd || /[.,;:!?]\s*$/.test(pre) || /\n\s*$/.test(pre)
+            || relaxed;   // see expectedPanelsFromCaption's second pass
         if (!(placed || letters[0] === next) || PANEL_CITE_CUE.test(pre)) continue;
         markers.push({ letters, idx: m.index, end: re.lastIndex });
         next = String.fromCharCode(letters[letters.length - 1].charCodeAt(0) + 1);
     }
     if (!markers.length) return null;
-    const ordered = [].concat(...markers.map(k => k.letters));
-    for (let i = 1; i < ordered.length; i++) if (ordered[i] <= ordered[i - 1]) return null;  // ambiguous
-    if (ordered.length < 2) return null;
-    const panels = {};
+
+    // Build the run marker by marker instead of demanding that EVERY parenthesised letter in
+    // the caption ascend. Real captions interleave two other things with their panel markers:
+    // single-letter unit and term abbreviations -- "(s)", "(S)", "(I)" -- and cross-references
+    // back to a panel already introduced ("...as in (B)"). Either one broke the old strictly
+    // ascending test and nulled the WHOLE caption, which is why captions carrying a clean
+    // (A)...(H) run were being refused. That was the single largest cause of unread real
+    // captions, and a null goes straight to abstention.
+    //
+    // The danger in relaxing this is UNDERCOUNTING: dropping a token that really was a panel
+    // would hand the detector a short count as a hard constraint and silently lose an arm's
+    // data. So a token is only dropped when it cannot plausibly be the next panel -- a
+    // back-reference to a letter already taken, or a letter far past the one expected next.
+    // Anything NEAR the expected letter (a possible gap, e.g. "(A) (B) (D)") stays ambiguous
+    // and returns null, because that is exactly the case where a wrong guess loses a panel.
+    const NEAR = 3;
+    // A back-reference is a MENTION ("...as in (B)"); a panel marker INTRODUCES a description.
+    // Length separates them. Bouet2011 Fig 3 labels its third panel "(B)" a second time -- a
+    // typo in the published caption -- and that repeat carries a full 200-character panel
+    // description. Treating it as a back-reference silently reported 2 panels for a 3-panel
+    // figure. Papers do contain such typos, and an undercount here loses an arm's data
+    // without a flag, so a repeat that introduces substantial new text is ambiguity, not a
+    // reference, and the caption must abstain.
+    const XREF_MAX = 40;
+    const kept = [];
+    const run = [];
     for (let i = 0; i < markers.length; i++) {
-        const stop = i + 1 < markers.length ? markers[i + 1].idx : text.length;
-        const seg = text.slice(markers[i].end, stop).trim();
+        const k = markers[i];
+        const wantCode = 97 + run.length;                  // the letter that continues the run
+        const first = k.letters[0].charCodeAt(0);
+        const contiguous = k.letters.every((L, j) => L.charCodeAt(0) === wantCode + j);
+        if (contiguous) { kept.push(k); run.push(...k.letters); continue; }
+        if (k.letters.every(L => run.includes(L))) {
+            const stop = i + 1 < markers.length ? markers[i + 1].idx : text.length;
+            if (text.slice(k.end, stop).trim().length > XREF_MAX) return null;
+            continue;                                                 // genuine cross-reference
+        }
+        if (Math.abs(first - wantCode) <= NEAR) return null;          // possible gap -> ambiguous
+        continue;                                                     // stray abbreviation
+    }
+    if (run.length < 2) return null;
+
+    const panels = {};
+    for (let i = 0; i < kept.length; i++) {
+        const stop = i + 1 < kept.length ? kept[i + 1].idx : text.length;
+        const seg = text.slice(kept[i].end, stop).trim();
         // A group ("(C,D) both things") describes every letter it names. First write wins, so a
         // later cross-reference to a letter can never blank the segment it already earned.
-        for (const L of markers[i].letters) if (!panels[L]) panels[L] = seg;
+        for (const L of kept[i].letters) if (!panels[L]) panels[L] = seg;
     }
-    return { preamble: text.slice(0, markers[0].idx).trim(), panels, letters: ordered };
+    return { preamble: text.slice(0, kept[0].idx).trim(), panels, letters: run };
 }
 
 function showCaptionHighlight(fig, scroll = true) {
@@ -3680,14 +3735,40 @@ function defaultPanelLetters(n) { return Array.from({ length: n }, (_, i) => Str
 // Stage 1: parse the expected panel letters from the caption. Only trusts a consecutive run
 // starting at 'a': a gap ("(A) (B) (D)") means the caption does not pin the count, and N is
 // returned as unknown rather than silently truncated to the letters before the gap.
-function expectedPanelsFromCaption(caption) {
-    const parsed = splitPanelCaption(caption);
-    if (!parsed) return null;
-    const letters = parsed.letters;
-    if (letters.length < 2) return null;
+// Minimum run length for the RELAXED second pass. Two is not enough: "(A)" and "(B)" appear
+// mid-clause in ordinary prose ("as reported previously (A) and in related work (B)"), and a
+// two-letter run there is indistinguishable from a real two-panel caption. Three markers
+// running a,b,c in order, each introducing a segment, is a structure prose does not produce
+// by accident. This threshold is what keeps the relaxed pass from inventing panels.
+const PANEL_RELAXED_MIN = 3;
+
+function _panelRunOk(letters) {
+    if (letters.length < 2) return false;
     for (let i = 0; i < letters.length; i++)
-        if (letters[i] !== String.fromCharCode(97 + i)) return null;
-    return { count: letters.length, letters: letters.slice(), panels: parsed.panels };
+        if (letters[i] !== String.fromCharCode(97 + i)) return false;
+    return true;
+}
+
+function expectedPanelsFromCaption(caption) {
+    // Pass 1, STRICT: a marker must open the caption, follow the "Figure N" lead-in, or follow
+    // clause punctuation. Safe, and it is what synthetic captions look like.
+    const parsed = splitPanelCaption(caption);
+    if (parsed && _panelRunOk(parsed.letters))
+        return { count: parsed.letters.length, letters: parsed.letters.slice(), panels: parsed.panels };
+
+    // Pass 2, RELAXED: real journal captions routinely attach the marker to a NOUN rather than
+    // to punctuation -- "at 2 months of age (A), 5 months of age (B), and 12 months (C)". The
+    // strict rule refuses the first marker, so no run ever anchors and the whole caption reads
+    // as null; that single case is a large share of the 50.7% of real captions this function
+    // could not read, and a null goes straight to abstention. Accept those, but only when the
+    // run is long enough (>= PANEL_RELAXED_MIN) to be structural rather than coincidental.
+    // A null from pass 1 caused by DECORATED markers must stay null -- that is a real
+    // ambiguity, not a placement quirk -- so only retry when pass 1 found nothing at all.
+    if (parsed) return null;
+    const loose = splitPanelCaption(caption, true);
+    if (!loose || !_panelRunOk(loose.letters) || loose.letters.length < PANEL_RELAXED_MIN)
+        return null;
+    return { count: loose.letters.length, letters: loose.letters.slice(), panels: loose.panels };
 }
 
 function _boxIntersectArea(a, b) {

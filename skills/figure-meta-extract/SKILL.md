@@ -98,36 +98,61 @@ flow-diagram · table · micrograph · schematic · other · unknown`
 | table | read_table | printed numbers directly |
 | flow-diagram / schematic / micrograph | not_extractable | no numeric yield |
 
-## Statistics -> meta-analytic form (which conversion depends on `dispersionType`)
-Use `figureExtractor.convert`: `seToSd(se,n)`, `sdToSe(sd,n)`, `ciToSe`, `ci95ToSd`,
-`medianIqrToMeanSd`, `medianRangeToMeanSd`, `meanDiff`, `hedgesG`, `rToFisherZ`,
-`varFromRatioCI`. **Getting SD/SEM/CI wrong changes the variance by up to a factor of n**
-— so confirm dispersion type from the caption and flag it when unknown.
+## Statistics -> meta-analytic form (R's job, not the tool's)
+Effect-size math (SE<->SD, CI->SD, median/IQR->mean/SD, Hedges g, Fisher z, ratio-CI
+variances) was deliberately REMOVED from the tool -- there is no `figureExtractor.convert`
+namespace, and calling it throws. The tool's authoritative output is calibrated DATA-unit
+landmarks + dispersion TYPE + provenance: collect it with `getFigureDerivedRows()` /
+`getFigureDerivedCsv()` and hand it to R (escalc / metafor), which computes every effect
+size and variance. **Getting SD/SEM/CI wrong changes the variance by up to a factor of n**
+-- so confirm dispersion type from the caption and flag `dispersion-type-uncertain` when
+unknown; the tool refuses to treat an unknown dispersion type as variance-bearing.
 
 ## Output (characterization JSON — the tool's schema)
+A concrete, validator-accepted example (every enum value below is from
+`figureExtractor.charVocab()`; `scripts/test_api_docs.py` feeds this exact block through
+the live validator, so it cannot drift):
 ```json
 {
-  "schemaVersion": 1, "confidence": 0.0, "source": "vision+caption", "panelCount": 1,
+  "schemaVersion": 1, "confidence": 0.9, "source": "vision+caption", "panelCount": 1,
   "panels": [{
-    "charType": "<vocab>", "charTypeConfidence": 0.0,
-    "dataProvenance": "primary|derived|unknown",
-    "extractionPriority": "high|medium|low|none",
-    "ignoredElements": ["legend","significance-markers","gridlines", …],
-    "axes": { "x": {"label","unit","scale","range","ticks"}, "y": {…}, "y2": null },
-    "series": [{"name","role","colorHex","n","nSource":"caption|image|unknown"}],
-    "statistics": {
-      "encodes": ["mean","dispersion", …],
-      "centralTendency": "mean|median|proportion|effect-size|…",
-      "dispersion": {"present": true, "type": "SD|SEM|CI95|IQR|…", "typeConfidence": 0.0},
-      "sampleSizePerGroup": {}, "pValuesShown": []
+    "charType": "grouped-bar", "charTypeConfidence": 0.95,
+    "dataProvenance": "primary",
+    "extractionPriority": "high",
+    "ignoredElements": ["legend", "significance-markers", "gridlines"],
+    "axes": {
+      "x": { "label": "Timepoint", "unit": "weeks", "scale": "categorical", "range": null, "ticks": ["0", "6", "12"] },
+      "y": { "label": "HAM-D score", "unit": "points", "scale": "linear", "range": [0, 30], "ticks": [0, 10, 20, 30] },
+      "y2": null
     },
-    "extractionPlan": {"method": "<routing>", "requiresCalibration": true}
+    "series": [
+      { "id": "s1", "label": "Placebo", "role": "control", "color": "#1a73e8",
+        "encoding": "color", "labelSource": "legend", "n": 24, "nSource": "caption" },
+      { "id": "s2", "label": "Psilocybin 25 mg", "role": "intervention", "color": "#dc2626",
+        "encoding": "color", "labelSource": "legend", "n": 25, "nSource": "caption" }
+    ],
+    "statistics": {
+      "encodes": ["mean", "dispersion"],
+      "centralTendency": "mean",
+      "dispersion": { "present": true, "type": "SEM", "typeConfidence": 0.9 },
+      "sampleSizePerGroup": { "s1": 24, "s2": 25 }, "pValuesShown": []
+    },
+    "extractionPlan": { "method": "bar-endpoints", "requiresCalibration": true }
   }],
-  "extractDecision": "extract|skip",
-  "extractReason": "<grounded in MA criteria + caption>",
-  "flags": ["dispersion-type-uncertain", …]
+  "extractDecision": "extract",
+  "extractReason": "Reports the target outcome (HAM-D) for the target comparison (drug vs placebo) as mean + SEM bars.",
+  "flags": []
 }
 ```
+Series fields are a deliberate three-way split -- never collapse them into one name:
+`id` is the join key that landmarks/marks bind to (REQUIRED, unique per panel); `label`
+is the printed legend text as read from the image; `role` is the arm MEANING
+(control/intervention/...), assigned by the agent from the caption and validated against
+the vocab. `color` is a hex string (there is no `colorHex` field), `encoding` says how
+series are visually distinguished, and `labelSource` says where the label text came from.
+Dispersion present with `"type": "unknown"` requires the `dispersion-type-uncertain`
+flag; more than one series with any of them unlabeled requires `series-unlabeled` --
+the validator rejects the characterization otherwise.
 
 ## Notes
 - Type from the image; dispersion type / n / units / decision from the caption + criteria.
