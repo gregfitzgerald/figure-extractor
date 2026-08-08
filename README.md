@@ -89,10 +89,14 @@ drew the figures.
 Two separate things are wrong, and it is worth keeping them apart, because fixing the first does
 not fix the second:
 
-- **Reading the caption.** The parser returned nothing for half of real captions. That is now
-  measured and partly fixed (`benchmark/real/caption_corpus.py`): 49.3% -> 54.9% parse rate, and
-  two *silent undercounts* removed along the way -- a caption reading `(A) ... (A') ... (B) ...
-  (B')` used to report two panels for a four-tile figure.
+- **Reading the caption.** The parser returned nothing for half of real captions. Now measured
+  and substantially fixed (`benchmark/real/caption_corpus.py`): **49.3% -> 57.7%** parse rate,
+  and two *silent undercounts* removed along the way -- a caption reading `(A) ... (A') ...
+  (B) ... (B')` used to report two panels for a four-tile figure. Part of that gain came from
+  discovering the corpus itself was damaged: 61 of the 71 stored captions are truncated (19 sit
+  at exactly 1200 characters), median 782 characters short, so the parser was being judged on
+  mutilated input and the detector was being handed short panel counts as hard constraints.
+  `refetch_captions.py` pulls the full text from the PDFs.
 - **Standing behind an answer.** This is the binding constraint, and it is NOT the caption.
   Reading four more captions moved abstention by exactly zero: 92.9% before, 92.9% after, 5
   figures answered both times. Of 65 abstentions, 58 carry `panel-labels-unverified`, and half
@@ -106,6 +110,12 @@ not fix the second:
   not one figure qualified.** The partial path needs each anchor to land cleanly on a distinct
   box, and the boxes themselves are wrong -- derived from a heuristic figure crop, not a human
   one. So the failure is upstream of both the caption and the labels: it is the figure region.
+
+  Three independent interventions now support that. Handling the real caption forms, fixing the
+  stray-token and cross-reference handling, and feeding full untruncated captions each improved
+  caption reading -- and **each moved abstention by exactly zero**: 92.9%, 5 figures answered,
+  every time. Nothing downstream of a correct panel count can be fixed while the box handed to
+  the detector is a guess.
 
 So the honest next step is not more caption work. It is panel-label verification on real raster
 figures, measured against human-drawn panel boxes -- which is exactly what

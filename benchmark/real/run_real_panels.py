@@ -113,6 +113,28 @@ def main():
 
     from playwright.sync_api import sync_playwright
     items = json.loads(WORKLIST.read_text())["items"]
+
+    # Prefer FULL captions re-extracted from the PDFs over the worklist's stored copies. 61 of
+    # the 71 stored captions are truncated (19 sit at exactly 1200 characters, 43.7% end
+    # mid-word), median 782 characters short. That matters more than it sounds: the caption's
+    # letter count is a HARD CONSTRAINT on the geometry, so a truncated caption hands the
+    # detector a short panel count and the split is then wrong -- or refused -- for a reason
+    # that has nothing to do with the figure. Measured over the same 71 figures, full captions
+    # lift the parse rate 54.9% -> 57.7% and recover panels on 4 of them.
+    # Regenerate the sidecar with `python3 refetch_captions.py`.
+    full = HERE / "out" / "captions_full.json"
+    if full.exists():
+        by_id = {c["id"]: c["full"] for c in json.loads(full.read_text())["captions"]}
+        n_sub = 0
+        for it in items:
+            f = by_id.get(it["item_id"])
+            if f and len(f) > len(it.get("caption") or ""):
+                it["caption"] = f
+                n_sub += 1
+        print(f"[captions] using full PDF-extracted captions for {n_sub}/{len(items)} items")
+    else:
+        print("[captions] out/captions_full.json absent -- using the worklist's TRUNCATED "
+              "captions; run refetch_captions.py for the honest measurement")
     if a.limit:
         items = items[:a.limit]
 

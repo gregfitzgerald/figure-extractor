@@ -108,15 +108,28 @@ FORMS = [
 def build():
     wl = json.loads(WORKLIST.read_text())
     items = wl.get("items") or wl.get("worklist") or []
+    # Prefer full PDF-extracted captions over the worklist's truncated copies -- see
+    # refetch_captions.py. Measuring a parser against mutilated input measures the corpus.
+    full = HERE / "out" / "captions_full.json"
+    by_id = ({c["id"]: c["full"] for c in json.loads(full.read_text())["captions"]}
+             if full.exists() else {})
+    if by_id:
+        print(f"[captions] full PDF captions available for {len(by_id)} items")
     recs = []
     for it in items:
         cap = (it.get("caption") or "").strip()
+        wl_cap = cap
+        full_cap = by_id.get(it["item_id"])
+        if full_cap and len(full_cap) > len(cap):
+            cap = full_cap
         if not cap:
             continue
         recs.append({
             "id": it["item_id"],
-            "source": "worklist",
+            "source": "pdf-full" if cap is not wl_cap else "worklist",
             "caption": cap,
+            "captionWorklist": wl_cap,
+            "captionTruncatedInWorklist": bool(full_cap and len(full_cap) > len(wl_cap)),
             # UNVALIDATED comparator -- see the module docstring.
             "worklistLetters": it.get("caption_expected_letters"),
             "worklistLetterCount": it.get("caption_letter_count"),
