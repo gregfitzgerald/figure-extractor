@@ -202,7 +202,19 @@ def main():
         # and one deliberate LETTER disagreement so the join is exercised.
         (greg / "gt").mkdir(parents=True, exist_ok=True)
         grecs = []
-        mislabel_item = store[0]["item_id"]
+        # Pick an item that actually HAS a panel labelled A. store[0] does not always --
+        # the store's order follows the session manifest, so on some runs the first record's
+        # panels start at B and the mislabel is never planted, making both checks below fail
+        # for a reason that has nothing to do with the code under test. A flaky test in a
+        # validation harness is worse than no test: it teaches you to re-run until green.
+        def _has_A(rec):
+            if (rec.get("panelLetter") or "").upper() == "A":
+                return True
+            return any((p.get("letter") or "").upper() == "A"
+                       for f in (rec.get("structure") or []) for p in (f.get("panels") or []))
+        _cand = next((r_ for r_ in store if _has_A(r_)), None)
+        check("a record with a panel 'A' exists to plant the mislabel on", _cand is not None)
+        mislabel_item = (_cand or store[0])["item_id"]
         for r_ in store:
             g = json.loads(json.dumps(r_))
             g["reader"] = "GF-human"
