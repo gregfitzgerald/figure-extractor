@@ -97,25 +97,30 @@ not fix the second:
   at exactly 1200 characters), median 782 characters short, so the parser was being judged on
   mutilated input and the detector was being handed short panel counts as hard constraints.
   `refetch_captions.py` pulls the full text from the PDFs.
-- **Standing behind an answer.** This is the binding constraint, and it is NOT the caption.
-  Reading four more captions moved abstention by exactly zero: 92.9% before, 92.9% after, 5
-  figures answered both times. Of 65 abstentions, 58 carry `panel-labels-unverified`, and half
-  happen *with* a caption count already in hand.
+- **Standing behind an answer.** This is where it actually fails, and it has **no single
+  cause** -- which is the finding, and it took three wrong guesses to reach. Reading more
+  captions moved abstention by exactly zero, three separate times (92.9%, 5 figures answered,
+  every time). So did allowing partial label verification: not one figure qualified.
 
-  The obvious next suspect was letter verification, which was all-or-nothing: one missing glyph
-  discarded every correctly-read one. Probing 13 real figures directly, the glyph finder does
-  work -- it found anchors on 12 -- but was short by one or more on 8 (Zhang2017 Fig 3: 5
-  anchors for 7 panels). Allowing a *partial* reading to count when it corroborates the
-  reading-order prior therefore looked like the fix. **It changed nothing: 92.9% -> 92.9%, and
-  not one figure qualified.** The partial path needs each anchor to land cleanly on a distinct
-  box, and the boxes themselves are wrong -- derived from a heuristic figure crop, not a human
-  one. So the failure is upstream of both the caption and the labels: it is the figure region.
+  Measured rather than assumed, on the 65 abstentions:
 
-  Three independent interventions now support that. Handling the real caption forms, fixing the
-  stray-token and cross-reference handling, and feeding full untruncated captions each improved
-  caption reading -- and **each moved abstention by exactly zero**: 92.9%, 5 figures answered,
-  every time. Nothing downstream of a correct panel count can be fixed while the box handed to
-  the detector is a guess.
+  | | |
+  |---|---|
+  | panel partition matches the caption count | 39 / 41 -- **the geometry is mostly right** |
+  | `panel-labels-unverified` | 59 |
+  | correct count *and* unverified labels | 34 |
+  | `labels-not-found` (no glyphs at all) | 10 -- so anchors usually *are* found |
+
+  Sampling 18 of those 34 and replaying the naming step: 8 had too few anchors (5 of them
+  **zero** -- those figures simply do not draw panel letters), 6 had two anchors colliding on
+  one box, 1 had an unassignable anchor, and only 3 would have verified. And those 3 still
+  carry `overlapping-panels` or `low-confidence`, so they would have abstained anyway.
+
+  Real figures fail in several independent ways at once. There is no one fix that unlocks
+  them, and each of the plausible-sounding single causes -- the caption, the labels, the figure
+  crop -- was measured and ruled out. What would settle the remaining question is human-drawn
+  panel boxes, because every number here is still "the detector emitted N", never "the figure
+  has N".
 
 So the honest next step is not more caption work. It is panel-label verification on real raster
 figures, measured against human-drawn panel boxes -- which is exactly what
