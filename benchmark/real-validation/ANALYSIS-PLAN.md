@@ -40,7 +40,7 @@ Greg's clicks carry ~1 px jitter. Measured on synthetic data where R's exact des
 known, that jitter produces **3.89% median / 27.7% worst** error on the dispersion channel
 against **0.44% median** on central tendency. The asymmetry is structural, not a skill issue:
 a bar top is a long pixel distance from the axis, an SEM cap is a short one, so the same
-1 px converts into ~10x the relative error.
+1 px converts into ~9x the relative error (3.89 / 0.44 = 8.8).
 
 Consequence: for dispersion **values** on real figures, a "machine vs human" number measures
 the disagreement of two imprecise readers. Reporting it as machine accuracy would attribute

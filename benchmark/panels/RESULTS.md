@@ -268,7 +268,7 @@ over-splits back down. Median 8 ms per figure.
     silent mislabels (well-localised, wrong letter) 5.0% of all panels
   WHOLE FIGURE EXACTLY RIGHT  30.3%
   ABSTENTION
-    coverage 81.8%   abstention precision 0.83  recall 0.22   net figures saved +4
+    coverage 81.8%   abstention precision 0.83  recall 0.21   net figures saved +4
 ```
 
 Stratified -- this is the deliverable:
@@ -333,7 +333,7 @@ Stratified -- this is the deliverable:
    60 % of figures exactly right.
 6. **There is no usable confidence signal.** The only refusal the legacy detector can make
    is "fewer than 2 boxes"; it fires on 6 figures, catching 5 real errors and costing 1
-   correct answer (net +4 of 23 errors, recall 0.22). 66.7 % of the figures it does answer
+   correct answer (net +4 of 23 errors, recall 0.21). 66.7 % of the figures it does answer
    are wrong, and it says nothing about them.
 
 ---
@@ -362,7 +362,7 @@ python3 score.py --run post_fix_ext --abstain-at 0.35
   coverage                             85.4%           65.9%
   spurious boxes                          99               2
   panels never matched                    30               7
-  abstention precision / recall     0.83 / 0.22     0.14 / 1.00
+  abstention precision / recall     0.83 / 0.16     0.14 / 1.00
   net figures saved by abstaining         +4             -10
 
   medIoU / figures exactly right     cascade         legacy

@@ -104,11 +104,13 @@ the second -- the first has a clean cause, the second turns out to have several:
   reverted: it sold a reading-order guess as verified, which let caption text be routed by
   letter onto panels whose letters were still a guess.
 
-  Measured rather than assumed, on the 65 abstentions:
+  Measured rather than assumed, on the 65 abstentions (the first row counts only the
+  36 of them whose caption yielded a count at all; over all 41 figures with a caption
+  count, answered included, it is 39 / 41):
 
   | | |
   |---|---|
-  | panel partition matches the caption count | 39 / 41 -- **the geometry is mostly right** |
+  | panel partition matches the caption count | 34 / 36 -- **the geometry is mostly right** |
   | `panel-labels-unverified` | 59 |
   | correct count *and* unverified labels | 34 |
   | `labels-not-found` (no glyphs at all) | 10 -- so anchors usually *are* found |
