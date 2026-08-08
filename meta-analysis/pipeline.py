@@ -11,7 +11,7 @@ Stages (see PIPELINE.md):
   5 adjudicate-ft   HUMAN  gate                 confirm final included set
   6 extract         agent  figure-extractor     -> extraction/<articleId>.json
   7 confirm-extract HUMAN  gate                 confirm dispersionType + n on figure-derived arms
-  8 synthesize      auto   metalib + RVE        -> studies.csv, forest, PRISMA
+  8 synthesize      auto   R escalc/metafor+RVE -> studies.csv, forest, PRISMA
   9 approve         HUMAN  gate                 sign off on the synthesis
 
 Two auditable records, both append-only / human-readable:
@@ -165,6 +165,19 @@ def resolve_adjudicate_ta(st):
         print(f"STILL {len(unresolved)} unsure — resolve them in {path.name} before resolving:")
         for pmid, *_ in unresolved:
             print("  ", pmid)
+        return
+    # The vocabulary is checked, not just the absence of "unsure". A hand-typed checkpoint is
+    # a text file: "includ" was accepted verbatim into screening.json, where the record counted
+    # as neither included nor excluded and simply DROPPED OUT of the review -- while the gate
+    # printed success and the PRISMA totals silently stopped adding up. A typo must never be
+    # able to remove an article from a systematic review.
+    ALLOWED = {"include", "exclude"}
+    bad = [(pmid, dec) for pmid, dec, *_ in decisions if dec not in ALLOWED]
+    if bad:
+        print(f"REFUSED: {len(bad)} decision(s) are not one of {sorted(ALLOWED)} — fix "
+              f"{path.name} and resolve again:")
+        for pmid, dec in bad:
+            print(f"   {pmid}: {dec!r}")
         return
     scr = json.loads((D / "screening" / "screening.json").read_text())
     by = {r["pmid"]: r for r in scr["records"]}

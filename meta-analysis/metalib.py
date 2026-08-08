@@ -1,11 +1,33 @@
 #!/usr/bin/env python3
 """
-META layer core — turn structured article->studies records into effect sizes and an analysis-ready
-studies table, per the APPROVED protocol (Hedges' g; RVE clustered by article).
+RETIRED -- DO NOT USE FOR ANY REPORTED NUMBER.
 
-This is the analysis-side counterpart to figure-extractor's `convert`/`extract` helpers: the tool
-digitizes figures into per-arm mean/SD/n; this library grains them into STUDIES, computes g, and
-emits studies.csv for metafor. Kept dependency-free (pure Python) so it runs in any analysis env.
+This library computes effect sizes in Python. The project's stated boundary, in README and
+enforced by scripts/test_meta_layer.py, is that ALL effect-size math is R's (escalc/metafor)
+and the tool emits only calibrated landmarks. metalib predates that decision and is kept for
+provenance, not for use. Nothing imports it except its own test suite; no runner produces a
+studies.csv from it.
+
+Four measured biases remain in it, each verified against metafor as oracle:
+  * CI -> SD divides by z = 1.96 at any n. At the n ~ 8 typical of this corpus the correct
+    divisor is t(.975, 7) = 2.3646, so SD is OVERestimated by ~21% and g attenuated ~17%
+    toward the null. (AUTOMATED-MA-VISION.md once described this backwards, as SD
+    underestimated and small studies overweighted; the direction is as stated here.)
+  * box_to_mean_sd hardcodes /1.35 and drops the Wan (2014) sample-size correction, despite
+    the comment claiming otherwise: at n = 12 that is an 11.7% SD error.
+  * Direction (+1/-1) is not handled at all -- the string does not occur in this file -- so a
+    lower-is-better outcome enters the pool with the wrong sign and can cancel a real effect.
+  * No Morris dppc2, so pre-post designs are read post-only (0.32 vs 0.80 on a worked case).
+Even on its happy path it does not reproduce metafor: TC1 gives vi 0.2036 here vs 0.2181 from
+escalc, a different variance-estimator family. So it is not usable as a sanity check either.
+
+The green "16/16 PASS" from test_metalib.py asserts these behaviours; it is a test of what the
+code does, not evidence that the numbers are right.
+
+Historical description follows.
+--------------------------------------------------------------------------------------------
+META layer core -- turn structured article->studies records into effect sizes and an
+analysis-ready studies table (Hedges' g; RVE clustered by article).
 
 Schema: see data-model.md.  Tests: test_metalib.py (the approved acceptance cases TC1-TC8).
 """

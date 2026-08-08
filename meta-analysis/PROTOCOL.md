@@ -37,7 +37,7 @@ Why this topic is a good fit for the tool:
 **Primary: Hedges' g (standardized mean difference)** — BDNF is measured in incomparable units
 across labs (pg/mg vs AU vs fold), so we standardize. Positive g = exercise increases BDNF.
 Variance by the standard SMD formula (small-sample corrected). *(Already implemented:
-`figureExtractor.convert.hedgesG`.)*
+`figureExtractor.convert.hedgesG`.)* **RETRACTED 2026-08-08: `convert` was removed when all effect-size math moved to R. Calling it throws. See metalib.py's header.**
 
 Alternative on the table: **log response ratio (lnRR)** — popular in preclinical/ecology MA,
 handles ratio-scale outcomes and fold-change data gracefully. (Approval question.)
@@ -89,7 +89,7 @@ selective reporting, other). One assessment per article; surfaced per study.
 
 ## 9. What's already built vs. what this adds
 - **Built (figure-extractor):** figure characterization, digitization, `bars/boxes/forest`
-  extraction, `convert.hedgesG` etc., and a per-figure `meta-analysis.csv`.
+  extraction, and a per-figure `meta-analysis.csv`. **RETRACTED 2026-08-08: `convert.hedgesG` and the per-figure `meta-analysis.csv` were both removed; the tool emits landmarks only and R computes every effect size.**
 - **This layer adds:** the protocol, the corpus + screening records, the **study-grained** record
   with moderators + article clustering + risk of bias, effect-size synthesis, and PRISMA/forest
   outputs. The per-figure `meta-analysis.csv` is a *precursor* (effect-grained); this re-grains it

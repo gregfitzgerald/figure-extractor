@@ -144,7 +144,7 @@ Invoked **only when text/tables lack the effect-size/CI info** and it must be re
 **`metalib.py` is retired from inference.** The review found it cannot reproduce your MA and introduces bias:
 - no `Direction` → wrong-signed effects that cancel the pool;
 - no Morris `dppc2` → structurally cannot produce the human (pre-post) half;
-- CI→SD divides by 1.96, but rodent n≈8 needs t₍.975,7₎ ≈ 2.365 → SD underestimated ~20%, small studies overweighted;
+- CI→SD divides by 1.96, but rodent n≈8 needs t₍.975,7₎ ≈ 2.365 → SD OVERestimated ~21%, g attenuated ~17% toward the null (this read backwards until 2026-08-08; verified against metafor);
 - `box_to_mean_sd` hardcodes `/1.35`, dropping the Wan-2014 sample-size correction Q(n).
 
 These are precisely the "wrong dispersion silently reweights studies" failure our own gate exists to catch — so the tool must not commit it. metalib may survive only as a non-authoritative sanity check; the authoritative path is R. (STATUS.md's "math core… done" claim is corrected accordingly.)

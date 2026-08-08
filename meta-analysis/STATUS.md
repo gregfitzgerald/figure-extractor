@@ -5,6 +5,39 @@ waiting on you. Written to clear up confusion so we can address each point syste
 
 ---
 
+## 0. THE CORPUS MUST BE RE-FETCHED BEFORE ANY RESULT IS REPORTED
+
+**The screened corpus is not the search result.** `corpus.py` capped `retmax` at 120 against
+204 hits, and PubMed's esearch returns **most-recent-first** -- so the 85 records it dropped
+were the 85 **oldest**. The fetched corpus spans 2013-2026; everything before mid-2013 is
+absent, including the foundational Neeper / Russo-Neustadt-era exercise-BDNF studies this
+question is built on. Verified by re-running the identical query live and diffing: 85 hits
+present in PubMed, absent from `candidates.json`, PMIDs 9795193 (1998) through 23411461 (2013).
+
+Nothing flagged it. This document called the 120 "the tightened set"; PIPELINE.md wrote
+"204 identified -> 120 fetched" as though it were a filter; the PRISMA block recorded
+`fetched: 120` with no `not_fetched`. It reads like a deliberate restriction and was an
+off-by-cap.
+
+This is a **recency selection bias baked into the sample before a single figure is read**, and
+it would propagate into any pooled estimate. The screening decisions already made are still
+valid for the 120 they cover -- nothing needs undoing -- but the corpus is incomplete.
+
+`corpus.py` is fixed: esearch now paginates to completion and *refuses* to write a partial
+corpus. What it cannot do for you is decide the research question:
+
+- **Re-run `python3 corpus.py`**, then screen the ~85 added records (title/abstract) and
+  re-open the adjudication gate. This is the correct action if the review is meant to cover
+  the literature.
+- **Or** deliberately restrict the protocol by date and say so in the PRISMA diagram and the
+  write-up -- a defensible choice, but it must be a stated inclusion criterion, not an artifact
+  of a fetch limit.
+
+Left for you because re-running the search changes your sample, and that is a research
+decision, not a code fix.
+
+---
+
 ## 1. The big picture (what we're building and why)
 
 You asked for two things to eventually work in concert:

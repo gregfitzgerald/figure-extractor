@@ -57,7 +57,7 @@ schema makes that structural, and carries the article id on every study so depen
   Stored raw (`dispersion`) *and* converted (`sd`) so a re-read is cheap without re-digitizing.
   From figure-extractor: `convert.seToSd`, `convert.ci95ToSd`, `convert.medianIqrToMeanSd`.
 - **`n`** must be per-arm; if a range ("n=8–10") is given, record the conservative value + a flag.
-- **`effect`** is computed by `convert.hedgesG(mean_i, sd_i, n_i, mean_c, sd_c, n_c)` — already
+- **`effect`** is computed by R (`escalc`/metafor). **RETRACTED 2026-08-08: this line said `convert.hedgesG(...)`, which no longer exists.** Formerly documented as already
   built and unit-tested (g, variance, se).
 - **`dependency.sharesControlWith`** lists studies drawing on the SAME control animals (e.g. one
   sedentary group compared to three running durations). Those aren't independent → shared-control
@@ -91,4 +91,4 @@ META layer:  map extraction → STUDY arms  +  attach moderators (from methods t
 ```
 figure-extractor is the **results-digitizer** component; the META layer owns the protocol,
 screening, study-grain, moderators, dependency, and synthesis. The existing per-figure
-`getMetaAnalysisRows()` is the hand-off point — the META layer consumes it and re-grains to studies.
+`getFigureDerivedRows()` / `getFigureDerivedCsv()` is the hand-off point -- calibrated landmarks with provenance, which R re-grains to studies. **RETRACTED 2026-08-08: this said `getMetaAnalysisRows()`, which was removed along with the browser's effect-size math.**

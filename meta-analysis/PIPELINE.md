@@ -17,7 +17,7 @@ halts and refuses to advance until a person resolves the gate's checkpoint file.
 | 5 | `adjudicate-ft` | **human** | confirms the final included set | ● |
 | 6 | `extract` | agents + figure-extractor | `extraction/<articleId>.json` (per-study arms) | |
 | 7 | `confirm-extract` | **human** | confirms `dispersionType` + `n` on every figure-derived arm | ● |
-| 8 | `synthesize` | auto — `metalib` + RVE | `studies.csv`, forest, PRISMA | |
+| 8 | `synthesize` | auto -- R (`escalc`/metafor) + RVE | `studies.csv`, forest, PRISMA | |
 | 9 | `approve` | **human** | signs off on the synthesis | ● |
 
 **Why these four gates.** They are the points where a wrong automated call silently biases the
@@ -67,5 +67,5 @@ to spot-check. `resolve` refuses to advance while any `unsure` remain.
 Stages 4–9 have state-machine slots and gates but not their runners yet: `screen-ft` (full-text
 agent pass), `extract` (drive figure-extractor on the included BDNF figures → per-arm mean/SD/n),
 `confirm-extract` opener (list each figure-derived arm with its dispersionType/n for confirmation),
-`synthesize` (metalib flatten + RVE forest/PRISMA), `approve`. Built next, in order, behind the
+`synthesize` (R `escalc`/metafor + RVE forest/PRISMA; metalib is RETIRED, see its header), `approve`. Built next, in order, behind the
 same gate discipline.
