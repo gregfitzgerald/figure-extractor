@@ -214,18 +214,22 @@ Specified in full in `SECOND-RATER-PROTOCOL.md` §4. Summary and rationale:
   about 21.4" would train the raters toward each other *on magnitudes*, which is the exact
   independence the design is buying.
 
-**The cost, and why it is worth paying.** Calibration induces a shared error component `c'`
-between `G` and `H2`. That is not free, and the direction must be stated: in Grubbs `{G,H2,M}`,
+**The cost, and why its sign must be stated per component.** Calibration induces a shared
+error component `c'` between `G` and `H2`. That is not free: in Grubbs `{G,H2,M}`,
 
 ```
 sigma_M^2(est) = [Var(M-G) + Var(M-H2) - Var(G-H2)] / 2
-               = sigma_M^2 + c'                            (c' = cov(e_G, e_H2) >= 0)
+               = sigma_M^2 + c' - c_GM - c_H2M             (c' = cov(e_G, e_H2) >= 0)
 ```
 
-so a shared convention **inflates** the machine's estimated variance -- **conservative against
-the machine**, the same direction §1.3 establishes for `c` between `D` and `G`. The
-conservatism argument therefore survives the calibration round intact, and
-`inter_rater.py --selftest` asserts this numerically rather than in prose.
+so the calibration component `c'` pushes the machine's estimated variance UP -- but that is
+one term, not a direction. `c_GM` and `c_H2M` -- machine and human misreading the same
+ambiguous cap the same way -- enter with a minus sign and are not zero, and amendment A2
+withdrew every claim that the net effect makes the estimate conservative, a bound, or biased
+against the machine. What the calibration round adds is a component of known sign; the NET
+bias direction of the estimate remains unknown, exactly as in `{D,G,M}` (§1.3).
+`inter_rater.py --selftest` asserts the `c'` term numerically -- an error component shared
+by the two humans inflates the third instrument's Grubbs variance -- rather than in prose.
 
 The alternative -- two uncalibrated raters using different definitions -- produces an inflated
 `Var(G - H2)` that is **bias, not unreliability**, and bias does not average out. Reconciling
@@ -242,8 +246,8 @@ Three estimates are computed and reported side by side, each labelled with what 
 
 | # | triple | scope | n | property |
 |---|---|---|---|---|
-| 1 | `{D, G, M}` | all complete Tier-E triplets | large | **precise, confounded.** `D` and `G` share a person; `E[sigma_M^2] = sigma_M^2 + c`, conservative against M. **Remains the primary for the corpus.** |
-| 2 | `{G, H2, M}` | Dan's 23-panel overlap | ~53 | **unconfounded, imprecise.** No two instruments share a person. `c'` from calibration only (A4), same conservative direction. **New primary on the overlap.** |
+| 1 | `{D, G, M}` | all complete Tier-E triplets | large | **precise, confounded.** `D` and `G` share a person; `E[sigma_M^2] = sigma_M^2 + c_DG - c_DM - c_GM`, net bias direction unknown (§1.3, A2). **Remains the primary for the corpus.** |
+| 2 | `{G, H2, M}` | Dan's 23-panel overlap | ~53 | **unconfounded by a shared person, imprecise.** `c'` from calibration only (A4) enters with a plus sign; shared reading difficulty still enters with a minus; net direction unknown. **New primary on the overlap.** |
 | 3 | difference of 1 and 2 | the 7 four-instrument cells | ~16 | `c_hat = sigma_G^2{D,G,M} - sigma_G^2{G,H2,M}` -- the first *measurement* of the quantity §1.3 could only bracket. |
 
 **Why not replace `D`.** `D` costs nothing, covers 355 panels, and its quantization cancels out
@@ -258,17 +262,22 @@ its over-identification residual is reported as a diagnostic of the independence
 
 ### A5.2 Pre-committed reading of `c_hat`
 
-`ANALYSIS-PLAN.md` §1.3 asserts a direction: shared-person error biases the comparison
-**against** the machine, so every machine-vs-human statement produced by `{D,G,M}` is
-conservative. That assertion is currently untested. With H2 it becomes falsifiable:
+`ANALYSIS-PLAN.md` §1.3 once asserted a direction -- shared-person error biases the
+comparison **against** the machine -- and amendment A2 **withdrew** it: `c_DM` and `c_GM`
+enter the expectation with a minus sign, so the net bias direction of `{D,G,M}` is unknown.
+`c_hat` makes the shared-person component, and only that component, measurable:
 
-- **`c_hat > 0`** (equivalently `sigma_M{D,G,M} > sigma_M{G,H2,M}`) -> §1.3 is **confirmed**.
-  The corpus-wide `sigma_M` stays as reported and keeps its "at least this good" framing.
-- **`c_hat <= 0` with the intervals separated** -> §1.3's conservatism claim is **refuted** and
-  must be withdrawn from the write-up, not softened. The `{D,G,M}` estimate would then be
-  anti-conservative and every statement resting on it is relabelled.
+- **`c_hat > 0`** (equivalently `sigma_M{D,G,M} > sigma_M{G,H2,M}`) -> the shared-person
+  covariance is confirmed positive and, for the first time, sized. This does NOT reinstate a
+  conservatism claim: `c_DM` and `c_GM` remain unmeasured (only the oracle stratum can see
+  them, §1.3), so the corpus-wide `sigma_M` is still reported as an estimate under a stated
+  assumption, never as a bound.
+- **`c_hat <= 0` with the intervals separated** -> the one component known to push the
+  estimate UP is absent, the remaining known covariances all push it DOWN, and every
+  `{D,G,M}` statement is relabelled as plausibly understating the machine's error -- said in
+  those words, not softened.
 - **intervals overlapping** (the likely outcome at n = 16) -> reported as *unresolved at this
-  n*, with the §1.3 argument retained as an argument and explicitly not as a measurement.
+  n*, with the §1.3/A2 algebra retained as algebra and explicitly not as a measurement.
 
 ### A5.3 New yardstick alongside `R_floor`
 
@@ -384,10 +393,12 @@ one:
    stratified sample and the reader must be able to see that;
 2. **"interchangeable, not accurate"** -- the sentence is about agreement, and the study's main
    methodological contribution is keeping those two apart;
-3. **the direction of every known bias**: shared-person `c` (§1.3), calibration-induced `c'` (A4)
-   and any G/H2 shared misreading all inflate the estimated `sigma_M`, so the machine statement
-   is conservative. *"We do not get to claim the machine is better than the estimate says; we do
-   get to claim it is at least that good."*
+3. **the sign of every known bias component, stated separately and never netted**:
+   shared-person `c` (§1.3), calibration-induced `c'` (A4) and any G/H2 shared misreading
+   inflate the estimated `sigma_M`; machine-human shared difficulty (`c_GM`, `c_H2M`)
+   deflates it; the net direction is unknown. Amendment A2 withdrew every "conservative" /
+   "at least that good" formulation, and it stays withdrawn here: the sentence is quoted
+   with its assumption attached or not at all.
 
 **And one thing the phrasing must not do**: it must not describe Dan as a random draw from "human
 annotators". He is a colleague trained by `SECOND-RATER-PROTOCOL.md` and calibrated against Greg
@@ -402,7 +413,7 @@ claim than "two humans".
 | threat | mechanism | control | direction of residual bias |
 |---|---|---|---|
 | **Dan -> Greg contamination** | building Dan's Stage B requires opening Dan's panel boxes | `prepare_dan_session.py build-b` refuses until every overlapping item of Greg's is ingested **and sealed** | eliminated if the gate is respected; `--force` use is visible in the session record |
-| **Calibration-induced correlation** | reconciling conventions makes `e_G` and `e_H2` share a component `c' >= 0` | conventions reconciled, values never; the round runs on non-scored panels | **inflates** `sigma_M{G,H2,M}` -- conservative against the machine (A4) |
+| **Calibration-induced correlation** | reconciling conventions makes `e_G` and `e_H2` share a component `c' >= 0` | conventions reconciled, values never; the round runs on non-scored panels | the `c'` component **inflates** `sigma_M{G,H2,M}`; the NET direction stays unknown because machine-human shared difficulty deflates it (A4, A2) |
 | **Dan is not a random annotator** | one colleague, trained by this protocol, calibrated against Greg | claim narrowed to "two trained annotators following a common written protocol" (A7) | unquantified; a generalisation limit, not a bias |
 | **7 articles is too few to cluster** | §2.1 prescribes an article-level cluster bootstrap at B = 10 000 | panel-level bootstrap substituted; every H2 interval labelled **"not cluster-adjusted"**; article ICC of log-ratios reported descriptively | intervals are **too narrow** by the design effect (~1.5 at ICC 0.4), stated wherever they appear |
 | **The overlap is a hard, stratified sample** | Dan reads Tier 1, which deliberately oversamples flush, tight, labels-absent and unstated-dispersion figures | reported per stratum, as everywhere else | `RC_inter` from this sample is **pessimistic** relative to a proportional sample -- so the "machine inside human variation" claim is *harder* to make, not easier |

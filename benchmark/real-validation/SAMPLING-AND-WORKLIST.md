@@ -93,11 +93,13 @@ mosaic's tile edges have to be judged rather than read off whitespace.
 
 Not "the first N", and not "proportional to the corpus". The sample is stratified on **the axes the
 synthetic benchmark taught us matter**, and deliberately **oversampled where the detector is measured
-weakest or where synthetic-to-real transfer is most doubtful**. From `benchmark/panels/RESULTS.md`
-section 7, the cascade's live failures are flush mosaics (0.000 median IoU) and non-guillotine
-layouts (0.107 median IoU, 0 of 6 figures exact). Tight gutters are *reported* solved (0.915) on clean
-synthetic renders -- which is precisely a claim that only real anti-aliased, JPEG-blocked scans can
-test.
+weakest or where synthetic-to-real transfer is most doubtful**. The oversampling weights were set
+when the mid-development cascade scored 0.107 median IoU / 0 of 6 figures exact on non-guillotine
+layouts and 0.000 median IoU on flush mosaics; the finished cascade (`benchmark/panels/RESULTS.md`
+section 7) measures 0.925 medIoU / 67% exact on non-guillotine -- still its weakest stratum -- and
+86% exact on flush and on tight, so the weights keep pointing at the right strata and the draw
+stands. Tight and flush are *reported* solved only on clean synthetic renders -- which is precisely
+a claim that only real anti-aliased, JPEG-blocked scans can test.
 
 Strata are **non-exclusive tags**. A single figure can discharge four of them, which is why 14
 figures cover 19 strata in Tier 1+. The target n is the minimum number of *distinct figures* carrying
@@ -111,7 +113,7 @@ the tag.
 | `S1_anchor` | easy/medium guillotine chart grid, labels drawn | 6 | no | L1_easy / L2_medium |
 | `S2_tight` | measured inter-panel gutter < ~1.5% of the figure dimension | 4 | no | L3_tight |
 | `S3_flush` | panels abutting at 0-0.5% gutter | 6 | **yes** | L4_flush -- cascade 0.000 medIoU |
-| `S4_nonguillotine` | no full-width/full-height cut sequence separates the panels | 2 | **yes** | L5 -- cascade 0.107 medIoU, 0/6 exact |
+| `S4_nonguillotine` | no full-width/full-height cut sequence separates the panels | 2 | **yes** | L5 -- the cascade's weakest stratum: 0.925 medIoU, 4/6 exact (0.107, 0/6 at sample draw) |
 | `S5_labels_absent` | caption names letters (or none); the figure draws none | 4 | **yes** | L2_grid2x2_nolabel / L2_grid1x3_nocap |
 | `S6_stray_letters` | expected-letter glyphs inside panels that are not labels | 1 | **yes** | L6 -- the conf 0.8-0.92 exploit |
 | `S7_manypanels` | >= 8 panels; letter run reaches I or beyond | 5 | **yes** | L7 |

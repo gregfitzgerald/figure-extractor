@@ -100,8 +100,8 @@ flow-diagram · table · micrograph · schematic · other · unknown`
 
 ## Statistics -> meta-analytic form (R's job, not the tool's)
 Effect-size math (SE<->SD, CI->SD, median/IQR->mean/SD, Hedges g, Fisher z, ratio-CI
-variances) was deliberately REMOVED from the tool -- there is no `figureExtractor.convert`
-namespace, and calling it throws. The tool's authoritative output is calibrated DATA-unit
+variances) was deliberately REMOVED from the tool -- there is no `convert` namespace on
+`figureExtractor`, and calling one throws. The tool's authoritative output is calibrated DATA-unit
 landmarks + dispersion TYPE + provenance: collect it with `getFigureDerivedRows()` /
 `getFigureDerivedCsv()` and hand it to R (escalc / metafor), which computes every effect
 size and variance. **Getting SD/SEM/CI wrong changes the variance by up to a factor of n**

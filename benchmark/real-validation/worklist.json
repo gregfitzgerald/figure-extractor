@@ -142,7 +142,7 @@
    "definition": "no sequence of full-width/full-height cuts separates the panels",
    "target_n_distinct_figures": 2,
    "oversampled": true,
-   "synthetic_analogue": "L5_nonguillotine -- cascade scores 0.107 medIoU, 0/6 figures exact",
+   "synthetic_analogue": "L5_nonguillotine -- the cascade's weakest stratum: 0.925 medIoU, 4/6 figures exact (0.107, 0/6 at sample draw)",
    "figures_in_worklist": 2,
    "figures_in_tier1": 1,
    "target_met": true
@@ -1049,7 +1049,7 @@
     "Clemenson2015_1_2"
    ],
    "est_minutes_panel_gt": 12,
-   "notes": "VERIFIED non-guillotine and the only clean one found in 222 surveyed figures. This single item carries the entire real-corpus evidence for the stratum where the cascade scores 0.107 medIoU. Paywalled (Wiley): GT metadata only, no image redistribution."
+   "notes": "VERIFIED non-guillotine and the only clean one found in 222 surveyed figures. This single item carries the entire real-corpus evidence for the stratum where the cascade is weakest (0.925 medIoU, 67% exact; 0.107 at sample draw). Paywalled (Wiley): GT metadata only, no image redistribution."
   },
   {
    "item_id": "Lyst2012_F7",

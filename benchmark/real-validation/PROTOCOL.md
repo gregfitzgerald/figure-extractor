@@ -698,6 +698,11 @@ That is the report that gives your reference its error bar.
 
 ## 11. Worked example
 
+**Everything in this section is ILLUSTRATIVE.** The item, the figure, the caption, every
+pixel value, every table entry and every timing below are invented to show the workflow at
+full resolution. They are not measured outputs from any session, and no number here may be
+quoted as data.
+
 **Item `it04_9c1a`, Figure 1 of a rodent enrichment study.** Two panels side by side, each
 a two-bar chart with error bars; the caption reads:
 

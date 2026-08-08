@@ -387,15 +387,24 @@ So the honest summary is: *it declines a third of figures, and is not observed t
 what it accepts.* For an extraction pipeline feeding a meta-analysis that is the right trade --
 an abstention costs a minute of human attention, a silent mislabel corrupts a study's weight.
 
-**But the abstention is badly over-cautious, and by this tier's own metric it loses.** Recall is
-1.00: it abstains on *every* figure it would have got wrong, which is the property you actually
-want. Precision is 0.14: of the 14 figures it declined, only 2 were genuinely wrong, so 12 were
-needless. Net figures saved = 2 caught - 12 wasted = **-10**. `ANALYSIS-PLAN.md` §4.3
-pre-registers `net figures saved > 0` as a hard gate, so **that gate currently fails**, and the
-committed `real-validation/synthetic_reference.json` still records the superseded 0.88 / 0.94 /
-+13 -- a stale artifact that would have laundered these numbers into the pre-registration
-unchallenged. Retuning `--abstain-at`, or amending the gate, is an open decision; it is recorded
-here rather than quietly fixed because the gate was pre-registered.
+**But the abstention is badly over-cautious, and by the tier's original metric it loses.**
+Recall is 1.00: it abstains on *every* figure it would have got wrong, which is the property you
+actually want. Precision is 0.14: of the 14 figures it declined, only 2 were genuinely wrong, so
+12 were needless. Net figures saved = 2 caught - 12 wasted = **-10**. `ANALYSIS-PLAN.md`
+pre-registered `net figures saved > 0` as a hard gate, and these numbers **fail it**. The
+committed `real-validation/synthetic_reference.json` moreover still recorded the superseded
+0.88 / 0.94 / +13 from an earlier build -- a stale hand-maintained artifact that would have
+laundered those numbers into the pre-registration unchallenged.
+
+Both are resolved by `ANALYSIS-PLAN.md` amendment **A18** (2026-08-08), which is explicit that
+it changes a pre-registered criterion after these numbers were seen: the gate is restated on
+abstention **recall** (0 answered-and-wrong figures), because a needless abstention and a silent
+error do not cost the same, and net figures saved / precision are reported descriptively as the
+cost, alongside coverage. The old criterion and its failure stay recorded -- here, in A18, and
+in the `superseded` block of `synthetic_reference.json`, which is now **generated** from this
+scorer by `real-validation/make_synthetic_reference.py` (`--check` detects staleness) so it
+cannot drift again. Retuning `--abstain-at` to buy back precision remains open, but it is
+tuning, not a gate question.
 
 Tight gutters and flush mosaics both went from unusable to 86% exact, and guillotine layouts
 are perfect. **Non-guillotine layouts are the remaining weakness** -- 0.925 medIoU but only

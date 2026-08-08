@@ -621,7 +621,9 @@ def selftest():
           f"{math.sqrt(g['var_c']):.4f}")
     check("Grubbs refuses n < 5", grubbs_three(A[:4], B[:4], C[:4]) is None)
 
-    # the shared-person confound, in the direction ANALYSIS-PLAN sec.1.3 claims
+    # the shared-person confound: one TERM of the sec.1.3 algebra -- a component shared by
+    # two instruments inflates the third's Grubbs variance. The net bias direction of the
+    # full estimator is unknown (amendment A2); this asserts the c' term in isolation.
     shared = [rng.gauss(0, 0.08) for _ in range(400)]
     A2 = [t + s + rng.gauss(0, 0.06) for t, s in zip(T, shared)]
     B2 = [t + s + rng.gauss(0, 0.06) for t, s in zip(T, shared)]
