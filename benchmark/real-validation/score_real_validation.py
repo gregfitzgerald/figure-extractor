@@ -627,6 +627,25 @@ def canonical_figure_id(fid):
     return canonical_article(fid)
 
 
+def coded_join_key(gt):
+    """The key a GT figure joins the CODED reference on.
+
+    The coded reference keys its rows `<article>_fig<figureNumber>` (Acklin2015_fig3). A GT
+    record's own `id` is `<anon>_fig<index>` (it01_420d_fig0), so joining on the id was dead
+    twice over -- anonymised article against the real one, and a zero-based index against a
+    printed figure number. It matched nothing, and the machine-vs-hand-coded comparison --
+    the headline of Tier E -- silently reported zero comparisons rather than failing.
+
+    Both halves are now available on the GT record because the ingest writes them, so build
+    the key from those and fall back to the id when they are absent (an older store).
+    """
+    art = gt.get("article")
+    num = gt.get("figureNumber")
+    if art and num is not None:
+        return canonical_figure_id(f"{art}_fig{num}")
+    return canonical_figure_id(gt.get("id") or "")
+
+
 def split_of(article):
     """Deterministic, recomputable, published-salt article-level split. Fixed by
     ANALYSIS-PLAN sec.2.3 before any figure was seen; it cannot be redrawn to suit a
@@ -787,6 +806,8 @@ def _coerce_gt(rec):
     return {
         "schemaVersion": 1, "id": fid,
         "article": rec.get("article") or rec.get("task") or "unknown",
+        # Carried so coded_join_key can build <article>_fig<number>.
+        "figureNumber": rec.get("figureNumber"),
         "pdf": {"page": rec.get("pageNum"), "dpi": rec.get("dpi")},
         "durationSec": rec.get("durationSec"), "session": rec.get("session"),
         "positionInSession": rec.get("positionInSession"),
@@ -1207,7 +1228,7 @@ def score_extraction(gt, pred, coded_by_panel):
             })
 
         for row in coded_by_panel.get(
-                (canonical_figure_id(gt["id"]), norm_label(gp.get("label"))), []):
+                (coded_join_key(gt), norm_label(gp.get("label"))), []):
             crows.append(_comparison_row(gt, gp, pp, row, lrows))
     return prows, lrows, crows
 

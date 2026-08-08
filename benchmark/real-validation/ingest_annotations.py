@@ -32,6 +32,7 @@ import argparse
 import json
 import math
 import pathlib
+import re
 import statistics
 import sys
 
@@ -51,6 +52,19 @@ ZOOM_FLOOR_PX = 100     # cap-to-top separation below this cannot support a <=1%
 
 
 # ================================================================= coding form
+
+def _fig_number(item):
+    """The printed figure NUMBER from a sealed-key item, e.g. 3 from "Figure 3".
+
+    Derived rather than required, so sealed keys written before this existed still work --
+    `figure` has always been stored, `figure_number` has not.
+    """
+    v = item.get("figure_number")
+    if isinstance(v, int):
+        return v
+    m = re.search(r"(\d+)", str(item.get("figure") or ""))
+    return int(m.group(1)) if m else None
+
 
 def validate_form(form, vocab, where):
     """Mirror of figure-extractor.html::validateCharacterization, plus the fields the
@@ -417,8 +431,14 @@ def cmd_ingest(args):
             # same paper into different clusters. Both fail quietly, and both change if the
             # ids are ever regenerated. The blinding this protects is a property of the
             # ANNOTATION, which is finished by the time this runs; the GT store is gitignored.
+            _k = keyed.get(aid, {}) or {}
             panel_rows.append({
-                "task": aid, "article": (keyed.get(aid, {}) or {}).get("article") or aid,
+                "task": aid, "article": _k.get("article") or aid,
+                # The printed figure NUMBER, not the zero-based index. The coded reference
+                # keys its rows `<article>_fig<figureNumber>` (e.g. Acklin2015_fig3), so
+                # without this the machine-vs-hand-coded join is dead twice over -- anon id
+                # against real article, AND index 0 against figure 3. It joined nothing.
+                "figureNumber": _fig_number(_k),
                 "figureIndex": fi, "nPanels": len(f["panels"]),
                 "confidence": 1.0, "abstain": False, "method": "human",
                 "figureBbox": f["bbox"],
