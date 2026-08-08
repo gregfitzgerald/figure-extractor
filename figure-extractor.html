@@ -2240,9 +2240,19 @@ async function buildPdfArticle(file, dpi, onProgress) {
 // First unused "name", "name_2", "name_3", … — same de-dup scheme uniqueNamer() applies to
 // ZIP entries. Only for loads with no path to key on: never silently merge two articles.
 function uniqueArticleName(name) {
-    if (!state.articles.some(a => a.name === name)) return name;
+    // Checks localStorage as well as this session's article list. Annotations are keyed by
+    // article name and PERSIST ACROSS SESSIONS, so checking only `state.articles` left the
+    // collision fully intact one day later: open a second reference-manager "Full Text PDF.pdf"
+    // tomorrow and `loadArticleAnnotations` restores YESTERDAY's boxes onto today's pixels --
+    // one paper's annotations over another paper's figures, exported under the wrong name,
+    // with no toast (the stale-work warning needs an annotations.json, which a dropped PDF has
+    // no). localStorage is the durable identity, which is why the rename guard already checks
+    // it; the load path must use the same test.
+    const taken = n => state.articles.some(a => a.name === n)
+        || localStorage.getItem('figext_' + n) !== null;
+    if (!taken(name)) return name;
     let i = 2;
-    while (state.articles.some(a => a.name === `${name}_${i}`)) i++;
+    while (taken(`${name}_${i}`)) i++;
     return `${name}_${i}`;
 }
 function addOrReplaceArticle(va) {

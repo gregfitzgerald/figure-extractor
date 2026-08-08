@@ -64,6 +64,21 @@ async def run():
         check("both papers survive as distinct articles",
               r["count"] == 2 and len(set(r["names"])) == 2, str(r["names"]))
 
+        # CROSS-SESSION. Annotations persist in localStorage under the article name, so a
+        # name that is free in THIS session can still own yesterday's boxes. Checking only
+        # state.articles left the collision intact one day later: the second "Full Text
+        # PDF.pdf" restored the first paper's annotations onto the second paper's pixels.
+        x = await pg.evaluate("""() => {
+            state.articles = [];                       // fresh session, nothing loaded
+            localStorage.setItem('figext_Full Text PDF',
+                JSON.stringify({figures:[{label:'YESTERDAY'}], nextFigureNum:2}));
+            const n = uniqueArticleName('Full Text PDF');
+            localStorage.removeItem('figext_Full Text PDF');
+            return n;
+        }""")
+        check("a name owning stored annotations is not reused across sessions",
+              x != "Full Text PDF", f"got {x!r}")
+
         # --- 3. calibration lever arm -------------------------------------------
         near = await pg.evaluate("""() => window.figureExtractor.verifyCalibration(
             {x1:{px:150,py:400}, x2:{px:151,py:400}, y1:{px:100,py:400}, y2:{px:100,py:100}},

@@ -321,7 +321,7 @@ def landmark_rows(article, target, extraction, char, header):
 def jitter_report(dig, extraction):
     """What a 1-IMAGE-pixel slip is worth, per channel, on this panel.
 
-    Directly comparable to the synthetic human-click floor (0.44% central / 4.15%
+    Directly comparable to the synthetic human-click floor (0.44% central / 3.89%
     dispersion median at 1 px). The rater is instructed to work at >=1:1 display
     magnification -- verified by the grating burned into every Stage B crop -- so one
     image pixel is an upper bound on one screen pixel, which is what makes this a
@@ -679,7 +679,7 @@ def cmd_audit(args):
                     low.append((r["panel_item"], c, kk, c * kk, j.get("kSource")))
     L += ["## Zoom discipline / implied click jitter", "",
           "What a 1-image-pixel slip is worth on each channel. Compare with the synthetic",
-          "human-click floor: 0.44% central / 4.15% dispersion median at 1 px.", "",
+          "human-click floor: 0.44% central / 3.89% dispersion median at 1 px.", "",
           "| channel | median | p90 | worst | n |", "|---|---|---|---|---|"]
     for nm, xs in (("central", cen), ("dispersion", dis)):
         if xs:

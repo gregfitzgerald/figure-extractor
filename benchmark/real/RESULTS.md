@@ -126,7 +126,7 @@ n=5). Span: n=5..20, cap length 1.2..7.3 data-units, 3 cognitive domains, both D
 
 | tool / corpus | central median | dispersion median | dispersion worst |
 |---|---|---|---|
-| synthetic `human_floor` (1px click jitter) | 0.44 | 4.15 | 37.3 |
+| synthetic `human_floor` (1px click jitter) | 0.44 | 3.89 | 27.7 |
 | synthetic `cv_autoreader` | 0.45 | 8.89 | 21.5 |
 | synthetic `vision` (agent, n=1) | 1.17 | 8.20 | -- |
 | **real pilot (this, zoom-assisted vision)** | **0.47** | **3.67** | **18.1** |

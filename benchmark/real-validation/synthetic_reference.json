@@ -231,7 +231,7 @@
       }
     },
     "dispersionMedianPct": {
-      "value": 4.15,
+      "value": 3.89,
       "unit": "pct",
       "higherBetter": false,
       "maxDelta": null,
@@ -244,7 +244,7 @@
       "note": "NOT an accuracy threshold on real figures -- see ANALYSIS-PLAN sec.1. Context only."
     },
     "dispersionWorstPct": {
-      "value": 37.3,
+      "value": 27.7,
       "unit": "pct",
       "higherBetter": false,
       "maxDelta": null,

@@ -113,10 +113,10 @@ STATIC = {
         "_comment": "human_floor = Greg's own 1px click jitter measured against R's exact descriptives.",
         "centralMedianPct":     {"value": 0.44,  "unit": "pct", "higherBetter": False, "maxDelta": -0.6, "threshold": 1.0,
                                  "alt": {"cv_autoreader": 0.45, "vision_agent": 1.17, "real_pilot_n16": 0.47}},
-        "dispersionMedianPct":  {"value": 4.15,  "unit": "pct", "higherBetter": False, "maxDelta": None, "threshold": None,
+        "dispersionMedianPct":  {"value": 3.89,  "unit": "pct", "higherBetter": False, "maxDelta": None, "threshold": None,
                                  "alt": {"cv_autoreader": 8.89, "vision_agent": 8.20, "real_pilot_n16": 3.67},
                                  "note": "NOT an accuracy threshold on real figures -- see ANALYSIS-PLAN sec.1. Context only."},
-        "dispersionWorstPct":   {"value": 37.3,  "unit": "pct", "higherBetter": False, "maxDelta": None, "threshold": None,
+        "dispersionWorstPct":   {"value": 27.7,  "unit": "pct", "higherBetter": False, "maxDelta": None, "threshold": None,
                                  "alt": {"cv_autoreader": 21.5, "real_pilot_n16": 18.11}},
     },
     "goldenDiff": {
