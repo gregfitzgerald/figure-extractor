@@ -225,4 +225,4 @@ For quick operations without browser:
 - Annotations are saved per-article in localStorage
 - Subfigure bounds are relative to the parent figure, in natural pixels
 - Use vision models (GPT-4V, Claude) to identify figure locations
-- The tool works offline after project is loaded (captions need a PDF text layer or `text.json`)
+- PDF.js and JSZip load from a CDN: loading PDFs and exporting need a network connection (the tool shows a banner at load when the CDN is unreachable). Captions need a PDF text layer or `text.json`.

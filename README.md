@@ -95,10 +95,17 @@ not fix the second:
   (B')` used to report two panels for a four-tile figure.
 - **Standing behind an answer.** This is the binding constraint, and it is NOT the caption.
   Reading four more captions moved abstention by exactly zero: 92.9% before, 92.9% after, 5
-  figures answered both times. Of 65 abstentions, 58 carry `panel-labels-unverified` -- the
-  detector cannot find the drawn panel letters in a real raster figure, so it refuses to trust a
-  split even when the caption told it how many panels to expect. Half its abstentions happen
-  *with* a caption count in hand.
+  figures answered both times. Of 65 abstentions, 58 carry `panel-labels-unverified`, and half
+  happen *with* a caption count already in hand.
+
+  The obvious next suspect was letter verification, which was all-or-nothing: one missing glyph
+  discarded every correctly-read one. Probing 13 real figures directly, the glyph finder does
+  work -- it found anchors on 12 -- but was short by one or more on 8 (Zhang2017 Fig 3: 5
+  anchors for 7 panels). Allowing a *partial* reading to count when it corroborates the
+  reading-order prior therefore looked like the fix. **It changed nothing: 92.9% -> 92.9%, and
+  not one figure qualified.** The partial path needs each anchor to land cleanly on a distinct
+  box, and the boxes themselves are wrong -- derived from a heuristic figure crop, not a human
+  one. So the failure is upstream of both the caption and the labels: it is the figure region.
 
 So the honest next step is not more caption work. It is panel-label verification on real raster
 figures, measured against human-drawn panel boxes -- which is exactly what

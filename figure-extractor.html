@@ -1396,6 +1396,20 @@ document.addEventListener('DOMContentLoaded', () => {
         restoreProjects();
     }
 
+    // PDF.js and JSZip come from a CDN. When that fetch is blocked (offline, captive portal,
+    // corporate proxy) the first PDF click or export used to die with no visible cause — say
+    // so up front, at load, where the user can still fix it before losing work.
+    const cdnMissing = [];
+    if (!window.pdfjsLib) cdnMissing.push('PDF.js (PDF loading)');
+    if (typeof JSZip === 'undefined') cdnMissing.push('JSZip (ZIP export)');
+    if (cdnMissing.length) {
+        const b = document.createElement('div');
+        b.id = 'cdnBanner';
+        b.textContent = 'Could not reach cdnjs.cloudflare.com — unavailable: ' + cdnMissing.join(', ')
+            + '. Reload once online; existing annotations are safe in browser storage.';
+        document.body.prepend(b);
+    }
+
     document.getElementById('projectInput').onchange = handleProjectSelect;
     document.getElementById('exportBtn').onclick = exportAll;
     document.getElementById('exportAllBtn').onclick = exportAllProjects;
@@ -6929,6 +6943,13 @@ function validateCharacterization(c) {
             && !((c.flags || []).includes('legend-order-mismatch'))) {
             errs.push(`panels[${i}]: legendOrder differs from plotOrder — add the 'legend-order-mismatch' flag (do NOT reorder silently)`);
         }
+        // A LENGTH mismatch is the most contradictory legend/plot report possible, and the
+        // `.length ===` guard above meant exactly that case sailed through unflagged. When
+        // the counts themselves disagree, the series COUNT is in doubt too.
+        if (Array.isArray(p.legendOrder) && Array.isArray(p.plotOrder) && p.legendOrder.length !== p.plotOrder.length
+            && !((c.flags || []).includes('legend-order-mismatch') && (c.flags || []).includes('series-count-uncertain'))) {
+            errs.push(`panels[${i}]: legendOrder (${p.legendOrder.length}) and plotOrder (${p.plotOrder.length}) have different lengths — add the 'legend-order-mismatch' AND 'series-count-uncertain' flags`);
+        }
         const m = p.extractionPlan && p.extractionPlan.method;
         if (m && !CHAR_VOCAB.method.includes(m)) errs.push(`panels[${i}]: unknown extraction method "${m}"`);
         if (p.dataProvenance && !CHAR_VOCAB.dataProvenance.includes(p.dataProvenance)) errs.push(`panels[${i}]: unknown dataProvenance "${p.dataProvenance}"`);
@@ -7318,9 +7339,15 @@ window.figureExtractor = {
         if (!p) return { ok: false, flags: [], problems: ['no characterization'] };
         const series = p.series || [], flags = [], problems = [];
         if (series.length > 1 && series.some(s => !s.label)) { flags.push('series-unlabeled'); problems.push('a series has no label — it cannot be bound to an arm'); }
-        if (Array.isArray(p.legendOrder) && Array.isArray(p.plotOrder)
-            && p.legendOrder.length === p.plotOrder.length && p.legendOrder.join('|') !== p.plotOrder.join('|')) {
-            flags.push('legend-order-mismatch'); problems.push('legend order differs from plot order — confirm the binding; do NOT reorder silently');
+        if (Array.isArray(p.legendOrder) && Array.isArray(p.plotOrder)) {
+            // Different LENGTHS is the worse contradiction (the count itself is in doubt), and
+            // the old `.length ===` precondition made it the one case that went unflagged.
+            if (p.legendOrder.length !== p.plotOrder.length) {
+                flags.push('legend-order-mismatch', 'series-count-uncertain');
+                problems.push(`legendOrder has ${p.legendOrder.length} entries but plotOrder has ${p.plotOrder.length} — the series count itself is uncertain`);
+            } else if (p.legendOrder.join('|') !== p.plotOrder.join('|')) {
+                flags.push('legend-order-mismatch'); problems.push('legend order differs from plot order — confirm the binding; do NOT reorder silently');
+            }
         }
         // near-identical hues are the measured failure mode (a sequential ramp at small marker size)
         const hex2rgb = h => { const m = /^#?([0-9a-f]{6})$/i.exec(String(h || '')); if (!m) return null; const v = parseInt(m[1], 16); return [v >> 16 & 255, v >> 8 & 255, v & 255]; };

@@ -171,6 +171,22 @@ async def run(pdf_path):
                       "{x1:{px:0,py:100},x2:{px:100,py:100},y1:{px:0,py:100},y2:{px:0,py:0}}, "
                       "{x1:'1',x2:'1000',y1:'0',y2:'10',logX:false,logY:false})")
         assert vc["ok"] is True and "log-axis-needs-human-review" in vc["flags"], f"log review flag missed: {vc}"
+        assert "calibration-short-baseline" not in vc["flags"], f"100px baselines wrongly flagged short: {vc}"
+
+        # ---- calibration lever-arm guard --------------------------------------
+        # X refs 1 px apart spanning 100 data units round-trip PERFECTLY (the check re-predicts
+        # the refs from their own pixels) while 1 px of click jitter moves a value by 100 units.
+        # Given that point-picking jitter is the benchmark's dominant error source, this must
+        # be flagged, not passed clean.
+        vshort = await ev("() => window.figureExtractor.verifyCalibration("
+                          "{x1:{px:100,py:100},x2:{px:101,py:100},y1:{px:100,py:100},y2:{px:100,py:0}}, "
+                          "{x1:'0',x2:'100',y1:'0',y2:'10',logX:false,logY:false})")
+        assert "calibration-short-baseline" in vshort["flags"], \
+            f"1px lever arm passed unflagged (the highest-leverage unguarded case): {vshort}"
+        vshorty = await ev("() => window.figureExtractor.verifyCalibration("
+                           "{x1:{px:0,py:100},x2:{px:100,py:100},y1:{px:0,py:100},y2:{px:0,py:90}}, "
+                           "{x1:'0',x2:'10',y1:'0',y2:'50',logX:false,logY:false})")
+        assert "calibration-short-baseline" in vshorty["flags"], f"short Y baseline unflagged: {vshorty}"
 
         # ---- export ZIP carries the landmarks CSV, and NO preview CSV ---------
         async with pg.expect_download() as di:
