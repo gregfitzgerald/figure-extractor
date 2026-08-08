@@ -9,7 +9,7 @@ meta-analysis: **how accurate is figure extraction, and where exactly does it br
 
 | | |
 |---|---|
-| **`figure-extractor.html`** | The tool. A single self-contained file -- no server, no build, no dependencies. Annotates figures/subfigures, captures captions, digitizes charts, and exposes a `window.figureExtractor` API so an AI agent can drive it. |
+| **`figure-extractor.html`** | The tool. A single file -- no server, no build, no install; PDF.js and JSZip load from a CDN, so loading PDFs and exporting need a network connection (a banner appears at load when the CDN is unreachable). Annotates figures/subfigures, captures captions, digitizes charts, and exposes a `window.figureExtractor` API so an AI agent can drive it. |
 | **`benchmark/`** | An extraction-accuracy benchmark where **R is the ground-truth engine**, plus a real-figure validation, a chart-type classification corpus, and a series/group-parsing tier. This is where the findings below come from. |
 | **`meta-analysis/`** | The evidence-synthesis pipeline the tool feeds: staged, with mandatory human gates and an append-only decision log. |
 
@@ -103,10 +103,12 @@ not fix the second:
 So the honest next step is not more caption work. It is panel-label verification on real raster
 figures, measured against human-drawn panel boxes -- which is exactly what
 [`benchmark/real-validation/`](benchmark/real-validation/) exists to collect.
-Non-guillotine layouts (67% exact) are the remaining weakness. **The caption is the load-bearing
-input:** withhold it from the same detector and exact-count collapses from 80.5% to 7.3%, with
-spurious boxes going 99 -> 305. Knowing how many panels to expect is worth more than any amount of
-pixel cleverness.
+
+On synthetic figures, non-guillotine layouts (67% exact) are the remaining weakness, and **the
+caption is the load-bearing input**: withhold it and exact-count collapses from 80.5% to 7.3%,
+with spurious boxes going 99 -> 305. Knowing how many panels to expect is worth more than any
+amount of pixel cleverness -- which is why the real-caption parse rate above matters even though
+improving it did not, on its own, move abstention.
 
 **Honest scope.** Findings 1, 2, 3, 5 and 6 are measured on *synthetic* charts that R rendered from
 known data, so the ground truth is exact by construction. They *bound* accuracy and *locate* risk;
@@ -115,7 +117,9 @@ real-figure result, and it is small: 6 panels, 3 articles, one reader, no repeat
 
 Two things are consequently **not** established. There is no measurement of a *human* reader in the
 loop -- every number above comes from exact pixels, simulated jitter, a CV reader or a vision model.
-And panel detection has never been scored on a real journal figure; the 95.1% is entirely synthetic.
+And while panel detection has now been *run* over 71 real journal figures, its **accuracy** there is
+still unmeasured: nobody has drawn a panel box on any of them, so every real-figure number above is
+"the detector emitted N", never "the figure has N". The 95.1% remains a synthetic result.
 Both gaps are the subject of [`benchmark/real-validation/`](benchmark/real-validation/), a
 pre-registered human annotation study that is built and blinded but not yet run to completion.
 
@@ -166,6 +170,10 @@ confidence badge. **Re-detect** re-runs detection, **Source** highlights the ori
 ### Digitize a chart
 
 Calibrate two points on each axis, then pick landmarks (bar tops, error caps, box quartiles, points).
+Then **Confirm extraction** (step 3 in the digitizer): declare the chart type and what the error
+bars show (SD / SEM / CI -- answered from the caption, never guessed; "unknown" is recorded as a
+`dispersion-type-uncertain` flag), plus optionally the direction of benefit and n. Confirming is
+what produces the figure-derived extraction behind `figure-derived-landmarks.csv`.
 The tool converts pixels to data values and exports **landmarks with provenance** -- never effect
 sizes. Every value is permanently flagged `figure_derived`, so a figure-vs-text sensitivity analysis
 stays possible downstream (verified is not laundered).
@@ -179,8 +187,10 @@ than silently repaired.
 
 **Export** downloads a ZIP for the current article; **Export All** bundles every annotated article.
 Each ZIP contains `annotations.json` (schema v2: figures + nested subfigures, natural-pixel `bounds`
-plus normalized `boundsNorm`, captions), `figures.csv`, `figure-derived-landmarks.csv` (the
-authoritative digitized output -- feed this to R), and PNG crops of every figure and subfigure.
+plus normalized `boundsNorm`, captions), `figures.csv`, PNG crops of every figure and subfigure,
+and -- once at least one extraction has been confirmed (digitizer step 3, or the API) --
+`figure-derived-landmarks.csv` (the authoritative digitized output -- feed this to R). The bundled
+README states whether the landmarks CSV is present.
 
 ## AI integration
 
