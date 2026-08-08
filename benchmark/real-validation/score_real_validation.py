@@ -760,7 +760,7 @@ def normalize_annotations(data):
     cannot map is simply absent, which downgrades that metric to 'not available'."""
     out = []
     article = data.get("article") or data.get("project") or "unknown"
-    for f in data.get("figures", []) or []:
+    for fi, f in enumerate(data.get("figures", []) or []):
         fb = f.get("bounds") or {}
         panels = []
         for i, s in enumerate(f.get("subfigures", []) or []):
@@ -783,7 +783,15 @@ def normalize_annotations(data):
             })
         out.append({
             "schemaVersion": 1,
-            "id": f.get("id") or f"{article}_{f.get('label','fig')}",
+            # Key the SAME way `_coerce_gt` keys panels_gt.jsonl -- `<task>_fig<index>` -- so
+            # the two views of one figure collide and `load_gt`'s setdefault keeps the first.
+            # They used to disagree (`f["id"]` is the tool's internal "fig1"), so a session
+            # ingested from panels_gt.jsonl ALSO gained a phantom record from the sealed
+            # annotations.json: a different id, figure-LOCAL coordinates rather than page
+            # coordinates, and the anon id standing in for the article. It diluted Tier D
+            # recall and could never join a prediction. Panel GT is loaded first and wins,
+            # which is right: it is the one in page coordinates.
+            "id": f"{article}_fig{fi}",
             "article": article,
             "pdf": {"page": f.get("pageNum")},
             "detection": {

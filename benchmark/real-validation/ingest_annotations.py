@@ -409,8 +409,17 @@ def cmd_ingest(args):
                            for s in f.get("subfigures", [])]})
         structure[aid] = figs
         for fi, f in enumerate(figs):
+            # The REAL article, resolved from the sealed key. Without it the scorer's
+            # `_coerce_gt` falls back to `article = task` -- the ANON id -- and everything
+            # article-level is then computed over anonymisation noise: `split_of` hashes the
+            # anon id, so the default `--split-filter lock` silently drops roughly a third of
+            # the human GT, and the "article-level cluster bootstrap" clusters panels of the
+            # same paper into different clusters. Both fail quietly, and both change if the
+            # ids are ever regenerated. The blinding this protects is a property of the
+            # ANNOTATION, which is finished by the time this runs; the GT store is gitignored.
             panel_rows.append({
-                "task": aid, "figureIndex": fi, "nPanels": len(f["panels"]),
+                "task": aid, "article": (keyed.get(aid, {}) or {}).get("article") or aid,
+                "figureIndex": fi, "nPanels": len(f["panels"]),
                 "confidence": 1.0, "abstain": False, "method": "human",
                 "figureBbox": f["bbox"],
                 "panels": [{"label": p["letter"],
