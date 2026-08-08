@@ -129,6 +129,23 @@ def selftest():
     check("translation leaves size alone", got["width"] == 30 and got["height"] == 20)
     ident = to_page_coords({"x": 7, "y": 8, "width": 1, "height": 2}, {"x": 0, "y": 0})
     check("a zero origin is the identity", ident == {"x": 7, "y": 8, "width": 1, "height": 2})
+
+    # THE JOIN. Translation was correct all along; the ids were not, and nothing tested them.
+    # Ask the scorer's own coercion how it keys a GT record shaped exactly as
+    # ingest_annotations.py writes it, and require this module to emit the same key.
+    import importlib
+    try:
+        srv = importlib.import_module("score_real_validation")
+        gt_rec = {"task": "it01_420d", "figureIndex": 0, "nPanels": 2,
+                  "panels": [{"label": "A", "bbox": {"x": 0, "y": 0, "width": 10, "height": 10}},
+                             {"label": "B", "bbox": {"x": 10, "y": 0, "width": 10, "height": 10}}]}
+        coerced = srv._coerce_gt(dict(gt_rec))
+        gt_id = coerced.get("id") if coerced else None
+        ours = f"{gt_rec['task']}_fig{gt_rec['figureIndex']}"
+        check("prediction id matches the scorer's GT key", gt_id == ours,
+              f"scorer={gt_id!r} ours={ours!r}")
+    except ImportError as e:
+        check("scorer importable for the join check", False, str(e))
     print("\nselftest OK" if ok else "\nSELFTEST FAILED")
     return 0 if ok else 1
 
@@ -193,7 +210,16 @@ def main():
                 assert (p["bbox"]["x"] >= box["x"] - 2
                         and p["bbox"]["y"] >= box["y"] - 2), \
                     f"{task}: predicted panel outside the figure box -- bad translation"
-            out.append({"id": task, "task": task, "figureIndex": r.get("figureIndex", 0),
+            # The id MUST match how the scorer keys ground truth. `_coerce_gt` builds
+            # `f"{task}_fig{figureIndex}"` for records that carry no explicit `id`, which is
+            # every record `ingest_annotations.py` writes into panels_gt.jsonl. Writing the
+            # bare task here meant NOTHING ever joined: every figure scored as pred=None,
+            # printing a confident median IoU of 0.000 and a coverage line that looked
+            # healthy, and -- because a missing prediction counts as answered-and-wrong --
+            # spuriously FAILING the A18 abstention gate the moment a real session was
+            # scored. The join is asserted below; a silent zero is the failure mode here.
+            fig_i = r.get("figureIndex", 0)
+            out.append({"id": f"{task}_fig{fig_i}", "task": task, "figureIndex": fig_i,
                         "nPanels": res["count"], "panels": panels,
                         "confidence": res.get("confidence"), "method": res.get("method"),
                         "abstain": not res.get("ok"),
@@ -208,6 +234,25 @@ def main():
     p = pred_dir / f"{a.run}.jsonl"
     p.write_text("\n".join(json.dumps(o) for o in out) + "\n", encoding="utf-8")
     print(f"[written] {p}  ({len(out)} prediction(s))")
+
+    # JOIN CHECK. The predictions and the GT are keyed independently, so a key-format drift
+    # on either side produces a scoring run where every figure silently misses and the report
+    # prints median IoU 0.000 with a healthy-looking coverage line. Verify the join HERE,
+    # against the same ids the GT actually carries, rather than discovering it in a report.
+    gt_ids = set()
+    for line in (gt_path.read_text().splitlines()):
+        if not line.strip():
+            continue
+        g = json.loads(line)
+        gt_ids.add(g.get("id") or f"{g.get('task')}_fig{g.get('figureIndex', 0)}")
+    joined = sum(1 for o in out if o["id"] in gt_ids)
+    print(f"[join]    {joined}/{len(out)} prediction(s) match a GT id")
+    if out and not joined:
+        raise SystemExit(
+            "NO prediction joins the ground truth -- scoring this run would report IoU 0.000 "
+            "for every figure and read as a total detector failure.\n"
+            f"  prediction ids look like: {out[0]['id']}\n"
+            f"  GT ids look like:         {sorted(gt_ids)[:1]}")
     if skipped:
         print(f"\n{len(skipped)} skipped -- reported, never silently dropped:")
         for s in skipped:

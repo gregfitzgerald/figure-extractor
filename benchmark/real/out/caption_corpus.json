@@ -6,12 +6,9 @@
    "id": "form_noun_marker",
    "source": "Baraldi2013 F1",
    "caption": "Figure 1. Novel object recognition at 2 months of age (A), 5 months of age (B), and 12 months of age (C). Data are mean +/- SEM.",
-   "expect": [
-    "a",
-    "b",
-    "c"
-   ],
-   "why": "markers follow a noun, not clause punctuation, so the `placed` test refuses the first one and no run ever anchors"
+   "expect": null,
+   "status": "open",
+   "why": "KNOWN OPEN. Markers follow a noun, not clause punctuation. A relaxed pass that accepted these was tried and REVERTED: it was worth 4.2pp of parse rate and invented panels from twelve classes of ordinary prose, most damagingly the significance-letter convention ('bars with different letters (a-c) differ'), which is ubiquitous in this corpus. Abstaining is safe; inventing a panel count is not, because the count is a hard constraint on the geometry."
   },
   {
    "id": "form_no_open_paren",
@@ -127,12 +124,58 @@
    "id": "ctrl_working_memory",
    "source": "adversarial",
    "caption": "Figure 12. Working memory at 2 months (A), 5 months (B), and 12 months (C).",
-   "expect": [
-    "a",
-    "b",
-    "c"
-   ],
-   "why": "contains the word 'work' but is not reference prose; the citation guard must key on 'earlier/previous/related work', not on 'work'"
+   "expect": null,
+   "status": "open",
+   "why": "KNOWN OPEN, same class as form_noun_marker. Real panels, but the markers attach to a noun rather than to punctuation. Only the reverted relaxed pass read these; abstaining costs coverage and is safe."
+  },
+  {
+   "id": "fp_sig_letters_range",
+   "source": "adversarial",
+   "caption": "Bars with different letters (a-c) indicate significant differences (P < 0.05).",
+   "expect": null,
+   "why": "THE killer class. Tukey/Duncan significance-letter conventions are ubiquitous in animal-study bar charts -- this tool's exact target -- and the letters are also DRAWN in the figure, so the glyph finder corroborates the invention. A one-panel bar chart with this caption was split into 3 'verified' panels at conf 0.79."
+  },
+  {
+   "id": "fp_sig_letters_list",
+   "source": "adversarial",
+   "caption": "Columns with different letters (a, b, c) differ significantly at P < 0.05 (Tukey HSD).",
+   "expect": null,
+   "why": "same convention, list form"
+  },
+  {
+   "id": "fp_sig_upper",
+   "source": "adversarial",
+   "caption": "Different uppercase letters (A-C) denote differences among diets.",
+   "expect": null,
+   "why": "same convention, uppercase range -- one token yields three letters"
+  },
+  {
+   "id": "fp_lane_enum",
+   "source": "adversarial",
+   "caption": "Lane (a) marker, (b) control, (c) treated cells, (d) knockout.",
+   "expect": null,
+   "why": "gel LANES enumerated like panels; a real 4-way enumeration of something that is not panels"
+  },
+  {
+   "id": "fp_hypotheses",
+   "source": "adversarial",
+   "caption": "We tested whether (a) latency increased, (b) amplitude decreased, and (c) speed fell.",
+   "expect": null,
+   "why": "enumerated hypotheses -- prose produces (a)(b)(c) runs routinely"
+  },
+  {
+   "id": "fp_criteria",
+   "source": "adversarial",
+   "caption": "Animals were excluded if (a) they failed the cue test, (b) they were ill, or (c) data were lost.",
+   "expect": null,
+   "why": "enumerated criteria, same shape"
+  },
+  {
+   "id": "fp_citation_multi",
+   "source": "adversarial",
+   "caption": "Reconstruction follows the method of Smith (a), Jones (b), and Lee (c).",
+   "expect": null,
+   "why": "author-letter citations"
   },
   {
    "id": "ctrl_citation_poison",

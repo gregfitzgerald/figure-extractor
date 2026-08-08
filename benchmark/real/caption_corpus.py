@@ -54,9 +54,13 @@ FORMS = [
     {"id": "form_noun_marker", "source": "Baraldi2013 F1",
      "caption": "Figure 1. Novel object recognition at 2 months of age (A), 5 months of age (B), "
                 "and 12 months of age (C). Data are mean +/- SEM.",
-     "expect": ["a", "b", "c"],
-     "why": "markers follow a noun, not clause punctuation, so the `placed` test refuses the "
-            "first one and no run ever anchors"},
+     "expect": None, "status": "open",
+     "why": "KNOWN OPEN. Markers follow a noun, not clause punctuation. A relaxed pass that "
+            "accepted these was tried and REVERTED: it was worth 4.2pp of parse rate and "
+            "invented panels from twelve classes of ordinary prose, most damagingly the "
+            "significance-letter convention ('bars with different letters (a-c) differ'), "
+            "which is ubiquitous in this corpus. Abstaining is safe; inventing a panel count "
+            "is not, because the count is a hard constraint on the geometry."},
     {"id": "form_no_open_paren", "source": "Morgan2018 F7",
      "caption": "Figure 7. Latency to platform in A), Y mice B), M mice, and C) O mice.",
      "expect": None, "status": "open",
@@ -127,9 +131,39 @@ FORMS = [
             "the fix for the false positives would have cost the true positives"},
     {"id": "ctrl_working_memory", "source": "adversarial",
      "caption": "Figure 12. Working memory at 2 months (A), 5 months (B), and 12 months (C).",
-     "expect": ["a", "b", "c"],
-     "why": "contains the word 'work' but is not reference prose; the citation guard must key "
-            "on 'earlier/previous/related work', not on 'work'"},
+     "expect": None, "status": "open",
+     "why": "KNOWN OPEN, same class as form_noun_marker. Real panels, but the markers attach "
+            "to a noun rather than to punctuation. Only the reverted relaxed pass read these; "
+            "abstaining costs coverage and is safe."},
+    # False-positive battery. Every one of these parsed as panels under the reverted relaxed
+    # pass. They are ordinary caption prose, and inventing a panel count from them hands the
+    # geometry a hard constraint that is simply wrong -- strictly worse than abstaining.
+    {"id": "fp_sig_letters_range", "source": "adversarial",
+     "caption": "Bars with different letters (a-c) indicate significant differences (P < 0.05).",
+     "expect": None,
+     "why": "THE killer class. Tukey/Duncan significance-letter conventions are ubiquitous in "
+            "animal-study bar charts -- this tool's exact target -- and the letters are also "
+            "DRAWN in the figure, so the glyph finder corroborates the invention. A one-panel "
+            "bar chart with this caption was split into 3 'verified' panels at conf 0.79."},
+    {"id": "fp_sig_letters_list", "source": "adversarial",
+     "caption": "Columns with different letters (a, b, c) differ significantly at P < 0.05 (Tukey HSD).",
+     "expect": None, "why": "same convention, list form"},
+    {"id": "fp_sig_upper", "source": "adversarial",
+     "caption": "Different uppercase letters (A-C) denote differences among diets.",
+     "expect": None, "why": "same convention, uppercase range -- one token yields three letters"},
+    {"id": "fp_lane_enum", "source": "adversarial",
+     "caption": "Lane (a) marker, (b) control, (c) treated cells, (d) knockout.",
+     "expect": None, "why": "gel LANES enumerated like panels; a real 4-way enumeration of "
+                            "something that is not panels"},
+    {"id": "fp_hypotheses", "source": "adversarial",
+     "caption": "We tested whether (a) latency increased, (b) amplitude decreased, and (c) speed fell.",
+     "expect": None, "why": "enumerated hypotheses -- prose produces (a)(b)(c) runs routinely"},
+    {"id": "fp_criteria", "source": "adversarial",
+     "caption": "Animals were excluded if (a) they failed the cue test, (b) they were ill, or (c) data were lost.",
+     "expect": None, "why": "enumerated criteria, same shape"},
+    {"id": "fp_citation_multi", "source": "adversarial",
+     "caption": "Reconstruction follows the method of Smith (a), Jones (b), and Lee (c).",
+     "expect": None, "why": "author-letter citations"},
     {"id": "ctrl_citation_poison", "source": "synthetic",
      "caption": "Figure 4. As reported previously (A) and in related work (B), performance "
                 "improved. See Smith et al. (2019) for details.",

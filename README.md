@@ -90,7 +90,7 @@ Two things are wrong, and they are worth keeping apart because fixing the first 
 the second -- the first has a clean cause, the second turns out to have several:
 
 - **Reading the caption.** The parser returned nothing for half of real captions. Now measured
-  and substantially fixed (`benchmark/real/caption_corpus.py`): **49.3% -> 57.7%** parse rate,
+  and partly fixed (`benchmark/real/caption_corpus.py`): **49.3% -> 53.5%** parse rate,
   and two *silent undercounts* removed along the way -- a caption reading `(A) ... (A') ...
   (B) ... (B')` used to report two panels for a four-tile figure. Part of that gain came from
   discovering the corpus itself was damaged: 61 of the 71 stored captions are truncated (19 sit
