@@ -94,6 +94,19 @@ FORMS = [
                 "(B') Magnified view.",
      "expect": None,
      "why": "primes make the run non-increasing -> ambiguous -> null"},
+    {"id": "form_run_continuation", "source": "adversarial",
+     "caption": "Figure 4. (A) Body weight. (B) Rectal temperature (C) at baseline and after "
+                "training.",
+     "expect": None, "status": "open",
+     "why": "KNOWN OPEN. A mid-clause token whose letter CONTINUES an already-anchored run "
+            "joins it -- here '(C)' is a temperature unit, not a panel, and the caption reads "
+            "as 3 panels. The run-continuation rule is what lets '(a) Foo (b) Bar' work "
+            "without punctuation before every marker, so tightening it risks the common case. "
+            "Demonstrated harm is COVERAGE, not a wrong number: the inflated count disagrees "
+            "with the geometry, the detector flags panel-count-mismatch and abstains, and "
+            "glyph verification caught it in every probe. Left open deliberately -- one "
+            "over-clever caption change was already reverted tonight for inventing panels, "
+            "and this one would trade a coverage loss for a correctness risk."},
     # Controls: forms the parser already handles. If a change breaks these it is a regression.
     {"id": "ctrl_canonical", "source": "synthetic",
      "caption": "Figure 1. (A) Control group. (B) Running group. (C) Enriched group.",
