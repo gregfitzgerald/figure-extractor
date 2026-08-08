@@ -1809,7 +1809,9 @@ async function readEntries(dir) {
     return out;
 }
 
-async function renderDir(dir, parentEl, depth) {
+// `prefix` accumulates the folder-relative path — it is the stable article identity key
+// (basenames collide across subfolders; see loadPdfDirect).
+async function renderDir(dir, parentEl, depth, prefix = '') {
     for (const { name, handle } of await readEntries(dir)) {
         const row = document.createElement('div');
         row.className = 'tree-row';
@@ -1825,7 +1827,7 @@ async function renderDir(dir, parentEl, depth) {
                 const open = childBox.style.display === 'none';
                 childBox.style.display = open ? 'block' : 'none';
                 row.querySelector('.tree-chevron').textContent = open ? '▾' : '▸';
-                if (open && !loaded) { loaded = true; await renderDir(handle, childBox, depth + 1); }
+                if (open && !loaded) { loaded = true; await renderDir(handle, childBox, depth + 1, prefix + name + '/'); }
             };
             parentEl.appendChild(row);
             parentEl.appendChild(childBox);
@@ -1837,11 +1839,11 @@ async function renderDir(dir, parentEl, depth) {
             row.onclick = () => {
                 document.querySelectorAll('#fileTree .tree-row.active').forEach(r => r.classList.remove('active'));
                 row.classList.add('active');
-                openTreeFile(handle, kind);
+                openTreeFile(handle, kind, prefix + name);
             };
             if (kind === 'pdf') {
                 row.draggable = true;
-                row.addEventListener('dragstart', () => { _dragTreeHandle = handle; });
+                row.addEventListener('dragstart', () => { _dragTreeHandle = { handle, path: prefix + name }; });
                 row.addEventListener('dragend', () => { _dragTreeHandle = null; });
             }
             parentEl.appendChild(row);
@@ -1849,10 +1851,10 @@ async function renderDir(dir, parentEl, depth) {
     }
 }
 
-async function openTreeFile(handle, kind) {
+async function openTreeFile(handle, kind, relPath) {
     if (kind !== 'pdf') return;
     if (!state.projectName) state.projectName = _rootDirHandle ? _rootDirHandle.name : 'Folder';
-    loadPdfDirect(await handle.getFile());  // single-click load, no DPI prompt
+    loadPdfDirect(await handle.getFile(), relPath);  // single-click load, no DPI prompt
 }
 
 // Accept a PDF dropped onto the Article pane (a file from the OS, or a tree row drag).
@@ -1867,8 +1869,8 @@ function setupArticleDrop() {
         // 1) OS file drop
         const f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
         if (f && /\.pdf$/i.test(f.name)) { loadPdfDirect(f); return; }
-        // 2) internal drag from the folder tree (path stashed on _dragTreeHandle)
-        if (_dragTreeHandle) { const h = _dragTreeHandle; _dragTreeHandle = null; loadPdfDirect(await h.getFile()); }
+        // 2) internal drag from the folder tree (handle + folder-relative path stashed)
+        if (_dragTreeHandle) { const d = _dragTreeHandle; _dragTreeHandle = null; loadPdfDirect(await d.handle.getFile(), d.path); }
     });
 }
 let _dragTreeHandle = null;
@@ -2056,7 +2058,8 @@ function handlePdfSelect(e) {
 // Render a PDF File immediately using the default render setting (no prompt) and open it.
 // PDFs load by clicking/dragging them from the folder tree, or dropping a file on the
 // article pane — the DPI is a Settings default, so loading never interrupts with a dialog.
-async function loadPdfDirect(file) {
+// `relPath` is the folder-relative path when the caller knows it (tree click/drag).
+async function loadPdfDirect(file, relPath) {
     if (!file) return;
     if (!window.pdfjsLib) { showToast('PDF.js not loaded'); return; }
     const dpi = settings.dpi === 'original' ? 'original' : (parseInt(settings.dpi) || 'original');
@@ -2064,6 +2067,15 @@ async function loadPdfDirect(file) {
     try {
         showToast('Rendering ' + file.name + '…');
         const va = await buildPdfArticle(file, dpi);
+        // Article name is the identity key for pages, localStorage annotations and export
+        // folders, and basenames collide routinely (reference managers ship dozens of
+        // "Full Text PDF.pdf"). A collision REPLACED the first paper's pages while restoring
+        // its boxes onto the second paper — one paper's pixels under another's caption. Key
+        // by the folder-relative path when we have one (stable and distinct across
+        // subfolders; re-loading the same path still replaces). Otherwise (OS drop, hidden
+        // input) the basename is all we have, so suffix it rather than merging two papers.
+        if (relPath) va.name = relPath.replace(/\.pdf$/i, '');
+        else va.name = uniqueArticleName(va.name);
         addOrReplaceArticle(va);
         if (!state.projectName) {
             state.projectName = 'PDF';
@@ -2211,6 +2223,14 @@ async function buildPdfArticle(file, dpi, onProgress) {
         dpi: repDpi, dpiMode: original ? 'original' : 'fixed'
     };
 }
+// First unused "name", "name_2", "name_3", … — same de-dup scheme uniqueNamer() applies to
+// ZIP entries. Only for loads with no path to key on: never silently merge two articles.
+function uniqueArticleName(name) {
+    if (!state.articles.some(a => a.name === name)) return name;
+    let i = 2;
+    while (state.articles.some(a => a.name === `${name}_${i}`)) i++;
+    return `${name}_${i}`;
+}
 function addOrReplaceArticle(va) {
     const idx = state.articles.findIndex(a => a.name === va.name);
     if (idx >= 0) {
@@ -2272,6 +2292,9 @@ async function renderSelected() {
         try {
             prog.textContent = `Rendering ${done + 1}/${chosen.length}: ${e.name}…`;
             const va = await buildPdfArticle(await e.handle.getFile(), dpi);
+            // Key by the folder-relative path, not the basename: `a/main.pdf` and `b/main.pdf`
+            // collapsed into ONE article while the toast still claimed it rendered both.
+            va.name = e.path.replace(/\.pdf$/i, '');
             addOrReplaceArticle(va);
             done++;
         } catch (err) { console.warn('[batch] failed', e.path, err); }
