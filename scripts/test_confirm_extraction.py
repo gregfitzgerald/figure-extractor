@@ -109,6 +109,53 @@ async def run(pdf):
                 direction: 1, nSource: 'caption' }})""")
         assert applied.get("success"), f"extraction failed: {applied}"
 
+        # A REFUSED extraction must not leave the characterization rewritten -- and this must
+        # be driven through the REAL dcSave handler, because that is where the two-step lives.
+        # dcSave commits setCharacterization and THEN runs the extraction, so a multi-panel
+        # refusal (the case the guard exists for) used to overwrite panels[0] with a charType,
+        # dispersion and extractionPlan the tool had just declined to act on. The user sees an
+        # error and reasonably assumes nothing happened. Calling runExtraction directly does
+        # NOT exercise this -- an earlier version of this test did, and passed with the fix
+        # removed.
+        fidM = (await pg.evaluate("() => window.figureExtractor.addFigure(1, "
+                                  "{x:80,y:640,width:180,height:100}, 'Figure M')"))["figureId"]
+        await pg.evaluate(f"""() => window.figureExtractor.setCharacterization('{fidM}', null,
+            {{panels:[{{charType:'scatter', dataProvenance:'primary',
+              statistics:{{dispersion:{{present:false, type:'none'}}}},
+              extractionPlan:{{method:'digitize_points'}}}},
+             {{charType:'scatter'}}]}})""")
+        await pg.evaluate(
+            "([fid,cal,vals,pts]) => window.figureExtractor.setDigitization(fid, null, "
+            "{cal, vals, points: pts, series:[{name:'pts'}]})", [fidM, cal, vals, pts])
+        pre = await pg.evaluate(
+            f"() => window.figureExtractor.getCharacterization('{fidM}', null)")
+        # Point the digitizer at this figure and drive the real Confirm button.
+        await pg.evaluate(f"""() => {{
+            const f = state.figures.find(x => x.id === '{fidM}');
+            dig.target = f; dig.figId = '{fidM}'; dig.subId = null;
+            dig.series = [{{name:'pts', color:'#000'}}];
+            document.getElementById('dcChartType').value = 'bar';
+            document.getElementById('dcDispersion').value = 'SEM';
+        }}""")
+        # The modal must be visible for a real click; open it the way the UI does.
+        await pg.evaluate("() => document.getElementById('digConfirmModal')"
+                          ".classList.add('visible')")
+        # Invoke the real handler. A CSS click is intercepted by the modal overlay in
+        # headless layout; what matters is that dcSave's own onclick runs, not the
+        # pointer path -- the defect is in the handler.
+        await pg.evaluate("() => document.getElementById('dcSave').onclick()")
+        await pg.wait_for_timeout(400)
+        post = await pg.evaluate(
+            f"() => window.figureExtractor.getCharacterization('{fidM}', null)")
+        assert post == pre, ("dcSave mutated the characterization despite a refused "
+                             f"extraction:\n  before {pre}\n  after  {post}")
+        assert not await pg.evaluate(
+            f"() => !!(state.figures.find(x=>x.id==='{fidM}')||{{}}).extraction"), \
+            "a refused extraction was stored anyway"
+        await pg.evaluate("() => document.getElementById('digConfirmModal')"
+                          ".classList.remove('visible')")   # else it blocks Export
+        await pg.evaluate(f"() => window.figureExtractor.deleteFigure('{fidM}')")
+
         rows = await pg.evaluate("() => window.figureExtractor.getFigureDerivedRows()")
         assert rows, "no authoritative rows after confirming an extraction"
         assert all(r["figure_derived"] is True for r in rows), f"provenance lost: {rows[:1]}"

@@ -1619,16 +1619,37 @@ document.addEventListener('DOMContentLoaded', () => {
         // "unknown" is an answer, not a gap: it must reach R's CSV as a flag, never become a guess.
         if (dispType === 'unknown') flags.add('dispersion-type-uncertain');
         char.flags = [...flags];
-        const set = window.figureExtractor.setCharacterization(dig.figId, dig.subId, char);
-        if (!set.success) { showToast('Invalid characterization: ' + set.errors[0]); return; }
-        const dirV = document.getElementById('dcDirection').value;
-        const nV = document.getElementById('dcN').value;
-        const res = window.figureExtractor.runExtraction(dig.figId, dig.subId, {
-            direction: dirV === '' ? null : +dirV,
-            n: nV === '' ? null : +nV,
-            nSource: document.getElementById('dcNSource').value.trim() || null,
-        });
-        if (!res.success) { showToast(res.error); return; }
+        // ATOMIC. The characterization is committed only if the extraction is then accepted.
+        // Committing first meant a REFUSED extraction still rewrote the stored
+        // characterization -- on a multi-panel figure the refusal is the whole point, and it
+        // left panels[0] with a charType, a dispersion and an extractionPlan the tool had
+        // just declined to act on, silently overwriting whatever an agent had recorded. The
+        // user sees an error and assumes nothing happened. Snapshot, then roll back.
+        // Both calls THROW when the target is gone (deleting the figure with this modal open),
+        // so the whole sequence is guarded rather than left to strand the dialog.
+        const before = t.characterization
+            ? JSON.parse(JSON.stringify(t.characterization)) : null;
+        let set, res;
+        try {
+            set = window.figureExtractor.setCharacterization(dig.figId, dig.subId, char);
+            if (!set.success) { showToast('Invalid characterization: ' + set.errors[0]); return; }
+            const dirV = document.getElementById('dcDirection').value;
+            const nV = document.getElementById('dcN').value;
+            res = window.figureExtractor.runExtraction(dig.figId, dig.subId, {
+                direction: dirV === '' ? null : +dirV,
+                n: nV === '' ? null : +nV,
+                nSource: document.getElementById('dcNSource').value.trim() || null,
+            });
+        } catch (e) {
+            digConfirmModal.classList.remove('visible');
+            showToast('Cannot confirm: ' + ((e && e.message) || e));
+            return;
+        }
+        if (!res.success) {
+            commit(() => { t.characterization = before; });   // undo the accepted-then-refused write
+            showToast(res.error);
+            return;
+        }
         digConfirmModal.classList.remove('visible');
         showToast('Extraction confirmed — figure-derived-landmarks.csv will be in the export');
     };
