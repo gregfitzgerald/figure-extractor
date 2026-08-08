@@ -8,7 +8,7 @@ suite for the META layer (numbers verified with the already-built `convert`/`ext
 **Input:** Article reports BDNF in Fig 2A, one running vs sedentary bar pair, mean ± SEM,
 n=10/group in Methods (running 32.4±3.1, sedentary 24.1±2.8 pg/mg, SEM).
 **Expected:** 1 screening record (included); **1 study**. Arms carry `dispersionType:"SEM"`,
-`sd = SEM·√n` (running 9.80, sedentary 8.85). `effect.measure="SMD"`, g ≈ 0.851 (0.8886 is Cohen's d before the Hedges J correction), var ≈ 0.21.
+`sd = SEM·√n` (running 9.80, sedentary 8.85). `effect.measure="SMD"`, g = 0.851, var = 0.218, se = 0.467 (metafor escalc; 0.8886 is Cohen's d before the Hedges J correction).
 `provenance.source="figure"`, `reviewStatus:"needs-review"`. clusterId = articleId.
 
 ## TC2 — Multiple studies per article, SHARED control  (the article≠study case)

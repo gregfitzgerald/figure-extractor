@@ -179,6 +179,30 @@ def resolve_adjudicate_ta(st):
         for pmid, dec in bad:
             print(f"   {pmid}: {dec!r}")
         return
+
+    # Validate the RESULTING DATA, not only the checkpoint text. Checking the parsed decisions
+    # catches a typo but not the three ways a record can go unmentioned: an emptied
+    # `DECISION:` field (the parser drops it), a deleted worksheet section, or a bad decision
+    # that arrived through `screen.py aggregate` rather than through this gate. In every one
+    # of those the gate reported success while an article stayed `unsure` or carried a value
+    # in no PRISMA bucket -- i.e. silently dropped out of the review. A systematic review must
+    # not be able to lose an article to an edit.
+    _scr = json.loads((D / "screening" / "screening.json").read_text())
+    _by = {r["pmid"]: r for r in _scr["records"]}
+    _after = dict(_by)
+    for pmid, dec, *_ in decisions:
+        if pmid in _after:
+            _after[pmid] = {**_after[pmid], "decision": dec}
+    stranded = sorted(p for p, r in _after.items() if r.get("decision") not in ALLOWED)
+    if stranded:
+        print(f"REFUSED: after applying this checkpoint, {len(stranded)} record(s) would "
+              f"still hold a decision outside {sorted(ALLOWED)} — they would belong to no "
+              f"PRISMA bucket and drop silently out of the review:")
+        for pmid in stranded[:20]:
+            print(f"   {pmid}: {_after[pmid].get('decision')!r}")
+        if len(stranded) > 20:
+            print(f"   ... and {len(stranded) - 20} more")
+        return
     scr = json.loads((D / "screening" / "screening.json").read_text())
     by = {r["pmid"]: r for r in scr["records"]}
     changed = 0

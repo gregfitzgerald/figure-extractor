@@ -35,8 +35,8 @@ schema makes that structural, and carries the article id on every study so depen
         "control":      { "label": "sedentary", "n": 10, "mean": 24.1,
                           "dispersion": 2.8, "dispersionType": "SEM", "sd": 8.85 }
       },
-      "effect": { "measure": "SMD", "value": 0.851, "variance": 0.213, "se": 0.462,
-                  "ci95": [-0.03, 1.79], "direction": "higher = exercise increases BDNF" },
+      "effect": { "measure": "SMD", "value": 0.851, "variance": 0.218, "se": 0.467,
+                  "ci95": [-0.064, 1.766], "direction": "higher = exercise increases BDNF" },
       "provenance": {
         "source": "figure",                       // figure | table | text
         "articlePage": 6, "figureRef": "Fig 3B",

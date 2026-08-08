@@ -91,12 +91,25 @@ def efetch(pmids):
 
 def main():
     ids, total = esearch(QUERY)
-    print(f"esearch: {total} total hits; fetched {len(ids)} id(s)")
-    if len(ids) < total:
-        # Never leave a partial corpus looking complete -- that is how the era bias hid.
+    uniq = list(dict.fromkeys(ids))          # order-preserving de-dup
+    print(f"esearch: {total} total hits; fetched {len(uniq)} unique id(s) "
+          f"({len(ids) - len(uniq)} duplicate(s))")
+    # Guard on UNIQUE ids, and refuse a zero result. Counting raw ids let a result set that
+    # shifted between pages re-serve the same record and mask a genuine gap: 204 fetched, 202
+    # unique, guard satisfied, two of the OLDEST studies missing -- the same era bias the cap
+    # produced. And a transient e-utils failure returns Count=0 with no idlist, which would
+    # otherwise write an EMPTY corpus over candidates.json and mark it complete.
+    if total == 0 or not uniq:
         raise SystemExit(
-            f"esearch returned {len(ids)} of {total} hits. A partial corpus is a silent "
-            "selection bias (esearch is most-recent-first, so the loss is by era). Re-run.")
+            "esearch returned no results (Count=0). That is far more likely a transient "
+            "e-utils failure than a real empty search; refusing to overwrite the corpus.")
+    if len(uniq) < total:
+        raise SystemExit(
+            f"esearch returned {len(uniq)} unique of {total} hits. A partial corpus is a "
+            "silent selection bias -- esearch is most-recent-first, so the loss is by era. "
+            "Re-run; if it persists the result set is shifting under pagination and this "
+            "should move to usehistory=y / WebEnv.")
+    ids = uniq
     records, B = [], 20
     for i in range(0, len(ids), B):
         records += efetch(ids[i:i + B]); time.sleep(0.4)

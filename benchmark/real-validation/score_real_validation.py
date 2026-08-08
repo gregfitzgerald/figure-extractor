@@ -681,10 +681,60 @@ def load_gt(directory=GT_DIR):
     for ann in sorted(directory.rglob("annotations.json")):
         try:
             for rec in normalize_annotations(json.loads(ann.read_text())):
-                out.setdefault(rec["id"], rec)
+                if rec["id"] in out:
+                    _merge_gt(out[rec["id"]], rec)
+                else:
+                    out[rec["id"]] = rec
         except Exception as e:
             print(f"  [warn] unreadable annotations.json {ann}: {e}", file=sys.stderr)
     return out
+
+
+# Semantic fields that only the Stage-B coding forms produce. panels_gt.jsonl is geometry
+# only, so these exist on the annotations.json view alone.
+_GT_SEMANTIC = ("chartType", "dispersionType", "dispersionFlags", "landmarks", "groups",
+                "calibration", "series", "scale", "unit", "direction", "n", "nSource",
+                "dataProvenance", "flags", "cueType", "contentType")
+
+
+def _merge_gt(base, extra):
+    """MERGE the two views of one figure instead of letting either shadow the other.
+
+    A session yields the same figure twice: `panels_gt.jsonl` in PAGE coordinates carrying
+    geometry only, and the sealed `annotations.json` in figure-local coordinates carrying
+    everything Stage B learned -- chart type, dispersion type, landmarks. They used to have
+    different ids, which produced a phantom record; keying them alike fixed that but then let
+    the geometry-only record WIN, so Tier E scored `chartType: None` for every panel and the
+    report announced "chart-type accuracy 0.0% -- DOES NOT TRANSFER" from ground truth whose
+    classifications had been silently discarded. A confident zero from a metric that never ran
+    is worse than a missing number.
+
+    Geometry stays with the page-coordinate record (it is the one predictions are compared
+    against); semantics are taken from the annotations view, per panel, matched on label and
+    falling back to position. Only absent fields are filled -- nothing already present is
+    overwritten.
+    """
+    for k, v in (extra or {}).items():
+        if k in ("id", "panels", "_source"):
+            continue
+        if base.get(k) in (None, "", [], {}):
+            base[k] = v
+    bp, ep = base.get("panels") or [], extra.get("panels") or []
+    by_label = {}
+    for p in ep:
+        lab = str(p.get("label") or "").strip().upper()
+        if lab:
+            by_label.setdefault(lab, p)
+    for i, p in enumerate(bp):
+        lab = str(p.get("label") or "").strip().upper()
+        src = by_label.get(lab) or (ep[i] if i < len(ep) else None)
+        if not src:
+            continue
+        for k in _GT_SEMANTIC:
+            if p.get(k) in (None, "", [], {}) and src.get(k) not in (None, "", [], {}):
+                p[k] = src[k]
+    base["_source"] = "panels_gt+annotations"
+    return base
 
 
 def _trailing_letter(label):

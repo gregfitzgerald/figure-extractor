@@ -1629,6 +1629,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // so the whole sequence is guarded rather than left to strand the dialog.
         const before = t.characterization
             ? JSON.parse(JSON.stringify(t.characterization)) : null;
+        const histBefore = state.history.length;
         let set, res;
         try {
             set = window.figureExtractor.setCharacterization(dig.figId, dig.subId, char);
@@ -1646,7 +1647,18 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (!res.success) {
-            commit(() => { t.characterization = before; });   // undo the accepted-then-refused write
+            // Roll back by DISCARDING the history entry setCharacterization pushed, not by
+            // committing a counter-mutation. A counter-mutation pushes a SECOND entry, so one
+            // Ctrl+Z -- the natural reflex after an error toast -- lands on the state between
+            // them, silently reinstating the write the tool had just refused and persisting it
+            // to localStorage, from where it ships in the next export. The refused save must
+            // leave no trace in the undo stack at all.
+            t.characterization = before;
+            state.history = state.history.slice(0, histBefore);
+            state.historyIndex = state.history.length - 1;
+            saveAnnotations();
+            renderAnnotations();
+            renderFiguresPane();
             showToast(res.error);
             return;
         }

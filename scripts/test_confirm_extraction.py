@@ -152,6 +152,22 @@ async def run(pdf):
         assert not await pg.evaluate(
             f"() => !!(state.figures.find(x=>x.id==='{fidM}')||{{}}).extraction"), \
             "a refused extraction was stored anyway"
+        # ...and it must leave NO trace in the undo stack. Rolling back by committing a
+        # counter-mutation pushed a second history entry, so one Ctrl+Z -- the reflex after an
+        # error toast -- landed between them and silently reinstated the refused write, which
+        # then persisted to localStorage and would ship in the next export.
+        await pg.keyboard.press("Control+z")
+        await pg.wait_for_timeout(300)
+        after_undo = await pg.evaluate(
+            f"() => window.figureExtractor.getCharacterization('{fidM}', null)")
+        assert after_undo == pre, ("one undo resurrected the refused characterization:\n"
+                                   f"  expected {pre}\n  got      {after_undo}")
+        stored = await pg.evaluate(f"""() => {{
+            const d = JSON.parse(localStorage.getItem('figext_' + state.currentArticle) || '{{}}');
+            const f = (d.figures || []).find(x => x.id === '{fidM}');
+            return f ? f.characterization : null; }}""")
+        if stored is not None:
+            assert stored == pre, f"the refused write persisted to localStorage: {stored}"
         await pg.evaluate("() => document.getElementById('digConfirmModal')"
                           ".classList.remove('visible')")   # else it blocks Export
         await pg.evaluate(f"() => window.figureExtractor.deleteFigure('{fidM}')")
