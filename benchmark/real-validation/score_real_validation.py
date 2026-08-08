@@ -14,7 +14,7 @@ Implements ANALYSIS-PLAN.md. Three tiers, one report:
 The measurement problem this file exists to handle correctly
 ------------------------------------------------------------
 On a real journal figure nobody knows the true SD. Greg's clicks carry ~1px jitter,
-which is 0.44% on a bar top and 4.15% median / 37.3% worst on an SEM cap. So a naive
+which is 0.44% on a bar top and 3.89% median / 27.7% worst on an SEM cap. So a naive
 "machine vs human" dispersion number is the DISAGREEMENT OF TWO IMPRECISE READERS,
 not machine accuracy.
 
@@ -1274,7 +1274,7 @@ def dispersion_analysis(lrows, crows, repeat_pairs):
         "medianCI": cb_median(naive_rows, lambda r: r["dispPct"]),
         "medianCI_iid": median_ci(naive),
         "_WARNING": "TWO-READER DISAGREEMENT, NOT MACHINE ACCURACY. "
-                    "Greg's own 1px jitter is 4.15% median / 37.3% worst on this channel.",
+                    "Greg's own 1px jitter is 3.89% median / 27.7% worst on this channel.",
     }
     central_rows = [r for r in lrows if r["centralPct"] is not NA]
     central = [r["centralPct"] for r in central_rows]
@@ -1757,8 +1757,8 @@ def report(res, run, split_filter, out=sys.stdout):
     p("  Accuracy claims on the DISPERSION channel are made ONLY against an oracle:")
     p("  the synthetic benchmark (R's exact descriptives), or the text-anchored real")
     p("  stratum where the paper prints the number. Everything else on that channel is")
-    p("  AGREEMENT between imprecise readers. Greg's own click jitter is 4.15% median /")
-    p("  37.3% worst on dispersion vs 0.44% on central tendency; a naive machine-vs-human")
+    p("  AGREEMENT between imprecise readers. Greg's own click jitter is 3.89% median /")
+    p("  27.7% worst on dispersion vs 0.44% on central tendency; a naive machine-vs-human")
     p("  dispersion number attributes that jitter to the machine.")
     p("")
 

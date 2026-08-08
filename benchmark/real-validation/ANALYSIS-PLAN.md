@@ -37,7 +37,7 @@ stratum-by-stratum, plus an honest statement of which Deltas the sample can actu
 ### 1.1 The problem
 
 Greg's clicks carry ~1 px jitter. Measured on synthetic data where R's exact descriptives are
-known, that jitter produces **4.15% median / 37.3% worst** error on the dispersion channel
+known, that jitter produces **3.89% median / 27.7% worst** error on the dispersion channel
 against **0.44% median** on central tendency. The asymmetry is structural, not a skill issue:
 a bar top is a long pixel distance from the axis, an SEM cap is a short one, so the same
 1 px converts into ~10x the relative error.
@@ -1963,6 +1963,24 @@ it shows the correction was local rather than understood. The addendum predates 
 by hours and was simply missed by it; the claims removed here are the same claims A2
 withdrew, for the same algebraic reason.
 
+
+### A20 -- the quoted click-jitter figures are corrected. 2026-08-08.
+
+**What changed.** The 1 px human-jitter figures quoted in section 1 and echoed in six places
+in `score_real_validation.py` move from **4.15% median / 37.3% worst** to **3.89% / 27.7%** on
+the dispersion channel. Central tendency is unchanged at 0.44%.
+
+**Why.** The old numbers were not reproducible. `benchmark/harness/score.py` seeded its jitter
+simulation on Python's `hash()` of a string, and CPython salts string hashing per process, so
+the published table changed on every run -- while the docstring four lines above promised
+"seeded per chart for reproducibility". Seeding now uses `crc32` and the table regenerates
+byte-identically. The medians barely moved; the WORST column was the part that was noise.
+
+**Scope.** This is a factual correction, not a change of criterion. The figures appear only in
+narrative and in the scorer's printed warnings; grep confirms no gate, threshold or computation
+reads them, and `R_floor` is unaffected. The asymmetry the passage exists to make -- roughly 9x
+more error on the dispersion channel than on central tendency -- is unchanged and if anything
+cleaner. Logged because a pre-registration whose numbers move silently is not one.
 ---
 
 ### Second-rater amendments (owned by `SECOND-RATER-PROTOCOL.md`, logged here)

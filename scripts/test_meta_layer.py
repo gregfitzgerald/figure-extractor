@@ -206,6 +206,139 @@ async def run(pdf_path):
           "no effect-size math, multi-panel guard, landmarks export, calibration log-review flag)")
 
 
+async def run_confirm_ui(pdf_path):
+    """The UI path to the landmarks CSV, end to end with REAL mouse events.
+
+    Before the "3. Confirm extraction" step existed, `t.extraction` was assigned in exactly
+    two API-only places, so a human who loaded a PDF, drew a figure, calibrated both axes,
+    placed points and clicked Export got a ZIP whose README described a
+    figure-derived-landmarks.csv the archive did not contain. This drives the whole loop by
+    mouse: draw -> digitize -> calibrate -> place points -> confirm (chart type + dispersion
+    "unknown", which must surface as a dispersion-type-uncertain flag, never a guess) ->
+    export -> assert the 29-column CSV and its values.
+    """
+    from playwright.async_api import async_playwright
+    errors = []
+    async with async_playwright() as pw:
+        browser = await pw.chromium.launch()
+        ctx = await browser.new_context(accept_downloads=True)
+        pg = await ctx.new_page()
+        pg.on("console", lambda m: errors.append(m.text) if m.type == "error" else None)
+        pg.on("pageerror", lambda e: errors.append("PAGEERROR: " + str(e)))
+        await pg.goto(TOOL)
+
+        buf = pathlib.Path(pdf_path).read_bytes()
+        await pg.evaluate("() => { settings.dpi = '150'; }")
+        await pg.set_input_files("#pdfInput", files=[{"name": "m.pdf", "mimeType": "application/pdf", "buffer": buf}])
+        for _ in range(80):
+            if await pg.evaluate("() => window.figureExtractor.isReady().articleLoaded"):
+                break
+            await pg.wait_for_timeout(250)
+        assert await pg.evaluate("() => window.figureExtractor.isReady().articleLoaded"), "article never loaded"
+
+        # --- draw a figure with the mouse over the chart rectangle ---
+        await pg.evaluate("() => state.pages.find(p=>p.pageNum===1).wrapper.scrollIntoView()")
+        await pg.wait_for_timeout(150)
+        ov = await pg.evaluate("""() => { const r = state.pages.find(p=>p.pageNum===1).overlay.getBoundingClientRect();
+            return {x:r.x, y:r.y, w:r.width, h:r.height}; }""")
+        x0, y0 = ov["x"] + ov["w"] * 0.15, ov["y"] + ov["h"] * 0.12
+        x1, y1 = ov["x"] + ov["w"] * 0.80, ov["y"] + ov["h"] * 0.52
+        await pg.mouse.move(x0, y0)
+        await pg.mouse.down()
+        await pg.mouse.move(x1, y1, steps=10)
+        await pg.mouse.up()
+        await pg.wait_for_timeout(200)
+        figs = await pg.evaluate("() => window.figureExtractor.getState().figures")
+        assert len(figs) == 1, f"mouse draw did not create a figure: {len(figs)}"
+        fid = figs[0]["id"]
+
+        # --- open the digitizer from the figure card ---
+        await pg.click("#figuresScroll button:has-text('Digitize')")
+        await pg.wait_for_timeout(150)
+        assert await pg.evaluate("() => document.getElementById('digitizerModal').classList.contains('visible')"), \
+            "digitizer did not open"
+
+        # --- calibrate: 4 reference clicks on the canvas, then the 4 values ---
+        await pg.click("#digAxesBtn")
+        k = await pg.evaluate("() => dig.scale * dig.view.zoom")
+        cr = await pg.evaluate("""() => { const r = document.getElementById('digCanvas').getBoundingClientRect();
+            return {x:r.x, y:r.y}; }""")
+        # crop-pixel positions: X refs 200px apart, Y refs 200px apart (no short-baseline flag)
+        refs = [(30, 260), (230, 260), (30, 260), (30, 60)]  # x1, x2, y1, y2
+        for px, py in refs:
+            await pg.mouse.click(cr["x"] + px * k, cr["y"] + py * k)
+        for sel, val in (("#digX1", "0"), ("#digX2", "10"), ("#digY1", "0"), ("#digY2", "100")):
+            await pg.fill(sel, val)
+        # x = (px-30)/20; y = (260-py)/2 in data units
+
+        # --- place two data points with the mouse ---
+        await pg.click("#digPointsBtn")
+        for px, py in ((130, 160), (180, 110)):     # -> (5,50) and (7.5,75)
+            await pg.mouse.click(cr["x"] + px * k, cr["y"] + py * k)
+        npts = await pg.evaluate("() => dig.points.length")
+        assert npts == 2, f"expected 2 digitized points, got {npts}"
+
+        # --- confirm: the human declarations, then the shared runExtraction path ---
+        await pg.click("#digConfirmBtn")
+        assert await pg.evaluate("() => document.getElementById('digConfirmModal').classList.contains('visible')"), \
+            "confirm modal did not open"
+        # the form must default to a NON-answer for the declarations
+        assert await pg.evaluate("() => document.getElementById('dcChartType').value") == "", "chartType pre-guessed"
+        assert await pg.evaluate("() => document.getElementById('dcDispersion').value") == "", "dispersion pre-guessed"
+        # refusing to answer must refuse to confirm
+        await pg.click("#dcSave")
+        assert await pg.evaluate(f"() => window.figureExtractor.getExtraction('{fid}', null)") is None, \
+            "extraction produced without the required declarations"
+        await pg.select_option("#dcChartType", "scatter")
+        await pg.select_option("#dcDispersion", "unknown")
+        await pg.select_option("#dcDirection", "-1")
+        await pg.fill("#dcN", "12")
+        await pg.fill("#dcNSource", "caption")
+        await pg.click("#dcSave")
+        await pg.wait_for_timeout(100)
+        e = await pg.evaluate(f"() => window.figureExtractor.getExtraction('{fid}', null)")
+        assert e, "confirm did not produce an extraction"
+        assert e["method"] == "digitize_points" and len(e["points"]) == 2, f"extraction shape: {e}"
+        assert "dispersion-type-uncertain" in e["flags"], f"'unknown' did not flag (silent guess): {e['flags']}"
+        assert e["direction"] == -1 and e["nSource"] == "caption" and e["n"] == 12, f"declared fields lost: {e}"
+        assert e["figure_derived"] is True and e["Data_Source"] == "figure", f"provenance stamp missing: {e}"
+        await pg.click("#digCloseBtn")
+
+        # --- export and verify the CSV a human's session now actually ships ---
+        async with pg.expect_download() as di:
+            await pg.click("#exportBtn")
+        dl = await di.value
+        import csv as csvmod
+        import io
+        import zipfile
+        z = zipfile.ZipFile(await dl.path())
+        names = z.namelist()
+        assert "figure-derived-landmarks.csv" in names, f"UI-only session still exports no landmarks CSV: {names}"
+        rows = list(csvmod.reader(io.StringIO(z.read("figure-derived-landmarks.csv").decode())))
+        header, data = rows[0], rows[1:]
+        assert len(header) == 29, f"expected 29 columns, got {len(header)}: {header}"
+        assert len(data) == 2 and all(len(r) == 29 for r in data), f"row shape: {data}"
+        r0 = dict(zip(header, data[0])); r1 = dict(zip(header, data[1]))
+        assert r0["chartType"] == "scatter" and r0["landmarkKind"] == "point", f"row kind: {r0}"
+        assert abs(float(r0["x"]) - 5) < 0.2 and abs(float(r0["y"]) - 50) < 0.5, f"point 1 off: {r0['x']},{r0['y']}"
+        assert abs(float(r1["x"]) - 7.5) < 0.2 and abs(float(r1["y"]) - 75) < 0.5, f"point 2 off: {r1['x']},{r1['y']}"
+        for r in (r0, r1):
+            assert r["dispersionType"] == "unknown", f"declared dispersion answer lost: {r}"
+            assert "dispersion-type-uncertain" in r["flags"], f"uncertainty flag not in CSV: {r}"
+            assert r["direction"] == "-1" and r["nSource"] == "caption" and r["n"] == "12", f"declarations lost: {r}"
+            assert r["figure_derived"] == "true" and r["Data_Source"] == "figure" \
+                and r["Data_Extraction_Method"] == "figure-extractor", f"provenance: {r}"
+        # ...and the bundled README now tells the truth about the file being present
+        readme = z.read("README.md").decode()
+        assert "figure-derived-landmarks.csv" in readme and "NO `figure-derived-landmarks.csv`" not in readme, \
+            "ZIP README does not describe the landmarks CSV it contains"
+
+        assert not errors, f"console errors: {errors}"
+        await browser.close()
+    print("test_meta_layer: PASS (confirm-extraction UI: mouse-drawn figure, mouse calibration+points, "
+          "required declarations, unknown->flag, 29-column landmarks CSV in export, truthful README)")
+
+
 def main():
     try:
         import fitz  # noqa: F401
@@ -218,6 +351,7 @@ def main():
         make_pdf(pdf)
         try:
             asyncio.run(run(pdf))
+            asyncio.run(run_confirm_ui(pdf))
         except Exception as e:
             print(f"test_meta_layer: FAIL ({e})")
             return 1

@@ -100,6 +100,24 @@ async def run(pdf_path):
         assert mism["success"] is False and any("legendOrder" in e for e in mism["errors"]), \
             f"legend/plot order mismatch accepted silently: {mism}"
 
+        # ---- legendOrder/plotOrder of DIFFERENT lengths: the worst contradiction
+        # Both validators required `.length ===` before comparing, so the MOST contradictory
+        # report (the counts themselves disagree) was the only one that passed unflagged.
+        mlen = await ev(f"() => window.figureExtractor.setCharacterization('{fid}', null, "
+                        "{panels:[{charType:'bar', series:[{id:'a',label:'A'},{id:'b',label:'B'}], "
+                        "legendOrder:['a','b','c'], plotOrder:['b','a']}]})")
+        assert mlen["success"] is False and any("length" in e for e in mlen["errors"]), \
+            f"length-mismatched legendOrder/plotOrder accepted silently: {mlen}"
+        mlen_ok = await ev(f"() => window.figureExtractor.setCharacterization('{fid}', null, "
+                           "{panels:[{charType:'bar', series:[{id:'a',label:'A'},{id:'b',label:'B'}], "
+                           "legendOrder:['a','b','c'], plotOrder:['b','a']}], "
+                           "flags:['legend-order-mismatch','series-count-uncertain']})")
+        assert mlen_ok["success"] is True, f"declared length mismatch rejected: {mlen_ok}"
+        vs_len = await ev(f"() => window.figureExtractor.validateSeries('{fid}', null)")
+        assert vs_len["ok"] is False, f"validateSeries passed a length mismatch: {vs_len}"
+        for fl in ("legend-order-mismatch", "series-count-uncertain"):
+            assert fl in vs_len["flags"], f"validateSeries missed {fl} on length mismatch: {vs_len}"
+
         # ---- deterministic guards for the B4 gate ---------------------------
         await ev(f"() => window.figureExtractor.setCharacterization('{fid}', null, "
                  "{panels:[{charType:'bar', seriesCount:3, series:["
