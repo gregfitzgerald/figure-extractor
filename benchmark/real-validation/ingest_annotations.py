@@ -33,6 +33,7 @@ import json
 import math
 import pathlib
 import re
+import shutil
 import statistics
 import sys
 
@@ -384,7 +385,22 @@ def cmd_ingest(args):
     vocab = rv.load_vocab()
     header = rv.load_landmark_header()
     chart_method = rv.load_chart_method()
-    keyfile = rv.read_json(rv.KEYS / "plan.key.json") or {"sessions": []}
+    keyfile = rv.read_json(rv.KEYS / "plan.key.json")
+    if not keyfile:
+        # REFUSE rather than degrade. Without the sealed key every panel row falls back to the
+        # anon id for `article` and has no `figureNumber`, which silently reinstates two bugs
+        # fixed tonight: `split_of` hashes anonymisation noise (so --split-filter lock drops a
+        # third of the GT at random and the cluster bootstrap clusters the wrong thing), and
+        # the machine-vs-hand-coded join goes dead. keys/ is gitignored, so this is exactly
+        # what a fresh checkout or another machine hits -- and the failure is invisible in the
+        # output. Better to stop and say which file is missing.
+        raise SystemExit(
+            f"no sealed key at {rv.KEYS / 'plan.key.json'}.\n"
+            "It carries the anon -> article mapping, without which the GT store cannot record "
+            "real article names or figure numbers: the dev/lock split would hash anonymisation "
+            "noise and the coded-reference join would match nothing, both silently. keys/ is "
+            "gitignored by design, so restore it from the machine that ran "
+            "`prepare_session.py plan`.")
     keyed = {}
     for s in keyfile["sessions"]:
         for it in s["items"]:
@@ -550,6 +566,19 @@ def cmd_ingest(args):
 
     gdir = rv.GT / session
     gdir.mkdir(parents=True, exist_ok=True)
+
+    # Remove per-item directories this ingest is not about to rewrite. A withdrawn or renamed
+    # item left its old `<aid>/annotations.json` behind, and `load_gt` walks the tree with
+    # rglob -- so the orphan was still loaded, in figure-local coordinates, with the anon id
+    # standing in for the article, joinable to nothing. It quietly diluted Tier D and Tier P.
+    # Reported, never silently swept: a directory disappearing from the ground-truth store is
+    # exactly the kind of thing that should be visible in the log.
+    live = set(stage_a_raw)
+    stale = [d for d in gdir.iterdir()
+             if d.is_dir() and d.name not in live]
+    for d in stale:
+        shutil.rmtree(d, ignore_errors=True)
+        print(f"  [stale] removed {d.relative_to(rv.DATA)} -- not in this session's manifest")
 
     # ---- Assemble: one annotations.json per FIGURE, panels as subfigures ----
     # This is the tool's own model (a panel IS a subfigure) rather than one file per
