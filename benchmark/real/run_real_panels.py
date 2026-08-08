@@ -120,7 +120,9 @@ def main():
     # letter count is a HARD CONSTRAINT on the geometry, so a truncated caption hands the
     # detector a short panel count and the split is then wrong -- or refused -- for a reason
     # that has nothing to do with the figure. Measured over the same 71 figures, full captions
-    # lift the parse rate 54.9% -> 57.7% and recover panels on 4 of them.
+    # recover panels on 4 of them. The live parse rate is 53.5% (caption_corpus.py --score);
+    # it was briefly higher under a relaxed pass that has since been reverted for
+    # inventing panels out of prose.
     # Regenerate the sidecar with `python3 refetch_captions.py`.
     full = HERE / "out" / "captions_full.json"
     if full.exists():

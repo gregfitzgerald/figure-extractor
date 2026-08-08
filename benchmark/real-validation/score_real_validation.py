@@ -994,6 +994,15 @@ def score_detection(gt, pred):
     gbox, pbox = as_box(d_gt.get("figureBbox")), as_box(d_pr.get("figureBbox"))
     if gbox is None:
         return None
+    # A run that does not ATTEMPT figure detection is not a run that failed at it. Panel-only
+    # predictors -- predict_panels.py is the main one -- are handed the human's figure box by
+    # design, so they emit no `detection.figureBbox`. Scoring that absence as IoU 0.0 printed
+    # "figure-bbox IoU median 0.000, recall 0.0%" for a tier the run never entered, which reads
+    # as a total detector failure and is exactly the confident-zero class this file keeps
+    # producing. Report not-attempted instead, so the tier prints n/a and the reader is told
+    # nothing rather than told something false.
+    if pbox is None and not d_pr:
+        return None
     v = iou(gbox, pbox)
     gcap, pcap = norm_text(d_gt.get("captionText")), norm_text(d_pr.get("captionText"))
     if gcap and pcap:

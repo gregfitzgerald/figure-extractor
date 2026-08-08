@@ -26,7 +26,11 @@ measures honestly is:
     exact. It is the number that matters, because a null goes straight to abstention.
   * DISAGREEMENT -- when the parser returns a run AND the worklist has an expectation, do
     they differ? A disagreement is a candidate SILENT ERROR and must be inspected by hand.
-    Zero disagreements is the property to preserve; the current parser has zero.
+    Zero disagreements is the property to preserve. The live run currently prints ONE
+    (Hullinger2015_F4): the parser reads a-f, the worklist claims 8 panels. Root cause is
+    input truncation, not the parser -- even the refetched caption ends mid-sentence at
+    "(F) MPEP does not diminish the synaptic" -- but it is a live undercount input class
+    and it must be inspected, not assumed away.
 
 Never report agreement-with-the-worklist as accuracy. The worklist is not a gold standard.
 

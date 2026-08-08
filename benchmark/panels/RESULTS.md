@@ -264,9 +264,9 @@ over-splits back down. Median 8 ms per figure.
     exact panel count 75.8%   over-split 6.1%   under-split 18.2%   spurious boxes 69
     caption states the count for 30 figures; matched for 80.0% of them
   ASSIGNMENT
-    localised panels given the RIGHT letter 87.5%
-    silent mislabels (well-localised, wrong letter) 5.0% of all panels
-  WHOLE FIGURE EXACTLY RIGHT  30.3%
+    localised panels given the RIGHT letter 83.3%
+    silent mislabels (well-localised, wrong letter) 6.7% of all panels
+  WHOLE FIGURE EXACTLY RIGHT  27.3%
   ABSTENTION
     coverage 81.8%   abstention precision 0.83  recall 0.21   net figures saved +4
 ```
@@ -303,7 +303,7 @@ Stratified -- this is the deliverable:
 ```
   per-panel IoU median 0.368   IoU >= 0.5 25.2%   never matched 19
   exact panel count 9.1%   over-split 72.7%   spurious boxes 226
-  localised panels given the RIGHT letter 43.3%   silent mislabels 14.3%
+  localised panels given the RIGHT letter 50.0%   silent mislabels 12.6%
   WHOLE FIGURE EXACTLY RIGHT 9.1%
 ```
 
@@ -333,7 +333,7 @@ Stratified -- this is the deliverable:
    60 % of figures exactly right.
 6. **There is no usable confidence signal.** The only refusal the legacy detector can make
    is "fewer than 2 boxes"; it fires on 6 figures, catching 5 real errors and costing 1
-   correct answer (net +4 of 23 errors, recall 0.21). 66.7 % of the figures it does answer
+   correct answer (net +4 of 24 errors, recall 0.21). 70.4 % of the figures it does answer
    are wrong, and it says nothing about them.
 
 ---
