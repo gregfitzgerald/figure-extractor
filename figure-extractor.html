@@ -4793,40 +4793,26 @@ function anchorPlacementPlausible(boxes, anchors) {
 // accepted only when every box owns exactly one anchor and the anchored letters are exactly
 // the expected set -- then it either CONFIRMS the prior or CORRECTS it (and the correction
 // wins, flagged). Anything less is 'unverified': the prior is emitted but never as ok=true.
-// Fraction of panels that must carry an unambiguous glyph anchor before a PARTIAL naming is
-// allowed to count as verified. See the partial branch below for why partial is admitted.
-const LABEL_PARTIAL_MIN_FRAC = 0.6;
-
+// PARTIAL label verification was tried here and REVERTED. It accepted a naming when >= 60%
+// of panels carried anchors agreeing with the reading-order prior, on the theory that one
+// missing glyph should not discard the correctly-read ones.
+//
+// It qualified ZERO real figures -- abstention 92.9% before and after -- so it bought nothing
+// measurable. And it was not free: `lettersVerified` became true on partial evidence, which
+// (a) let `applyPanelResult`'s caption routing attach '(D) ...' text BY LETTER to panels whose
+// letters were still only the reading-order guess, the exact silent error the cascade exists
+// to prevent, and (b) suppressed the confirm dialog's "panel LETTERS are a guess from reading
+// order" warning precisely in the case where they partly are. It also supplied the second half
+// of a compound attack: a one-panel bar chart with a significance-letter caption split into 3
+// panels, with partial anchors vouching for the invented split at confidence 0.79.
+//
+// Verification is therefore all-or-nothing again, deliberately. The anchors are the evidence;
+// a naming is either fully anchored or it is a prior, and a prior must never be sold as
+// verified.
 function verifyPanelLetters(boxes, anchors, priorLetters) {
     const out = { letters: priorLetters.slice(), status: 'unverified' };
-    if (boxes.length < 2 || priorLetters.length !== boxes.length) return out;
-
-    // PARTIAL VERIFICATION. Requiring one anchor per panel is all-or-nothing, and on real
-    // raster figures that is what fails: measured over 13 real figures the glyph finder
-    // located anchors on 12, but was SHORT by one or more on 8 of them (Zhang2017 Fig 3: 5
-    // anchors for 7 panels). One missing glyph threw away the five correctly-read ones and
-    // dropped the whole figure to 'unverified' -- which is why `panel-labels-unverified`
-    // appears on 58 of 65 real-figure abstentions and is the binding constraint on answering.
-    //
-    // A partial reading is admitted only when it CORROBORATES and never when it argues: every
-    // anchor found must own a distinct box AND agree with the reading-order prior for that
-    // box. A single disagreement means the partition or the ordering is wrong, and partial
-    // evidence is far too weak to correct a naming on -- so any conflict stays 'unverified'.
-    // The threshold keeps one stray glyph on a 6-panel figure from vouching for the rest.
-    if (anchors.length !== boxes.length) {
-        const need = Math.max(2, Math.ceil(LABEL_PARTIAL_MIN_FRAC * boxes.length));
-        if (anchors.length < need) return out;
-        const own = assignAnchorsToBoxes(boxes, anchors);
-        const seen = new Array(boxes.length).fill(null);
-        for (let ai = 0; ai < anchors.length; ai++) {
-            const bi = own[ai];
-            if (bi < 0 || seen[bi]) return out;              // unassigned or two on one box
-            if (anchors[ai].letter !== priorLetters[bi]) return out;   // argues -> not evidence
-            seen[bi] = anchors[ai];
-        }
-        return { letters: priorLetters.slice(), status: 'partial' };
-    }
-    if (anchors.length !== boxes.length) return out;
+    if (boxes.length < 2 || anchors.length !== boxes.length
+        || priorLetters.length !== boxes.length) return out;
     const owner = assignAnchorsToBoxes(boxes, anchors);
     const per = new Array(boxes.length).fill(null);
     for (let ai = 0; ai < anchors.length; ai++) {
@@ -5569,7 +5555,6 @@ function detectPanelsCore(fig, opts = {}) {
         named = { letters: prior.slice(), status: 'unverified' };
     }
     if (named.status === 'corrected') res.flags.push('label-order-mismatch');
-    else if (named.status === 'partial') res.flags.push('panel-labels-partial');
     else if (named.status === 'unverified' && boxesA.length >= 2) res.flags.push('panel-labels-unverified');
     // A forced merge that the anchors do not vouch for is a count disagreement, not a fix.
     if (merged && named.status === 'unverified' && !res.flags.includes('panel-count-mismatch'))
@@ -5594,9 +5579,6 @@ function detectPanelsCore(fig, opts = {}) {
     else { conf = 0.2; res.flags.push('single-panel'); }
     for (const [flag, pen] of [['overlapping-panels', 0.25], ['ink-orphaned', 0.15], ['sliver-panel', 0.1],
                                ['label-order-mismatch', 0.05], ['panel-labels-unverified', 0.15], ['weak-gutter', 0.1],
-                               // Partial anchoring corroborates but does not fully vouch, so it
-                               // costs less than 'unverified' and more than nothing.
-                               ['panel-labels-partial', 0.06],
                                ['boundary-repaired', 0.12], ['label-placement-implausible', 0.15]])
         if (res.flags.includes(flag)) conf -= pen;
     res.confidence = Math.max(0.05, Math.min(0.98, +conf.toFixed(2)));
@@ -5618,7 +5600,7 @@ function detectPanelsCore(fig, opts = {}) {
     // the reported boxes) on a result that is then handed to a human rather than trusted.
     const CRITICAL = ['panel-count-mismatch', 'overlapping-panels',
                       'low-confidence', 'no-caption-letters', 'no-page',
-                      'panel-labels-unverified', 'panel-labels-partial', 'label-placement-implausible',
+                      'panel-labels-unverified', 'label-placement-implausible',
                       'boundary-repaired'];
     if (!res.lettersVerified) CRITICAL.push('non-guillotine-layout', 'label-order-mismatch');
     res.ok = !res.flags.some(f => CRITICAL.includes(f));

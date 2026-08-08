@@ -100,7 +100,9 @@ the second -- the first has a clean cause, the second turns out to have several:
 - **Standing behind an answer.** This is where it actually fails, and it has **no single
   cause** -- which is the finding, and it took three wrong guesses to reach. Reading more
   captions moved abstention by exactly zero, three separate times (92.9%, 5 figures answered,
-  every time). So did allowing partial label verification: not one figure qualified.
+  every time). Allowing *partial* label verification qualified not one figure, and was
+  reverted: it sold a reading-order guess as verified, which let caption text be routed by
+  letter onto panels whose letters were still a guess.
 
   Measured rather than assumed, on the 65 abstentions:
 
