@@ -3887,6 +3887,16 @@ function defaultPanelLetters(n) { return Array.from({ length: n }, (_, i) => Str
 // by accident. This threshold is what keeps the relaxed pass from inventing panels.
 const PANEL_RELAXED_MIN = 3;
 
+// Reference language immediately before the first marker. The relaxed pass exists to accept
+// markers attached to a NOUN ("at 2 months of age (A), 5 months (B), and 12 months (C)"), but
+// a citation list is structurally identical -- "consistent with earlier reports (A), later
+// work (B), and a replication (C)" -- and the >= 3 threshold does not separate them, because
+// prose cites three things as readily as two. Found by adversarial probing after the relaxed
+// pass shipped: that sentence produced three panels out of nothing. A wrong panel count is
+// handed to the geometry as a HARD CONSTRAINT, so inventing panels is worse than missing them.
+// Only the relaxed pass consults this; the strict pass already requires clause punctuation.
+const PANEL_REF_PROSE = /\b(?:consistent with|in line with|in agreement with|as (?:previously |recently )?(?:reported|shown|described|noted|observed)|(?:earlier|previous|prior|related|recent) (?:report|work|stud|finding|paper)|replicat|see also|reviewed in|refs?\b)[^.;:]{0,60}$/i;
+
 function _panelRunOk(letters) {
     if (letters.length < 2) return false;
     for (let i = 0; i < letters.length; i++)
@@ -3913,6 +3923,9 @@ function expectedPanelsFromCaption(caption) {
     const loose = splitPanelCaption(caption, true);
     if (!loose || !_panelRunOk(loose.letters) || loose.letters.length < PANEL_RELAXED_MIN)
         return null;
+    // Refuse when the text running up to the first marker reads as a citation rather than as
+    // a panel introduction. `preamble` is exactly that span.
+    if (PANEL_REF_PROSE.test(loose.preamble || '')) return null;
     return { count: loose.letters.length, letters: loose.letters.slice(), panels: loose.panels };
 }
 

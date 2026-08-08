@@ -85,6 +85,56 @@
    "why": "grouped marker"
   },
   {
+   "id": "ctrl_citation_three",
+   "source": "adversarial",
+   "caption": "Figure 6. Consistent with earlier reports (A), later work (B), and a replication (C), enrichment improved recall.",
+   "expect": null,
+   "why": "THREE citation letters in prose. The relaxed pass is gated at >=3 markers, and prose cites three things as readily as two -- so the threshold alone does not separate a citation list from a panel list. Found by adversarial probing AFTER the relaxed pass shipped: this produced three panels out of nothing. A wrong panel count is handed to the geometry as a hard constraint, so inventing panels is worse than missing them."
+  },
+  {
+   "id": "ctrl_as_previously_shown",
+   "source": "adversarial",
+   "caption": "Figure 6b. As previously shown (A), and in related work (B), and a replication (C), recall improved.",
+   "expect": null,
+   "why": "same class, different reference phrasing"
+  },
+  {
+   "id": "ctrl_stats_parens",
+   "source": "adversarial",
+   "caption": "Figure 5. Performance differed by group (P < 0.05), with a main effect of housing (F1,50 = 5.24, P = 0.026) and no interaction (P = 0.963).",
+   "expect": null,
+   "why": "statistical parentheticals must never read as panel markers"
+  },
+  {
+   "id": "ctrl_unit_abbrevs",
+   "source": "adversarial",
+   "caption": "Figure 8. Standard housing (S), isolated (I), and enriched (E) groups were compared.",
+   "expect": null,
+   "why": "three single-letter GROUP abbreviations in a row -- shaped exactly like a panel run but not starting at 'a'"
+  },
+  {
+   "id": "ctrl_panels_with_stats",
+   "source": "adversarial",
+   "caption": "Figure 11. (A) Latency (P < 0.05). (B) Path length (n = 8). (C) Speed (cm/s).",
+   "expect": [
+    "a",
+    "b",
+    "c"
+   ],
+   "why": "real panels INTERLEAVED with statistical parentheticals -- must still parse, or the fix for the false positives would have cost the true positives"
+  },
+  {
+   "id": "ctrl_working_memory",
+   "source": "adversarial",
+   "caption": "Figure 12. Working memory at 2 months (A), 5 months (B), and 12 months (C).",
+   "expect": [
+    "a",
+    "b",
+    "c"
+   ],
+   "why": "contains the word 'work' but is not reference prose; the citation guard must key on 'earlier/previous/related work', not on 'work'"
+  },
+  {
    "id": "ctrl_citation_poison",
    "source": "synthetic",
    "caption": "Figure 4. As reported previously (A) and in related work (B), performance improved. See Smith et al. (2019) for details.",
